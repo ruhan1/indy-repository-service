@@ -1,0 +1,65 @@
+# Quarkus will choose application.yaml over application.properties.
+quarkus:
+    http:
+        port: 8080
+        read-timeout: 30m
+        limits:
+          max-body-size: 500M
+
+    package:
+        uber-jar: true
+
+    # Logging (disable console on prod)
+    log:
+        level: INFO
+        category:
+            "org.commonjava.util.gateway":
+                level: DEBUG
+        console:
+            level: DEBUG
+            enable: true
+        file:
+            enable: true
+            path: "log/gateway.log"
+            level: DEBUG
+            format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+            rotation:
+                max-backup-index: 5
+                max-file-size: 10M
+
+    swagger-ui:
+        always-include: true
+
+
+repository:
+    affectedGroupsExclude: ^build-\d+
+#    disposableStorePattern:
+    # ssl configuration for remote
+#    remote:
+#        sslRequired: false
+##       nossHosts:
+
+cassandra:
+    enabled: false
+#    host: localhost
+#    port: 9042
+#    user: user
+#    pass: pass
+#    keyspace:
+#    replica:
+#    timeoutMillis:
+#        connect: 60000
+#        read: 60000
+#    retries:
+#        read: 3
+#        write: 3
+
+keycloak:
+    enabled: false
+
+store:
+
+
+
+
+
