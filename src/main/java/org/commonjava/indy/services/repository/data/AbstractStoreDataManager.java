@@ -16,9 +16,9 @@
 package org.commonjava.indy.services.repository.data;
 
 import org.apache.commons.lang3.StringUtils;
-import org.commonjava.cdi.util.weft.Locker;
 import org.commonjava.indy.services.repository.audit.ChangeSummary;
 import org.commonjava.indy.services.repository.change.ArtifactStoreUpdateType;
+import org.commonjava.indy.services.repository.concurrent.Locker;
 import org.commonjava.indy.services.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.services.repository.config.SslValidationConfiguration;
 import org.commonjava.indy.services.repository.event.EventMetadata;
@@ -66,7 +66,7 @@ public abstract class AbstractStoreDataManager
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-//    protected final Locker<StoreKey> opLocks = new Locker<>(); // used internally
+    protected final Locker<StoreKey> opLocks = new Locker<>(); // used internally
 
     abstract protected StoreEventDispatcher getStoreEventDispatcher();
 

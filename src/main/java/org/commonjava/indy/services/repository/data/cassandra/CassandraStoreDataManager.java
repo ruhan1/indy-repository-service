@@ -1,6 +1,7 @@
 package org.commonjava.indy.services.repository.data.cassandra;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.commonjava.indy.services.repository.audit.ChangeSummary;
 import org.commonjava.indy.services.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.services.repository.event.StoreEventDispatcher;
@@ -11,7 +12,6 @@ import org.commonjava.indy.services.repository.model.HostedRepository;
 import org.commonjava.indy.services.repository.model.RemoteRepository;
 import org.commonjava.indy.services.repository.model.StoreKey;
 import org.commonjava.indy.services.repository.model.StoreType;
-import org.commonjava.indy.services.repository.util.jackson.IndyObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class CassandraStoreDataManager
     CassandraStoreQuery storeQuery;
 
     @Inject
-    IndyObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Override
     protected StoreEventDispatcher getStoreEventDispatcher()

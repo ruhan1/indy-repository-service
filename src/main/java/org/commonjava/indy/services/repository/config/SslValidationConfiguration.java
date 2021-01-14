@@ -28,7 +28,7 @@ public class SslValidationConfiguration
     @ConfigProperty( name = "repository.remote.sslRequired", defaultValue = "false" )
     private Boolean sslRequired;
 
-    @ConfigProperty( name = "repository.remote.nossHosts", defaultValue = "" )
+    @ConfigProperty( name = "repository.remote.nosslHosts", defaultValue = " " )
     private List<String> remoteNoSSLHosts;
 
     public Boolean isSSLRequired()

@@ -44,6 +44,7 @@ import java.util.Set;
 
 @ApplicationScoped
 @Named
+@Alternative
 public class IndyObjectMapper
         extends ObjectMapper
 {

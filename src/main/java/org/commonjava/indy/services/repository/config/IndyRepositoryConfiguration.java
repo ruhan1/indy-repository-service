@@ -29,10 +29,10 @@ public class IndyRepositoryConfiguration
 {
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    @ConfigProperty( name = "repository.affectedGroupsExclude", defaultValue = "" )
+    @ConfigProperty( name = "repository.affectedGroupsExclude", defaultValue = " " )
     private String affectedGroupsExcludeFilter;
 
-    @ConfigProperty( name = "repository.disposableStorePattern", defaultValue = "" )
+    @ConfigProperty( name = "repository.disposableStorePattern", defaultValue = " " )
     private String disposableStorePattern;
 
     @ConfigProperty(name="repository.storeValidationEnabled", defaultValue = "false")

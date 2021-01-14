@@ -15,43 +15,7 @@
  */
 package org.commonjava.indy.services.repository.jaxrs;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.CONFLICT;
-import static javax.ws.rs.core.Response.noContent;
-import static javax.ws.rs.core.Response.notModified;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.commonjava.indy.services.repository.model.ArtifactStore.METADATA_CHANGELOG;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -71,9 +35,44 @@ import org.commonjava.indy.services.repository.model.RemoteRepository;
 import org.commonjava.indy.services.repository.model.StoreKey;
 import org.commonjava.indy.services.repository.model.StoreType;
 import org.commonjava.indy.services.repository.model.dto.StoreListingDTO;
-import org.commonjava.indy.services.repository.util.jackson.IndyObjectMapper;
+import org.commonjava.indy.services.repository.util.jackson.MapperUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static javax.ws.rs.core.Response.noContent;
+import static javax.ws.rs.core.Response.notModified;
+import static javax.ws.rs.core.Response.ok;
+import static javax.ws.rs.core.Response.status;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.commonjava.indy.services.repository.model.ArtifactStore.METADATA_CHANGELOG;
 
 @Api( description = "Resource for accessing and managing artifact store definitions", value = "Store Administration" )
 @Path( "/api/admin/stores/{packageType}/{type: (hosted|group|remote)}" )
@@ -87,7 +86,7 @@ public class RepositoryAdminResources
     private AdminController adminController;
 
     @Inject
-    private IndyObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Inject
     private SecurityManager securityManager;
@@ -163,7 +162,7 @@ public class RepositoryAdminResources
 
             //            logger.warn("=> JSON: " + json);
 
-            json = objectMapper.patchLegacyStoreJson( json );
+            json = MapperUtil.patchLegacyStoreJson( objectMapper, json );
         }
         catch ( final IOException e )
         {
@@ -245,7 +244,7 @@ public class RepositoryAdminResources
         try
         {
             json = IOUtils.toString( request.getInputStream(), Charset.defaultCharset() );
-            json = objectMapper.patchLegacyStoreJson( json );
+            json = MapperUtil.patchLegacyStoreJson( objectMapper, json );
         }
         catch ( final IOException e )
         {
@@ -351,6 +350,7 @@ public class RepositoryAdminResources
                          @PathParam( "type" ) String type,
                          final @ApiParam( required = true ) @PathParam( "name" ) String name )
     {
+        logger.info( "{}:{}:{}", packageType, type, name );
         final StoreType st = StoreType.get( type );
         final StoreKey key = new StoreKey( packageType, st, name );
 

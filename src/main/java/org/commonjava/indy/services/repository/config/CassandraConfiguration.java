@@ -33,10 +33,10 @@ public class CassandraConfiguration
     @ConfigProperty( name = "cassandra.port", defaultValue = "9402" )
     private Integer cassandraPort;
 
-    @ConfigProperty( name = "cassandra.user", defaultValue = "" )
+    @ConfigProperty( name = "cassandra.user", defaultValue = " " )
     private String cassandraUser;
 
-    @ConfigProperty( name = "cassandra.pass", defaultValue = "" )
+    @ConfigProperty( name = "cassandra.pass", defaultValue = " " )
     private String cassandraPass;
 
     @ConfigProperty( name = "cassandra.timeoutMillis.connect", defaultValue = "60000" )
@@ -51,7 +51,7 @@ public class CassandraConfiguration
     @ConfigProperty( name = "cassandra.retries.write", defaultValue = "3" )
     private int writeRetries;
 
-    @ConfigProperty( name = "cassandra.keyspace", defaultValue = "" )
+    @ConfigProperty( name = "cassandra.keyspace", defaultValue = " " )
     private String keyspace;
 
     @ConfigProperty( name = "cassandra.replica", defaultValue = "0" )

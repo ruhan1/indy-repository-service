@@ -15,7 +15,6 @@
  */
 package org.commonjava.indy.services.repository.data;
 
-import org.commonjava.cdi.util.weft.NamedThreadFactory;
 import org.commonjava.indy.services.repository.audit.ChangeSummary;
 import org.commonjava.indy.services.repository.event.NoOpStoreEventDispatcher;
 import org.commonjava.indy.services.repository.event.StoreEventDispatcher;
@@ -25,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -58,9 +56,11 @@ public class MemoryStoreDataManager
         this.dispatcher = new NoOpStoreEventDispatcher();
         if ( unitTestUsage )
         {
-            super.affectedByAsyncRunner = Executors.newFixedThreadPool( 4, new NamedThreadFactory(
-                            AFFECTED_BY_ASYNC_RUNNER_NAME, new ThreadGroup( AFFECTED_BY_ASYNC_RUNNER_NAME ), true,
-                            4 ) );
+            //TODO: weft way
+//            super.affectedByAsyncRunner = Executors.newFixedThreadPool( 4, new NamedThreadFactory(
+//                            AFFECTED_BY_ASYNC_RUNNER_NAME, new ThreadGroup( AFFECTED_BY_ASYNC_RUNNER_NAME ), true,
+//                            4 ) );
+            super.affectedByAsyncRunner = Executors.newFixedThreadPool( 4 );
         }
     }
 
