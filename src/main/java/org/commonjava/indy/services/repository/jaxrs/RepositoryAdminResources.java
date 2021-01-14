@@ -36,12 +36,12 @@ import org.commonjava.indy.services.repository.model.StoreKey;
 import org.commonjava.indy.services.repository.model.StoreType;
 import org.commonjava.indy.services.repository.model.dto.StoreListingDTO;
 import org.commonjava.indy.services.repository.util.jackson.MapperUtil;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -106,7 +106,7 @@ public class RepositoryAdminResources
     //    private UriInfo uriInfo;
     //
     //    @Context
-    //    private HttpServletRequest request;
+    //    private HttpRequest request;
 
     @ApiOperation( "Check if a given store exists" )
     @ApiResponses( { @ApiResponse( code = 200, message = "The store exists" ),
@@ -150,7 +150,7 @@ public class RepositoryAdminResources
     public Response create( final @PathParam( "packageType" ) String packageType,
                             final @ApiParam( allowableValues = "hosted,group,remote", required = true )
                             @PathParam( "type" ) String type, final @Context UriInfo uriInfo,
-                            final @Context HttpServletRequest request, final @Context SecurityContext securityContext )
+                            final @Context HttpRequest request, final @Context SecurityContext securityContext )
     {
         final StoreType st = StoreType.get( type );
 
@@ -235,7 +235,7 @@ public class RepositoryAdminResources
                            final @ApiParam( allowableValues = "hosted,group,remote", required = true )
                            @PathParam( "type" ) String type,
                            final @ApiParam( required = true ) @PathParam( "name" ) String name,
-                           final @Context HttpServletRequest request, final @Context SecurityContext securityContext )
+                           final @Context HttpRequest request, final @Context SecurityContext securityContext )
     {
         final StoreType st = StoreType.get( type );
 
@@ -244,7 +244,9 @@ public class RepositoryAdminResources
         try
         {
             json = IOUtils.toString( request.getInputStream(), Charset.defaultCharset() );
+            logger.info( "{}", json );
             json = MapperUtil.patchLegacyStoreJson( objectMapper, json );
+
         }
         catch ( final IOException e )
         {
@@ -283,7 +285,7 @@ public class RepositoryAdminResources
 
         try
         {
-            String user = securityManager.getUser( securityContext, request );
+            final String user = securityManager.getUser( securityContext, request );
 
             logger.info( "Storing: {}", store );
             if ( adminController.store( store, user, false ) )
@@ -387,7 +389,7 @@ public class RepositoryAdminResources
                             @PathParam( "type" ) String type,
                             final @ApiParam( required = true ) @PathParam( "name" ) String name,
                             final @QueryParam( "deleteContent" ) boolean deleteContent,
-                            @Context final HttpServletRequest request, final @Context SecurityContext securityContext )
+                            @Context final HttpRequest request, final @Context SecurityContext securityContext )
     {
         final StoreType st = StoreType.get( type );
         final StoreKey key = new StoreKey( packageType, st, name );
@@ -409,7 +411,7 @@ public class RepositoryAdminResources
 
             if ( isEmpty( summary ) )
             {
-                summary = request.getHeader( METADATA_CHANGELOG );
+                summary = request.getHttpHeaders().getHeaderString( METADATA_CHANGELOG );
             }
 
             if ( isEmpty( summary ) )
@@ -440,8 +442,7 @@ public class RepositoryAdminResources
     public Response getRemoteByUrl( final @PathParam( "packageType" ) String packageType,
                                     final @ApiParam( allowableValues = "remote", required = true ) @PathParam( "type" )
                                             String type, final @QueryParam( "url" ) String url,
-                                    @Context final HttpServletRequest request,
-                                    final @Context SecurityContext securityContext )
+                                    @Context final HttpRequest request, final @Context SecurityContext securityContext )
     {
         if ( !"remote".equals( type ) )
         {

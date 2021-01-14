@@ -16,10 +16,10 @@
 package org.commonjava.indy.services.repository.jaxrs;
 
 import org.commonjava.indy.services.repository.config.KeycloakConfiguration;
+import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
@@ -33,7 +33,7 @@ public class SecurityManager
     @Inject
     private KeycloakConfiguration config;
 
-    public String getUser( SecurityContext context, HttpServletRequest request )
+    public String getUser( SecurityContext context, HttpRequest request )
     {
         if ( !config.isEnabled() )
         {
