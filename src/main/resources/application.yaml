@@ -13,14 +13,14 @@ quarkus:
     log:
         level: INFO
         category:
-            "org.commonjava.util.gateway":
+            "org.commonjava.indy.service":
                 level: DEBUG
         console:
             level: DEBUG
             enable: true
         file:
             enable: true
-            path: "log/gateway.log"
+            path: "log/indy-repository-service.log"
             level: DEBUG
             format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
             rotation:

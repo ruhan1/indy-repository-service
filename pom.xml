@@ -3,20 +3,15 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.commonjava</groupId>
-    <artifactId>commonjava</artifactId>
-    <version>17-SNAPSHOT</version>
-  </parent>
-  <groupId>org.commonjava.indy.services</groupId>
-  <artifactId>indy-repository-services</artifactId>
+  <groupId>org.commonjava.indy.service</groupId>
+  <artifactId>indy-repository-service</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <name>Indy :: Services :: Repository</name>
+  <name>Indy :: Service :: Repository</name>
   <properties>
-    <indy.version>2.5.3-SNAPSHOT</indy.version>
+    <!--    <indy.version>2.5.3-SNAPSHOT</indy.version>-->
     <java.version>1.8</java.version>
 
-    <weft.version>1.18</weft.version>
+    <!--    <weft.version>1.18</weft.version>-->
     <atlas.version>1.1.1</atlas.version>
 
     <quarkus.version>1.9.2.Final</quarkus.version>
@@ -33,11 +28,11 @@
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.commonjava.cdi.util</groupId>
-        <artifactId>weft</artifactId>
-        <version>${weft.version}</version>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.commonjava.cdi.util</groupId>-->
+      <!--        <artifactId>weft</artifactId>-->
+      <!--        <version>${weft.version}</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.commonjava.atlas</groupId>
         <artifactId>atlas-relationships-api</artifactId>
@@ -66,16 +61,16 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.spec.javax.servlet</groupId>
-        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-        <version>1.0.2.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.commonjava.indy</groupId>
-        <artifactId>indy-model-core-java</artifactId>
-        <version>${indy.version}</version>
-      </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.jboss.spec.javax.servlet</groupId>-->
+      <!--        <artifactId>jboss-servlet-api_3.0_spec</artifactId>-->
+      <!--        <version>1.0.2.Final</version>-->
+      <!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>org.commonjava.indy</groupId>-->
+      <!--        <artifactId>indy-model-core-java</artifactId>-->
+      <!--        <version>${indy.version}</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.commonjava.indy</groupId>
         <artifactId>indy-subsys-keycloak</artifactId>
@@ -119,10 +114,10 @@
       <groupId>org.commonjava.atlas</groupId>
       <artifactId>atlas-relationships-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.jboss.spec.javax.servlet</groupId>-->
+    <!--      <artifactId>jboss-servlet-api_3.0_spec</artifactId>-->
+    <!--    </dependency>-->
     <!--    <dependency>-->
     <!--      <groupId>io.quarkus</groupId>-->
     <!--      <artifactId>quarkus-resteasy-mutiny</artifactId>-->

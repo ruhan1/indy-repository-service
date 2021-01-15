@@ -1,0 +1,3 @@
+org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor
+org.commonjava.indy.service.repository.model.pkg.NPMPackageTypeDescriptor
+org.commonjava.indy.service.repository.model.pkg.GenericPackageTypeDescriptor
