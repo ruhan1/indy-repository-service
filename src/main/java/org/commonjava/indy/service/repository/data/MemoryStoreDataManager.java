@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -54,14 +53,6 @@ public class MemoryStoreDataManager
     public MemoryStoreDataManager( final boolean unitTestUsage )
     {
         this.dispatcher = new NoOpStoreEventDispatcher();
-        if ( unitTestUsage )
-        {
-            //TODO: weft way
-//            super.affectedByAsyncRunner = Executors.newFixedThreadPool( 4, new NamedThreadFactory(
-//                            AFFECTED_BY_ASYNC_RUNNER_NAME, new ThreadGroup( AFFECTED_BY_ASYNC_RUNNER_NAME ), true,
-//                            4 ) );
-            super.affectedByAsyncRunner = Executors.newFixedThreadPool( 4 );
-        }
     }
 
     public MemoryStoreDataManager( final StoreEventDispatcher dispatcher )

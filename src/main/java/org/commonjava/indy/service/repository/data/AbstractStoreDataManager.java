@@ -15,12 +15,26 @@
  */
 package org.commonjava.indy.service.repository.data;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.inject.Inject;
+
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
-import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
 import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
@@ -32,32 +46,11 @@ import org.commonjava.indy.service.repository.model.StoreType;
 import org.commonjava.indy.service.repository.util.ValuePipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.Collections.emptySet;
-import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.commonjava.indy.service.repository.model.StoreType.group;
-import static org.commonjava.indy.service.repository.model.StoreType.hosted;
+import static java.util.Collections.*;
+import static javax.ws.rs.core.Response.Status.*;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.commonjava.indy.service.repository.model.StoreType.*;
 
 public abstract class AbstractStoreDataManager
         implements StoreDataManager
@@ -74,22 +67,7 @@ public abstract class AbstractStoreDataManager
     StoreValidator storeValidator;
 
     @Inject
-    private SslValidationConfiguration configuration;
-
-    //
-    @Inject
     private IndyRepositoryConfiguration repoConfig;
-    //
-    //    @Inject
-    //    StoreDataManager storeDataManager;
-
-    protected static final String AFFECTED_BY_ASYNC_RUNNER_NAME = "store-affected-by-async-runner";
-
-    // TODO: This is using weft thread pooling service, will consider it later
-//    @Inject
-//    @WeftManaged
-//    @ExecutorConfig( named = AFFECTED_BY_ASYNC_RUNNER_NAME, priority = 4, threads = 32 )
-    protected ExecutorService affectedByAsyncRunner = Executors.newFixedThreadPool(32);
 
     protected AbstractStoreDataManager()
     {
@@ -481,20 +459,6 @@ public abstract class AbstractStoreDataManager
     public Set<Group> affectedBy( final Collection<StoreKey> keys )
     {
         return affectedByFromStores( keys );
-    }
-
-    @Override
-    public void asyncGroupAffectedBy( ContextualTask contextualTask )
-    {
-        if ( StringUtils.isNotBlank( contextualTask.getTaskContext() ) )
-        {
-            MDC.put( "group-affected-runner-context", contextualTask.getTaskContext() );
-        }
-        affectedByAsyncRunner.execute( () -> {
-            Thread.currentThread()
-                  .setName( String.format( "%s::%s", AFFECTED_BY_ASYNC_RUNNER_NAME, contextualTask.getThreadName() ) );
-            contextualTask.getTask().run();
-        } );
     }
 
     protected Set<Group> affectedByFromStores( final Collection<StoreKey> keys )

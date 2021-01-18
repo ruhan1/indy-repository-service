@@ -162,42 +162,4 @@ public interface StoreDataManager
      */
     Set<Group> affectedBy( Collection<StoreKey> keys, EventMetadata eventMetadata ) throws IndyDataException;
 
-    /**
-     * This api is used for some time-sensitive tasks which should use getGroupsAffectedBy service, as
-     * this service is a little time-consuming now.
-     *
-     * @param contextualTask
-     */
-    void asyncGroupAffectedBy( ContextualTask contextualTask );
-
-    class ContextualTask
-    {
-        private final String threadName;
-
-        private final String taskContext;
-
-        private final Runnable task;
-
-        public ContextualTask( String threadName, String taskContext, Runnable task )
-        {
-            this.threadName = threadName;
-            this.taskContext = taskContext;
-            this.task = task;
-        }
-
-        public String getTaskContext()
-        {
-            return this.taskContext;
-        }
-
-        public String getThreadName(){
-            return this.threadName;
-        }
-
-        public Runnable getTask()
-        {
-            return task;
-        }
-
-    }
 }
