@@ -15,12 +15,12 @@
  */
 package org.commonjava.indy.service.repository.controller;
 
+import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
 import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.data.StoreValidator;
-import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
-import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
@@ -53,9 +53,6 @@ public class AdminController
 
     @Inject
     private IndyRepositoryConfiguration indyConfiguration;
-
-    //    @Inject
-    //    private DownloadManager downloadManager;
 
     @Inject
     private StoreValidator storeValidator;
@@ -128,6 +125,20 @@ public class AdminController
         }
     }
 
+    public List<ArtifactStore> getAllStores()
+            throws IndyWorkflowException
+    {
+        try
+        {
+            return new ArrayList<>( storeManager.getAllArtifactStores() );
+        }
+        catch ( IndyDataException e )
+        {
+            throw new IndyWorkflowException( INTERNAL_SERVER_ERROR.getStatusCode(),
+                                             "Failed to list all stores. Reason: {}", e, e.getMessage() );
+        }
+    }
+
     public ArtifactStore get( final StoreKey key )
             throws IndyWorkflowException
     {
@@ -191,11 +202,6 @@ public class AdminController
             throw new IndyWorkflowException( status, "Failed to delete: {}. Reason: {}", e, key, e.getMessage() );
         }
     }
-
-    //    private void deleteContent( final ArtifactStore store ) throws IndyWorkflowException
-    //    {
-    //        downloadManager.delete( store, ROOT_PATH, new EventMetadata().set( IGNORE_READONLY, Boolean.TRUE ) );
-    //    }
 
     public boolean exists( final StoreKey key )
     {

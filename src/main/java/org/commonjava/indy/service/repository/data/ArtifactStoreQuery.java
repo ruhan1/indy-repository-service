@@ -44,6 +44,7 @@ import java.util.stream.Stream;
  */
 public interface ArtifactStoreQuery<T extends ArtifactStore>
 {
+    @Deprecated
     ArtifactStoreQuery<T> rewrap( StoreDataManager manager );
 
     ArtifactStoreQuery<T> packageType( String packageType )
