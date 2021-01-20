@@ -92,9 +92,6 @@ public class RepositoryAdminResources
     private SecurityManager securityManager;
 
     @Inject
-    StoreValidator storeValidator;
-
-    @Inject
     private ResponseHelper responseHelper;
 
     public RepositoryAdminResources()

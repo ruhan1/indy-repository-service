@@ -75,7 +75,6 @@ public class DTOStreamingOutput
     public void write( final OutputStream outputStream )
             throws IOException, WebApplicationException
     {
-        AtomicReference<IOException> ioe = new AtomicReference<>();
         CountingOutputStream cout = new CountingOutputStream( outputStream );
 
         try
@@ -89,6 +88,7 @@ public class DTOStreamingOutput
 
         }
         // TODO: This is metrics wrapped way, will rollback to this when enable metrics
+//        AtomicReference<IOException> ioe = new AtomicReference<>();
 //        metricsManager.wrapWithStandardMetrics( () -> {
 //            CountingOutputStream cout = new CountingOutputStream( outputStream );
 //            //            long start = System.nanoTime();

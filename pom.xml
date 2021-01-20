@@ -9,7 +9,7 @@
   <name>Indy :: Service :: Repository</name>
   <properties>
     <!--    <indy.version>2.5.3-SNAPSHOT</indy.version>-->
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
 
     <!--    <weft.version>1.18</weft.version>-->
     <atlas.version>1.1.1</atlas.version>
@@ -61,16 +61,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>org.jboss.spec.javax.servlet</groupId>-->
-      <!--        <artifactId>jboss-servlet-api_3.0_spec</artifactId>-->
-      <!--        <version>1.0.2.Final</version>-->
-      <!--      </dependency>-->
-      <!--      <dependency>-->
-      <!--        <groupId>org.commonjava.indy</groupId>-->
-      <!--        <artifactId>indy-model-core-java</artifactId>-->
-      <!--        <version>${indy.version}</version>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>org.commonjava.indy</groupId>
         <artifactId>indy-subsys-keycloak</artifactId>
@@ -217,13 +207,17 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
           <configuration>
             <skipTests>${skipSurefire}</skipTests>
             <redirectTestOutputToFile>${test-redirectOutput}</redirectTestOutputToFile>
             <forkCount>${test-forkCount}</forkCount>
             <reportsDirectory>${junit.report.dir}</reportsDirectory>
             <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+            <!-- To support junit5 -->
+            <systemPropertyVariables>
+              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+              <maven.home>${maven.home}</maven.home>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
       </plugins>
