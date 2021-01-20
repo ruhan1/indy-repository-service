@@ -33,6 +33,9 @@ import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This customizer is u
+ */
 @Singleton
 public class IndyJacksonCustomizer
         implements ObjectMapperCustomizer
@@ -45,19 +48,7 @@ public class IndyJacksonCustomizer
     @Inject
     private Instance<ModuleSet> injectedModuleSets;
 
-    //    private final Iterable<Module> ctorModules;
-
-    //    private final Iterable<ModuleSet> ctorModuleSets;
-
     private final Set<String> registeredModules = new HashSet<>();
-
-    @PostConstruct
-    public void init()
-    {
-
-        //        inject( injectedModules, injectedModuleSets );
-        //        inject( ctorModules, ctorModuleSets );
-    }
 
     public void customize( ObjectMapper mapper )
     {
@@ -68,7 +59,7 @@ public class IndyJacksonCustomizer
         mapper.enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID );
 
         mapper.enable( MapperFeature.AUTO_DETECT_FIELDS );
-        //        disable( MapperFeature.AUTO_DETECT_GETTERS );
+        //        mapper.disable( MapperFeature.AUTO_DETECT_GETTERS );
 
         mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
 
@@ -107,7 +98,7 @@ public class IndyJacksonCustomizer
 
         for ( Module module : injected )
         {
-            injectSingle(mapper, module );
+            injectSingle( mapper, module );
         }
 
     }
@@ -126,61 +117,4 @@ public class IndyJacksonCustomizer
         }
     }
 
-    public Set<String> getRegisteredModuleNames()
-    {
-        return registeredModules;
-    }
-
-//    public String patchLegacyStoreJson( final String json )
-//            throws IOException
-//    {
-//        final JsonNode tree = readTree( json );
-//        logger.debug( "Patching JSON tree: {}", tree );
-//
-//        final JsonNode keyNode = tree.get( ArtifactStore.KEY_ATTR );
-//        StoreKey key;
-//        try
-//        {
-//            key = StoreKey.fromString( keyNode.textValue() );
-//        }
-//        catch ( IllegalArgumentException e )
-//        {
-//            throw new IndySerializationException(
-//                    "Cannot patch store JSON. StoreKey 'key' attribute has invalid packageType (first segment)!", null,
-//                    e );
-//        }
-//
-//        boolean changed = false;
-//        if ( !keyNode.textValue().equals( key.toString() ) )
-//        {
-//            logger.trace( "Patching key field in JSON for: {}", key );
-//            ( (ObjectNode) tree ).put( ArtifactStore.KEY_ATTR, key.toString() );
-//            changed = true;
-//        }
-//
-//        JsonNode field = tree.get( ArtifactStore.TYPE_ATTR );
-//        if ( field == null )
-//        {
-//            logger.trace( "Patching type field in JSON for: {}", key );
-//            ( (ObjectNode) tree ).put( ArtifactStore.TYPE_ATTR, key.getType().singularEndpointName() );
-//            changed = true;
-//        }
-//
-//        field = tree.get( ArtifactStore.PKG_TYPE_ATTR );
-//        if ( field == null )
-//        {
-//            logger.trace( "Patching packageType field in JSON for: {}", key );
-//            ( (ObjectNode) tree ).put( ArtifactStore.PKG_TYPE_ATTR, key.getPackageType() );
-//            changed = true;
-//        }
-//
-//        if ( changed )
-//        {
-//            String patched = writeValueAsString( tree );
-//            logger.trace( "PATCHED store definition:\n\n{}\n\n", patched );
-//            return patched;
-//        }
-//
-//        return json;
-//    }
 }

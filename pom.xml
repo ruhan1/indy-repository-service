@@ -9,7 +9,7 @@
   <name>Indy :: Service :: Repository</name>
   <properties>
     <!--    <indy.version>2.5.3-SNAPSHOT</indy.version>-->
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
 
     <!--    <weft.version>1.18</weft.version>-->
     <atlas.version>1.1.1</atlas.version>
@@ -61,16 +61,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>org.jboss.spec.javax.servlet</groupId>-->
-      <!--        <artifactId>jboss-servlet-api_3.0_spec</artifactId>-->
-      <!--        <version>1.0.2.Final</version>-->
-      <!--      </dependency>-->
-      <!--      <dependency>-->
-      <!--        <groupId>org.commonjava.indy</groupId>-->
-      <!--        <artifactId>indy-model-core-java</artifactId>-->
-      <!--        <version>${indy.version}</version>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>org.commonjava.indy</groupId>
         <artifactId>indy-subsys-keycloak</artifactId>
@@ -115,10 +105,6 @@
       <artifactId>atlas-relationships-api</artifactId>
     </dependency>
     <!--    <dependency>-->
-    <!--      <groupId>org.jboss.spec.javax.servlet</groupId>-->
-    <!--      <artifactId>jboss-servlet-api_3.0_spec</artifactId>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
     <!--      <groupId>io.quarkus</groupId>-->
     <!--      <artifactId>quarkus-resteasy-mutiny</artifactId>-->
     <!--    </dependency>-->
@@ -151,6 +137,15 @@
       <artifactId>quarkus-kubernetes-config</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.swagger</groupId>
       <artifactId>swagger-annotations</artifactId>
     </dependency>
@@ -174,15 +169,16 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
+<!--    <resources>-->
+<!--      <resource>-->
+<!--        <directory>src/main/resources</directory>-->
+<!--        <filtering>true</filtering>-->
+<!--      </resource>-->
+<!--    </resources>-->
     <pluginManagement>
       <plugins>
         <plugin>
@@ -217,13 +213,18 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
+          <version>2.22.2</version>
           <configuration>
             <skipTests>${skipSurefire}</skipTests>
             <redirectTestOutputToFile>${test-redirectOutput}</redirectTestOutputToFile>
             <forkCount>${test-forkCount}</forkCount>
             <reportsDirectory>${junit.report.dir}</reportsDirectory>
             <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+            <!-- To support junit5 -->
+            <systemPropertyVariables>
+              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+              <maven.home>${maven.home}</maven.home>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
       </plugins>
