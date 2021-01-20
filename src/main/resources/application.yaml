@@ -30,6 +30,10 @@ quarkus:
     swagger-ui:
         always-include: true
 
+    # make config accept non-exists properties
+#    arc:
+#        config-properties-default-naming-strategy: verbatim
+
 
 repository:
     affectedGroupsExclude: ^build-\d+
