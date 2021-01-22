@@ -19,17 +19,29 @@ import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Startup
 @ApplicationScoped
 public class SslValidationConfiguration
 {
+    @Inject
     @ConfigProperty( name = "repository.remote.sslRequired", defaultValue = "false" )
     private Boolean sslRequired;
 
-    @ConfigProperty( name = "repository.remote.nosslHosts", defaultValue = " " )
-    private List<String> remoteNoSSLHosts;
+    @Inject
+    @ConfigProperty( name = "repository.remote.nosslHosts" )
+    private Optional<List<String>> remoteNoSSLHosts;
+
+//    @PostConstruct
+//    public void testProperties()
+//    {
+//        final Logger logger = LoggerFactory.getLogger( this.getClass() );
+//        logger.info( "remoteNoSSLHosts: {}", getRemoteNoSSLHosts() );
+//    }
 
     public Boolean isSSLRequired()
     {
@@ -43,11 +55,11 @@ public class SslValidationConfiguration
 
     public List<String> getRemoteNoSSLHosts()
     {
-        return remoteNoSSLHosts;
+        return remoteNoSSLHosts.orElse( Collections.emptyList() );
     }
 
     public void setRemoteNoSSLHosts( List<String> remoteNoSSLHosts )
     {
-        this.remoteNoSSLHosts = remoteNoSSLHosts;
+        this.remoteNoSSLHosts = Optional.of( remoteNoSSLHosts );
     }
 }

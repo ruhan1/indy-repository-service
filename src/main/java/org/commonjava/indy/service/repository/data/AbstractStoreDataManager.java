@@ -50,6 +50,8 @@ import org.slf4j.LoggerFactory;
 import static java.util.Collections.*;
 import static javax.ws.rs.core.Response.Status.*;
 import static org.apache.commons.lang3.StringUtils.*;
+import static org.commonjava.indy.service.repository.data.StoreUpdateAction.DELETE;
+import static org.commonjava.indy.service.repository.data.StoreUpdateAction.STORE;
 import static org.commonjava.indy.service.repository.model.StoreType.*;
 
 public abstract class AbstractStoreDataManager
@@ -82,14 +84,14 @@ public abstract class AbstractStoreDataManager
     protected abstract ArtifactStore getArtifactStoreInternal( final StoreKey key );
 
     @Override
-//    @Measure
+    //    @Measure
     public ArtifactStore getArtifactStore( final StoreKey key )
     {
         return getArtifactStoreInternal( key );
     }
 
     @Override
-//    @Measure
+    //    @Measure
     public boolean storeArtifactStore( final ArtifactStore store, final ChangeSummary summary,
                                        final boolean skipIfExists, final boolean fireEvents,
                                        final EventMetadata eventMetadata )
@@ -149,7 +151,7 @@ public abstract class AbstractStoreDataManager
         // Hosted or Remote update does not change affectedBy relationships
         if ( store instanceof Group )
         {
-            refreshAffectedBy( store, original, StoreUpdateAction.STORE );
+            refreshAffectedBy( store, original, STORE );
         }
     }
 
@@ -178,16 +180,94 @@ public abstract class AbstractStoreDataManager
         refreshAffectedBy( store, null, StoreUpdateAction.DELETE );
     }
 
+//    @Measure
     protected void refreshAffectedBy( final ArtifactStore store, final ArtifactStore original,
                                       StoreUpdateAction action )
     {
-        //do nothing by default
+        if ( store == null )
+        {
+            return;
+        }
+
+        if ( store instanceof Group && isExcludedGroup( (Group) store ) )
+        {
+            logger.info( "Skip affectedBy calculation of group: {}", store.getName() );
+            return;
+        }
+
+        if ( action == DELETE )
+        {
+            if ( store instanceof Group )
+            {
+                Group grp = (Group) store;
+
+                new HashSet<>( grp.getConstituents() ).forEach( ( key ) -> removeAffectedBy( key, store.getKey() ) );
+
+                logger.info( "Removed affected-by reverse mapping for: {} in {} member stores", store.getKey(),
+                             grp.getConstituents().size() );
+            }
+            else
+            {
+                removeAffectedStore( store.getKey() );
+            }
+        }
+        else if ( action == STORE )
+        {
+            // NOTE: Only group membership changes can affect our affectedBy, unless the update is a store deletion.
+            if ( store instanceof Group )
+            {
+                final Set<StoreKey> updatedConstituents = new HashSet<>( ( (Group) store ).getConstituents() );
+                final Set<StoreKey> originalConstituents;
+                if ( original != null )
+                {
+                    originalConstituents = new HashSet<>( ( (Group) original ).getConstituents() );
+                }
+                else
+                {
+                    originalConstituents = new HashSet<>();
+                }
+
+                final Set<StoreKey> added = new HashSet<>();
+                final Set<StoreKey> removed = new HashSet<>();
+                for ( StoreKey updKey : updatedConstituents )
+                {
+                    if ( !originalConstituents.contains( updKey ) )
+                    {
+                        added.add( updKey );
+                    }
+                }
+
+                for ( StoreKey oriKey : originalConstituents )
+                {
+                    if ( !updatedConstituents.contains( oriKey ) )
+                    {
+                        removed.add( oriKey );
+                    }
+                }
+
+                removed.forEach( ( key ) -> removeAffectedBy( key, store.getKey() ) );
+
+                logger.info( "Removed affected-by reverse mapping for: {} in {} member stores", store.getKey(),
+                             removed.size() );
+
+                added.forEach( ( key ) -> addAffectedBy( key, store.getKey() ) );
+
+                logger.info( "Added affected-by reverse mapping for: {} in {} member stores", store.getKey(),
+                             added.size() );
+            }
+        }
     }
+
+    protected abstract void removeAffectedBy( StoreKey key, StoreKey affected );
+
+    protected abstract void addAffectedBy( StoreKey key, StoreKey affected );
+
+    protected abstract void removeAffectedStore( StoreKey key );
 
     protected abstract ArtifactStore removeArtifactStoreInternal( StoreKey key );
 
     @Override
-//    @Measure
+    //    @Measure
     public void deleteArtifactStore( final StoreKey key, final ChangeSummary summary,
                                      final EventMetadata eventMetadata )
             throws IndyDataException
@@ -260,12 +340,12 @@ public abstract class AbstractStoreDataManager
             throws IndyDataException;
 
     @Override
-//    @Measure
+    //    @Measure
     public abstract Set<ArtifactStore> getAllArtifactStores()
             throws IndyDataException;
 
     @Override
-//    @Measure
+    //    @Measure
     public Stream<ArtifactStore> streamArtifactStores()
             throws IndyDataException
     {
@@ -273,7 +353,7 @@ public abstract class AbstractStoreDataManager
     }
 
     @Override
-//    @Measure
+    //    @Measure
     public abstract Map<StoreKey, ArtifactStore> getArtifactStoresByKey();
 
     @Override
@@ -541,6 +621,10 @@ public abstract class AbstractStoreDataManager
 
     public boolean isExcludedGroup( Group group )
     {
+        if ( repoConfig == null )
+        {
+            return false;
+        }
         String filter = repoConfig.getAffectedGroupsExcludeFilter();
         return isNotBlank( filter ) && group.getName().matches( filter );
     }

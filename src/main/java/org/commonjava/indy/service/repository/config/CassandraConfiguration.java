@@ -19,43 +19,62 @@ import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.util.Optional;
+
+import static java.util.Optional.of;
 
 @Startup
 @ApplicationScoped
 public class CassandraConfiguration
 {
+    @Inject
     @ConfigProperty( name = "cassandra.enabled", defaultValue = "false" )
     private Boolean enabled;
 
+    @Inject
     @ConfigProperty( name = "cassandra.host", defaultValue = "localhost" )
     private String cassandraHost;
 
+    @Inject
     @ConfigProperty( name = "cassandra.port", defaultValue = "9402" )
-    private Integer cassandraPort;
+    private int cassandraPort;
 
-    @ConfigProperty( name = "cassandra.user", defaultValue = " " )
-    private String cassandraUser;
+    @Inject
+    @ConfigProperty( name = "cassandra.user" )
+    private Optional<String> cassandraUser;
 
-    @ConfigProperty( name = "cassandra.pass", defaultValue = " " )
-    private String cassandraPass;
+    @Inject
+    @ConfigProperty( name = "cassandra.pass" )
+    private Optional<String> cassandraPass;
 
+    @Inject
     @ConfigProperty( name = "cassandra.timeoutMillis.connect", defaultValue = "60000" )
     private int connectTimeoutMillis;
 
+    @Inject
     @ConfigProperty( name = "cassandra.timeoutMillis.read", defaultValue = "60000" )
     private int readTimeoutMillis;
 
+    @Inject
     @ConfigProperty( name = "cassandra.retries.read", defaultValue = "3" )
     private int readRetries;
 
+    @Inject
     @ConfigProperty( name = "cassandra.retries.write", defaultValue = "3" )
     private int writeRetries;
 
-    @ConfigProperty( name = "cassandra.keyspace", defaultValue = " " )
-    private String keyspace;
+    @Inject
+    @ConfigProperty( name = "cassandra.keyspace" )
+    private Optional<String> keyspace;
 
-    @ConfigProperty( name = "cassandra.replica", defaultValue = "0" )
+    @Inject
+    @ConfigProperty( name = "cassandra.replicaFactor", defaultValue = "0" )
     private int replicationFactor;
+
+    @Inject
+    @ConfigProperty( name = "cassandra.keyspaceReplicas", defaultValue = "0" )
+    private int keyspaceReplicas;
 
     public CassandraConfiguration()
     {
@@ -83,12 +102,12 @@ public class CassandraConfiguration
 
     public void setCassandraUser( String cassandraUser )
     {
-        this.cassandraUser = cassandraUser;
+        this.cassandraUser = of( cassandraUser );
     }
 
     public void setCassandraPass( String cassandraPass )
     {
-        this.cassandraPass = cassandraPass;
+        this.cassandraPass = of( cassandraPass );
     }
 
     public String getCassandraHost()
@@ -103,12 +122,12 @@ public class CassandraConfiguration
 
     public String getCassandraUser()
     {
-        return cassandraUser;
+        return cassandraUser.orElse( "" );
     }
 
     public String getCassandraPass()
     {
-        return cassandraPass;
+        return cassandraPass.orElse( "" );
     }
 
     public int getConnectTimeoutMillis()
@@ -153,12 +172,12 @@ public class CassandraConfiguration
 
     public String getKeyspace()
     {
-        return keyspace;
+        return keyspace.orElse( "" );
     }
 
     public void setKeyspace( String keyspace )
     {
-        this.keyspace = keyspace;
+        this.keyspace = of( keyspace );
     }
 
     public int getReplicationFactor()
@@ -169,5 +188,15 @@ public class CassandraConfiguration
     public void setReplicationFactor( int replicationFactor )
     {
         this.replicationFactor = replicationFactor;
+    }
+
+    public int getKeyspaceReplicas()
+    {
+        return keyspaceReplicas;
+    }
+
+    public void setKeyspaceReplicas( int keyspaceReplicas )
+    {
+        this.keyspaceReplicas = keyspaceReplicas;
     }
 }

@@ -30,18 +30,13 @@ quarkus:
     swagger-ui:
         always-include: true
 
-    # make config accept non-exists properties
-#    arc:
-#        config-properties-default-naming-strategy: verbatim
-
-
 repository:
     affectedGroupsExclude: ^build-\d+
 #    disposableStorePattern:
-    # ssl configuration for remote
+    # ssl validation configuration for remote
 #    remote:
 #        sslRequired: false
-##       nosslHosts:
+#        nosslHosts: localhost,localhost1,localhost2
 
 cassandra:
     enabled: false
@@ -50,7 +45,8 @@ cassandra:
 #    user: user
 #    pass: pass
 #    keyspace:
-#    replica:
+#    replicaFactor:
+#    keyspaceReplicas:
 #    timeoutMillis:
 #        connect: 60000
 #        read: 60000

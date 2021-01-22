@@ -19,14 +19,19 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.commonjava.indy.service.repository.data.StoreUpdateAction.STORE;
+import static org.commonjava.indy.service.repository.model.StoreType.group;
 
 @ApplicationScoped
 @ClusterStoreDataManager
@@ -51,8 +56,11 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    protected ArtifactStore getArtifactStoreInternal(StoreKey key )
+    protected ArtifactStore getArtifactStoreInternal( StoreKey key )
     {
+
+        logger.trace( "Get artifact store: {}", key.toString() );
+
         DtxArtifactStore dtxArtifactStore = storeQuery.getArtifactStore( key.getPackageType(), key.getType(), key.getName() );
 
         return toArtifactStore( dtxArtifactStore );
@@ -61,6 +69,9 @@ public class CassandraStoreDataManager
     @Override
     protected ArtifactStore removeArtifactStoreInternal( StoreKey key )
     {
+
+        logger.trace( "Remove artifact store: {}", key.toString() );
+
         DtxArtifactStore dtxArtifactStore = storeQuery.removeArtifactStore( key.getPackageType(), key.getType(), key.getName() );
         return toArtifactStore( dtxArtifactStore );
     }
@@ -72,31 +83,27 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @Measure
+//     @Measure
     public Set<ArtifactStore> getAllArtifactStores()
     {
         Set<DtxArtifactStore> dtxArtifactStoreSet = storeQuery.getAllArtifactStores();
         Set<ArtifactStore> artifactStoreSet = new HashSet<>(  );
-        dtxArtifactStoreSet.forEach( dtxArtifactStore -> {
-            artifactStoreSet.add( toArtifactStore( dtxArtifactStore ) );
-        } );
+        dtxArtifactStoreSet.forEach( dtxArtifactStore -> artifactStoreSet.add( toArtifactStore( dtxArtifactStore ) ) );
         return artifactStoreSet;
     }
 
     @Override
-//    @Measure
+//     @Measure
     public Map<StoreKey, ArtifactStore> getArtifactStoresByKey()
     {
         Map<StoreKey, ArtifactStore> ret = new HashMap<>();
         Set<ArtifactStore> artifactStoreSet = getAllArtifactStores();
-        artifactStoreSet.forEach( store -> {
-            ret.put( store.getKey(), store );
-        } );
+        artifactStoreSet.forEach( store -> ret.put( store.getKey(), store ) );
         return ret;
     }
 
     @Override
-//    @Measure
+//     @Measure
     public Set<StoreKey> getStoreKeysByPkg( final String pkg )
     {
         Set<StoreKey> storeKeySet = new HashSet<>(  );
@@ -108,15 +115,28 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @Measure
+//     @Measure
     public Set<StoreKey> getStoreKeysByPkgAndType( final String pkg, final StoreType type )
     {
+
+        logger.trace( "Get storeKeys: {}/{}", pkg, type );
+
         Set<DtxArtifactStore> dtxArtifactStoreSet = storeQuery.getArtifactStoresByPkgAndType( pkg, type );
         Set<StoreKey> storeKeySet = new HashSet<>(  );
-        dtxArtifactStoreSet.forEach( dtxArtifactStore -> {
-            storeKeySet.add( new StoreKey( pkg, type, dtxArtifactStore.getName() ) );
-        } );
+        dtxArtifactStoreSet.forEach( dtxArtifactStore -> storeKeySet.add( new StoreKey( pkg, type, dtxArtifactStore.getName() ) ) );
         return storeKeySet;
+    }
+
+    @Override
+    public Set<ArtifactStore> getArtifactStoresByPkgAndType( final String pkg, final StoreType type )
+    {
+
+        logger.trace( "Get stores: {}/{}", pkg, type );
+
+        Set<DtxArtifactStore> dtxArtifactStoreSet = storeQuery.getArtifactStoresByPkgAndType( pkg, type );
+        Set<ArtifactStore> storeSet = new HashSet<>(  );
+        dtxArtifactStoreSet.forEach( dtxArtifactStore -> storeSet.add( toArtifactStore( dtxArtifactStore ) ) );
+        return storeSet;
     }
 
     @Override
@@ -138,6 +158,11 @@ public class CassandraStoreDataManager
         return storeQuery.isEmpty();
     }
 
+    public boolean isAffectedEmpty()
+    {
+        return storeQuery.isAffectedEmpty();
+    }
+
     @Override
     public Stream<StoreKey> streamArtifactStoreKeys()
     {
@@ -153,12 +178,100 @@ public class CassandraStoreDataManager
         return toArtifactStore( dtxArtifactStore );
     }
 
+    @Override
+//     @Measure
+    public Set<Group> affectedBy( Collection<StoreKey> keys )
+    {
+
+        final Set<Group> result = new HashSet<>();
+
+        // use these to avoid recursion
+        final Set<StoreKey> processed = new HashSet<>();
+        final LinkedList<StoreKey> toProcess = new LinkedList<>( keys );
+
+        while ( !toProcess.isEmpty() )
+        {
+            StoreKey key = toProcess.removeFirst();
+            if ( key == null )
+            {
+                continue;
+            }
+
+            if ( processed.add( key ) )
+            {
+                DtxAffectedStore affectedStore = storeQuery.getAffectedStore( key );
+                if ( affectedStore == null )
+                {
+                    processed.add( key );
+                    continue;
+                }
+                Set<StoreKey> affected = affectedStore.getAffectedStoreKeys();
+                if ( affected != null )
+                {
+                    logger.debug( "Get affectedByStores, key: {}, affected: {}", key, affected );
+                    affected = affected.stream().filter( k -> k.getType() == group ).collect( Collectors.toSet() );
+                    for ( StoreKey gKey : affected )
+                    {
+                        // avoid loading the ArtifactStore instance again and again
+                        if ( !processed.contains( gKey ) && !toProcess.contains( gKey ) )
+                        {
+                            ArtifactStore store = getArtifactStoreInternal( gKey );
+
+                            // if this group is disabled, we don't want to keep loading it again and again.
+                            if ( store.isDisabled() )
+                            {
+                                processed.add( gKey );
+                            }
+                            else
+                            {
+                                // add the group to the toProcess list so we can find any result that might include it in their own membership
+                                toProcess.addLast( gKey );
+                                result.add( (Group) store );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if ( logger.isTraceEnabled() )
+        {
+            logger.trace( "Groups affected by {} are: {}", keys,
+                          result.stream().map( ArtifactStore::getKey ).collect( Collectors.toSet() ) );
+        }
+        return filterAffectedGroups( result );
+    }
+
+    @Override
+    protected void removeAffectedStore( StoreKey key )
+    {
+        storeQuery.removeAffectedStore( key );
+    }
+
+    @Override
+    protected void removeAffectedBy( StoreKey key, StoreKey affected )
+    {
+        storeQuery.removeAffectedBy( key, affected );
+    }
+
+    @Override
+    protected void addAffectedBy( StoreKey key, StoreKey affected )
+    {
+        storeQuery.addAffectedBy( key, affected );
+    }
+
+    public void initAffectedBy()
+    {
+        final Set<ArtifactStore> allStores = getAllArtifactStores();
+        allStores.stream().filter( s -> group == s.getType() ).forEach( s -> refreshAffectedBy( s, null, STORE ) );
+    }
+
     private DtxArtifactStore toDtxArtifactStore( StoreKey storeKey, ArtifactStore store )
     {
 
         DtxArtifactStore dtxArtifactStore = new DtxArtifactStore();
         dtxArtifactStore.setTypeKey(
-                        CassandraStoreUtil.getTypeKey( storeKey.getPackageType(), storeKey.getType().name() ) );
+                CassandraStoreUtil.getTypeKey( storeKey.getPackageType(), storeKey.getType().name() ) );
         dtxArtifactStore.setNameHashPrefix( CassandraStoreUtil.getHashPrefix( storeKey.getName() ) );
         dtxArtifactStore.setPackageType( storeKey.getPackageType() );
         dtxArtifactStore.setStoreType( storeKey.getType().name() );
@@ -180,20 +293,20 @@ public class CassandraStoreDataManager
     private Map<String, String> toExtra( ArtifactStore store )
     {
         Map<String, String> extras = new HashMap<>(  );
-        if ( store instanceof AbstractRepository)
+        if ( store instanceof AbstractRepository )
         {
             AbstractRepository repository = (AbstractRepository) store;
             putValueIntoExtra( CassandraStoreUtil.ALLOW_SNAPSHOTS, repository.isAllowSnapshots(), extras );
             putValueIntoExtra( CassandraStoreUtil.ALLOW_RELEASES, repository.isAllowReleases(), extras );
         }
-        if ( store instanceof HostedRepository)
+        if ( store instanceof HostedRepository )
         {
             HostedRepository hostedRepository = (HostedRepository) store;
             putValueIntoExtra( CassandraStoreUtil.STORAGE, hostedRepository.getStorage(), extras );
             putValueIntoExtra( CassandraStoreUtil.READONLY, hostedRepository.isReadonly(), extras );
             putValueIntoExtra( CassandraStoreUtil.SNAPSHOT_TIMEOUT_SECONDS, hostedRepository.getSnapshotTimeoutSeconds(), extras );
         }
-        if ( store instanceof RemoteRepository)
+        if ( store instanceof RemoteRepository )
         {
             RemoteRepository remoteRepository = (RemoteRepository) store;
             putValueIntoExtra( CassandraStoreUtil.URL, remoteRepository.getUrl(), extras);
@@ -219,7 +332,7 @@ public class CassandraStoreDataManager
             putValueIntoExtra( CassandraStoreUtil.IGNORE_HOST_NAME_VERIFICATION, remoteRepository.isIgnoreHostnameVerification(), extras );
 
         }
-        if ( store instanceof Group)
+        if ( store instanceof Group )
         {
             Group group = ( Group ) store;
             putValueIntoExtra( CassandraStoreUtil.CONSTITUENTS, group.getConstituents(), extras );
@@ -367,7 +480,7 @@ public class CassandraStoreDataManager
                     ( (RemoteRepository) store ).setAllowSnapshots( allowSnapshots );
                 }
             }
-            else if ( dtxArtifactStore.getStoreType().equals( StoreType.group.name() ) )
+            else if ( dtxArtifactStore.getStoreType().equals( group.name() ) )
             {
                 List<String> constituentStrList = readValueFromExtra( CassandraStoreUtil.CONSTITUENTS, List.class, extras );
                 List<StoreKey> constituentList = constituentStrList.stream().map( StoreKey::fromString ).collect( Collectors.toList() );
@@ -414,5 +527,4 @@ public class CassandraStoreDataManager
         }
         return null;
     }
-
 }
