@@ -15,47 +15,55 @@
  */
 package org.commonjava.indy.service.repository.config;
 
-import io.quarkus.arc.config.ConfigProperties;
 import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.util.Optional;
 
 @Startup
 @ApplicationScoped
 public class IndyRepositoryConfiguration
 {
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
+    @Inject
+    @ConfigProperty( name = "repository.affectedGroupsExclude" )
+    private Optional<String> affectedGroupsExcludeFilter;
 
-    @ConfigProperty( name = "repository.affectedGroupsExclude", defaultValue = " " )
-    private String affectedGroupsExcludeFilter;
+    @Inject
+    @ConfigProperty( name = "repository.disposableStorePattern" )
+    private Optional<String> disposableStorePattern;
 
-    @ConfigProperty( name = "repository.disposableStorePattern", defaultValue = " " )
-    private String disposableStorePattern;
-
-    @ConfigProperty(name="repository.storeValidationEnabled", defaultValue = "false")
+    @Inject
+    @ConfigProperty( name = "repository.storeValidationEnabled", defaultValue = "false" )
     private Boolean storeValidation;
+
+//    @PostConstruct
+//    public void testProperties()
+//    {
+//        final Logger logger = LoggerFactory.getLogger( this.getClass() );
+//        logger.info( "affectedGroupExcludeFilter: {}", getAffectedGroupsExcludeFilter() );
+//        logger.info( "disposableStorePattern: {}", getDisposableStorePattern() );
+//    }
 
     public String getAffectedGroupsExcludeFilter()
     {
-        return affectedGroupsExcludeFilter;
+        return affectedGroupsExcludeFilter.orElse( "" );
     }
 
     public void setAffectedGroupsExcludeFilter( String affectedGroupsExcludeFilter )
     {
-        this.affectedGroupsExcludeFilter = affectedGroupsExcludeFilter;
+        this.affectedGroupsExcludeFilter = Optional.of( affectedGroupsExcludeFilter );
     }
 
     public String getDisposableStorePattern()
     {
-        return disposableStorePattern;
+        return disposableStorePattern.orElse( "" );
     }
 
     public void setDisposableStorePattern( String disposableStorePattern )
     {
-        this.disposableStorePattern = disposableStorePattern;
+        this.disposableStorePattern = Optional.of( disposableStorePattern );
     }
 
     public Boolean getStoreValidation()

@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
@@ -108,7 +109,7 @@ public class AdminController
     {
         try
         {
-            ArtifactStoreQuery<ArtifactStore> query = storeManager.query().storeTypes(type );
+            ArtifactStoreQuery<ArtifactStore> query = storeManager.query().storeTypes( type );
             if ( !ALL_PACKAGE_TYPES.equals( packageType ) )
             {
                 return query.packageType( packageType ).getAll();
@@ -174,7 +175,8 @@ public class AdminController
         // safe check
         if ( deleteContent )
         {
-            if ( !key.getName().matches( indyConfiguration.getDisposableStorePattern() ) )
+            final String disposablePattern = indyConfiguration.getDisposableStorePattern();
+            if ( StringUtils.isNotBlank( disposablePattern ) && !key.getName().matches( disposablePattern ) )
             {
                 throw new IndyWorkflowException( FORBIDDEN.getStatusCode(), "Content deletion not allowed" );
             }
@@ -187,7 +189,7 @@ public class AdminController
             {
                 logger.info( "Delete content of {}", key );
                 //TODO: here should send event to notify store service to delete file contents for this repo
-//                deleteContent( store );
+                //                deleteContent( store );
             }
 
             storeManager.deleteArtifactStore( key, new ChangeSummary( user, changelog ), new EventMetadata() );
@@ -208,7 +210,7 @@ public class AdminController
         return storeManager.hasArtifactStore( key );
     }
 
-    public ArtifactStoreValidateData validateStore(ArtifactStore artifactStore )
+    public ArtifactStoreValidateData validateStore( ArtifactStore artifactStore )
             throws InvalidArtifactStoreException, MalformedURLException
     {
         return storeValidator.validate( artifactStore );
