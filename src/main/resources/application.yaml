@@ -45,7 +45,8 @@ cassandra:
 #    user: user
 #    pass: pass
 #    keyspace:
-#    replica:
+#    replicaFactor:
+#    keyspaceReplicas:
 #    timeoutMillis:
 #        connect: 60000
 #        read: 60000

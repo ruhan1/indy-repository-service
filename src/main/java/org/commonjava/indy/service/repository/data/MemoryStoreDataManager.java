@@ -20,6 +20,7 @@ import org.commonjava.indy.service.repository.event.NoOpStoreEventDispatcher;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
+import org.commonjava.indy.service.repository.model.StoreType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -70,6 +72,24 @@ public class MemoryStoreDataManager
     protected ArtifactStore getArtifactStoreInternal( StoreKey key )
     {
         return stores.get( key );
+    }
+
+    @Override
+    protected void removeAffectedBy( StoreKey key, StoreKey affected )
+    {
+
+    }
+
+    @Override
+    protected void addAffectedBy( StoreKey key, StoreKey affected )
+    {
+
+    }
+
+    @Override
+    protected void removeAffectedStore( StoreKey key )
+    {
+
     }
 
     @Override
@@ -128,6 +148,16 @@ public class MemoryStoreDataManager
     public Stream<StoreKey> streamArtifactStoreKeys()
     {
         return stores.keySet().stream();
+    }
+
+    @Override
+    public Set<ArtifactStore> getArtifactStoresByPkgAndType( String packageType, StoreType storeType )
+    {
+        return stores.values()
+                     .stream()
+                     .filter( item -> packageType.equals( item.getPackageType() ) && storeType.equals(
+                             item.getType() ) )
+                     .collect( Collectors.toSet() );
     }
 
     @Override

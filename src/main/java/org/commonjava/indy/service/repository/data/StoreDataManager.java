@@ -162,4 +162,6 @@ public interface StoreDataManager
      */
     Set<Group> affectedBy( Collection<StoreKey> keys, EventMetadata eventMetadata ) throws IndyDataException;
 
+    Set<ArtifactStore> getArtifactStoresByPkgAndType( String packageType, StoreType storeType );
+
 }
