@@ -14,7 +14,7 @@
     <!--    <weft.version>1.18</weft.version>-->
     <atlas.version>1.1.1</atlas.version>
 
-    <quarkus.version>1.9.2.Final</quarkus.version>
+    <quarkus.version>1.11.0.Final</quarkus.version>
     <cassandra.version>3.7.2</cassandra.version>
 
     <junit.report.dir>${project.build.directory}/surefire-reports</junit.report.dir>
@@ -111,6 +111,11 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec.javax.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      <version>2.0.1.Final</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
