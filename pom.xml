@@ -14,7 +14,7 @@
     <!--    <weft.version>1.18</weft.version>-->
     <atlas.version>1.1.1</atlas.version>
 
-    <quarkus.version>1.9.2.Final</quarkus.version>
+    <quarkus.version>1.11.0.Final</quarkus.version>
     <cassandra.version>3.7.2</cassandra.version>
 
     <junit.report.dir>${project.build.directory}/surefire-reports</junit.report.dir>
