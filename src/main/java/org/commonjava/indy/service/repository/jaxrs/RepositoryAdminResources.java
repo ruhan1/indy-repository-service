@@ -16,18 +16,10 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.apache.commons.io.IOUtils;
 import org.commonjava.atlas.maven.ident.util.JoinString;
-import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
-import org.commonjava.indy.service.repository.data.StoreValidator;
 import org.commonjava.indy.service.repository.controller.AdminController;
+import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
@@ -36,6 +28,16 @@ import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
 import org.commonjava.indy.service.repository.model.dto.StoreListingDTO;
 import org.commonjava.indy.service.repository.util.jackson.MapperUtil;
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.info.Info;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +75,10 @@ import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.commonjava.indy.service.repository.model.ArtifactStore.METADATA_CHANGELOG;
+import static org.eclipse.microprofile.openapi.annotations.enums.ParameterIn.PATH;
 
-@Api( description = "Resource for accessing and managing artifact store definitions", value = "Store Administration" )
-@Path( "/api/admin/stores/{packageType}/{type: (hosted|group|remote)}" )
+@Tag( name = "Store Administration", description = "Resource for accessing and managing artifact store definitions" )
+@Path( "/admin/stores/{packageType}/{type: (hosted|group|remote)}" )
 @ApplicationScoped
 public class RepositoryAdminResources
 {
@@ -96,19 +99,20 @@ public class RepositoryAdminResources
 
     public RepositoryAdminResources()
     {
-        logger.info( "\n\n\n\nStarted StoreAdminHandler\n\n\n\n" );
+        logger.info( "\n\n\n\nStarted Store Administration resources\n\n\n\n" );
     }
 
 
-    @ApiOperation( "Check if a given store exists" )
-    @ApiResponses( { @ApiResponse( code = 200, message = "The store exists" ),
-                           @ApiResponse( code = 404, message = "The store doesn't exist" ) } )
+    @Operation( description = "Check if a given store exists" )
+    @APIResponses( { @APIResponse( responseCode = "200", description = "The store exists" ),
+                           @APIResponse( responseCode = "404", description = "The store doesn't exist" ) } )
     @Path( "/{name}" )
     @HEAD
     public Response exists( final @PathParam( "packageType" ) String packageType,
-                            final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                            final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                              required = true )
                             @PathParam( "type" ) String type,
-                            @ApiParam( required = true ) @PathParam( "name" ) final String name )
+                            @Parameter(in = PATH, required = true ) @PathParam( "name" ) final String name )
     {
         Response response;
         final StoreType st = StoreType.get( type );
@@ -129,18 +133,20 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Create a new store" )
-    @ApiResponses( { @ApiResponse( code = 201, response = ArtifactStore.class, message = "The store was created" ),
-                           @ApiResponse( code = 409,
-                                         message = "A store with the specified type and name already exists" ) } )
-    @ApiImplicitParams( { @ApiImplicitParam( paramType = "body", name = "body", required = true,
-                                             dataType = "org.commonjava.indy.model.core.ArtifactStore",
-                                             value = "The artifact store definition JSON" ) } )
+    @Operation( description = "Create a new store" )
+    @APIResponses( { @APIResponse( responseCode = "201",
+                                   content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ),
+                                   description = "The store was created" ),
+                     @APIResponse( responseCode = "409",
+                                   description = "A store with the specified type and name already exists" ) } )
+    @RequestBody( description = "The artifact store definition JSON", name = "body", required = true,
+                  content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ) )
     @POST
     @Consumes( APPLICATION_JSON )
     @Produces( APPLICATION_JSON )
     public Response create( final @PathParam( "packageType" ) String packageType,
-                            final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                            final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                              required = true )
                             @PathParam( "type" ) String type, final @Context UriInfo uriInfo,
                             final @Context HttpRequest request, final @Context SecurityContext securityContext )
     {
@@ -210,23 +216,22 @@ public class RepositoryAdminResources
         return response;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.commonjava.indy.core.rest.admin.DeployPointAdminResource#store(java.lang.String)
-     */
-    @ApiOperation( "Update an existing store" )
-    @ApiResponses( { @ApiResponse( code = 200, message = "The store was updated" ), @ApiResponse( code = 400,
-                                                                                                  message = "The store specified in the body JSON didn't match the URL parameters" ), } )
-    @ApiImplicitParams( { @ApiImplicitParam( paramType = "body", name = "body", required = true,
-                                             dataType = "org.commonjava.indy.model.core.ArtifactStore",
-                                             value = "The artifact store definition JSON" ) } )
+    @Operation( description = "Update an existing store" )
+    @APIResponses( { @APIResponse( responseCode = "200",
+                                   content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ),
+                                   description = "The store was updated" ),
+                     @APIResponse( responseCode = "400",
+                                   description = "The store specified in the body JSON didn't match the URL parameters" ) } )
+    @RequestBody( description = "The artifact store definition JSON", name = "body", required = true,
+                  content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ) )
     @Path( "/{name}" )
     @PUT
     @Consumes( APPLICATION_JSON )
     public Response store( final @PathParam( "packageType" ) String packageType,
-                           final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                           final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                             required = true )
                            @PathParam( "type" ) String type,
-                           final @ApiParam( required = true ) @PathParam( "name" ) String name,
+                           final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name,
                            final @Context HttpRequest request, final @Context SecurityContext securityContext )
     {
         final StoreType st = StoreType.get( type );
@@ -299,15 +304,17 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Retrieve the definitions of all artifact stores of a given type on the system" )
-    @ApiResponses(
-            { @ApiResponse( code = 200, response = StoreListingDTO.class, message = "The store definitions" ), } )
+    @Operation( description = "Retrieve the definitions of all artifact stores of a given type on the system" )
+    @APIResponses( { @APIResponse( responseCode = "200",
+                                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
+                                   description = "The store definitions" ) } )
     @GET
     @Produces( APPLICATION_JSON )
-    public Response getAll( final @ApiParam(
-            "Filter only stores that support the package type (eg. maven, npm). NOTE: '_all' returns all." )
+    public Response getAll( final @Parameter(
+            description = "Filter only stores that support the package type (eg. maven, npm). NOTE: '_all' returns all." )
                             @PathParam( "packageType" ) String packageType,
-                            final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                            final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                              required = true )
                             @PathParam( "type" ) String type )
     {
 
@@ -333,16 +340,19 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Retrieve the definition of a specific artifact store" )
-    @ApiResponses( { @ApiResponse( code = 200, response = ArtifactStore.class, message = "The store definition" ),
-                           @ApiResponse( code = 404, message = "The store doesn't exist" ), } )
+    @Operation( description = "Retrieve the definition of a specific artifact store" )
+    @APIResponses( { @APIResponse( responseCode = "200",
+                                   content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ),
+                                   description = "The store definition" ),
+                     @APIResponse( responseCode = "404", description = "The store doesn't exist" ) } )
     @Path( "/{name}" )
     @GET
     @Produces( APPLICATION_JSON )
     public Response get( final @PathParam( "packageType" ) String packageType,
-                         final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                         final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                           required = true )
                          @PathParam( "type" ) String type,
-                         final @ApiParam( required = true ) @PathParam( "name" ) String name )
+                         final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name )
     {
         logger.info( "{}:{}:{}", packageType, type, name );
         final StoreType st = StoreType.get( type );
@@ -371,15 +381,17 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Delete an artifact store" )
-    @ApiResponses( { @ApiResponse( code = 204, response = ArtifactStore.class,
-                                   message = "The store was deleted (or didn't exist in the first place)" ), } )
+    @Operation( description = "Delete an artifact store" )
+    @APIResponses( { @APIResponse( responseCode = "204",
+                                   content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ),
+                                   description = "The store was deleted (or didn't exist in the first place)" ) } )
     @Path( "/{name}" )
     @DELETE
     public Response delete( final @PathParam( "packageType" ) String packageType,
-                            final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                            final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                              required = true )
                             @PathParam( "type" ) String type,
-                            final @ApiParam( required = true ) @PathParam( "name" ) String name,
+                            final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name,
                             final @QueryParam( "deleteContent" ) boolean deleteContent,
                             @Context final HttpRequest request, final @Context SecurityContext securityContext )
     {
@@ -426,13 +438,17 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Retrieve the definition of a remote by specific url" )
-    @ApiResponses( { @ApiResponse( code = 200, response = ArtifactStore.class, message = "The store definition" ),
-                           @ApiResponse( code = 404, message = "The remote repository doesn't exist" ), } )
+    @Operation( description = "Retrieve the definition of a remote by specific url" )
+    @APIResponses( { @APIResponse( responseCode = "200",
+                                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
+                                   description = "The remote store definitions" ),
+                     @APIResponse( responseCode = "404",
+                                   description = "The remote repository doesn't exist" )} )
     @Path( "/query/byUrl" )
     @GET
     public Response getRemoteByUrl( final @PathParam( "packageType" ) String packageType,
-                                    final @ApiParam( allowableValues = "remote", required = true ) @PathParam( "type" )
+                                    final @Parameter( in = PATH, schema = @Schema( enumeration = { "remote" }),
+                                                      required = true ) @PathParam( "type" )
                                             String type, final @QueryParam( "url" ) String url,
                                     @Context final HttpRequest request, final @Context SecurityContext securityContext )
     {
@@ -467,10 +483,12 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Revalidation of Artifacts Stored on demand" )
-    @ApiResponses( { @ApiResponse( code = 200, response = ArtifactStore.class,
-                                   message = "Revalidation for Remote Repositories was successfull" ),
-                           @ApiResponse( code = 404, message = "Revalidation is not successfull" ), } )
+    @Operation( description = "Revalidation of Artifacts Stored on demand" )
+    @APIResponses( { @APIResponse( responseCode = "200",
+                                   content = @Content( schema = @Schema( implementation = Map.class ) ),
+                                   description = "Revalidation for Remote Repositories was successfull" ),
+                           @APIResponse( responseCode = "404",
+                                         description = "Revalidation is not successfull" )} )
     @Path( "/revalidate/all/" )
     @POST
     public Response revalidateArtifactStores( @PathParam( "packageType" ) String packageType,
@@ -517,16 +535,20 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Revalidation of Artifact Stored on demand based on package, type and name" )
-    @ApiResponses( { @ApiResponse( code = 200, response = ArtifactStore.class,
-                                   message = "Revalidation for Remote Repository was successfull" ),
-                           @ApiResponse( code = 404, message = "Revalidation is not successfull" ), } )
+    @Operation( description = "Revalidation of Artifact Stored on demand based on package, type and name" )
+    @APIResponses( { @APIResponse( responseCode = "200",
+                                   content = @Content( schema = @Schema( implementation = ArtifactStoreValidateData.class ) ),
+                                   description = "Revalidation for Remote Repository was successful" ),
+                           @APIResponse( responseCode = "404",
+                                         description = "Revalidation is not successful" )} )
     @Path( "/{name}/revalidate" )
     @POST
     public Response revalidateArtifactStore( final @PathParam( "packageType" ) String packageType,
-                                             final @ApiParam( allowableValues = "hosted,group,remote", required = true )
+                                             final @Parameter( in = PATH, schema = @Schema( enumeration = { "hosted", "group", "remote" } ),
+                                                               required = true )
                                              @PathParam( "type" ) String type,
-                                             final @ApiParam( required = true ) @PathParam( "name" ) String name )
+                                             final @Parameter( in = PATH, required = true ) @PathParam( "name" )
+                                                         String name )
     {
 
         ArtifactStoreValidateData result;
@@ -575,13 +597,15 @@ public class RepositoryAdminResources
         return response;
     }
 
-    @ApiOperation( "Return All Invalidated Remote Repositories" )
-    @ApiResponses( { @ApiResponse( code = 200, message = "Return All Invalidated Remote Repositories" ) } )
+    @Operation( description = "Return All Invalidated Remote Repositories" )
+    @APIResponses(
+            { @APIResponse( responseCode = "200", description = "Return All Invalidated Remote Repositories" ) } )
     @Path( "/all_invalid" )
     @GET
     public Response returnDisabledStores(
-            final @ApiParam( required = true ) @PathParam( "packageType" ) String packageType,
-            final @ApiParam( allowableValues = "remote", required = true ) @PathParam( "type" ) String type )
+            final @Parameter( in = PATH, required = true ) @PathParam( "packageType" ) String packageType,
+            final @Parameter( in = PATH, schema = @Schema( enumeration = { "remote" } ),
+                              required = true ) @PathParam( "type" ) String type )
     {
         if ( !"remote".equals( type ) )
         {

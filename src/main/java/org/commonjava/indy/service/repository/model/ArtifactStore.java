@@ -20,8 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -38,9 +36,9 @@ import java.util.TimeZone;
 @JsonSubTypes( { @Type( name = "remote", value = RemoteRepository.class ),
                        @Type( name = "hosted", value = HostedRepository.class ),
                        @Type( name = "group", value = Group.class ) } )
-@ApiModel(
-        description = "Definition of a content store on Indy, whether it proxies content from a remote server, hosts artifacts on this system, or groups other content stores.",
-        discriminator = "type", subTypes = { HostedRepository.class, Group.class, RemoteRepository.class } )
+//@ApiModel(
+//        description = "Definition of a content store on Indy, whether it proxies content from a remote server, hosts artifacts on this system, or groups other content stores.",
+//        discriminator = "type", subTypes = { HostedRepository.class, Group.class, RemoteRepository.class } )
 public abstract class ArtifactStore
         implements Externalizable
 {
@@ -59,8 +57,8 @@ public abstract class ArtifactStore
 
     public static final String TRACKING_ID = "trackingId";
 
-    @ApiModelProperty( required = true, dataType = "string",
-                       value = "Serialized store key, of the form: '[hosted|group|remote]:name'" )
+//    @ApiModelProperty( required = true, dataType = "string",
+//                       value = "Serialized store key, of the form: '[hosted|group|remote]:name'" )
     private StoreKey key;
 
     private String description;
@@ -71,8 +69,8 @@ public abstract class ArtifactStore
 
     private boolean disabled;
 
-    @ApiModelProperty( required = false, dataType = "int",
-                       value = "Integer time in seconds which is used for repo automatically re-enable when set disable by errors, positive value means time in seconds, -1 means never disable, empty or 0 means use default timeout." )
+//    @ApiModelProperty( required = false, dataType = "int",
+//                       value = "Integer time in seconds which is used for repo automatically re-enable when set disable by errors, positive value means time in seconds, -1 means never disable, empty or 0 means use default timeout." )
     @JsonProperty( "disable_timeout" )
     private int disableTimeout;
 
