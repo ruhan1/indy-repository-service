@@ -21,17 +21,15 @@ import org.commonjava.indy.service.repository.model.StoreKey;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class ApiSerializerModule
+public class RepoApiSerializerModule
     extends SimpleModule
 {
 
     private static final long serialVersionUID = 1L;
 
-    public static final ApiSerializerModule INSTANCE = new ApiSerializerModule();
-
-    public ApiSerializerModule()
+    public RepoApiSerializerModule()
     {
-        super( "Indy Core API" );
+        super( "Indy Repository API" );
         addDeserializer( StoreKey.class, new StoreKeyDeserializer() );
         addSerializer( StoreKey.class, new StoreKeySerializer() );
     }

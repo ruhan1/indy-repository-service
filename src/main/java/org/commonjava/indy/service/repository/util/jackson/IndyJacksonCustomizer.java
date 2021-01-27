@@ -48,6 +48,7 @@ public class IndyJacksonCustomizer
     @Inject
     private Instance<ModuleSet> injectedModuleSets;
 
+    @Deprecated
     private final Set<String> registeredModules = new HashSet<>();
 
     public void customize( ObjectMapper mapper )
@@ -111,10 +112,10 @@ public class IndyJacksonCustomizer
         mapper.registerModule( module );
         registeredModules.add( module.getClass().getSimpleName() );
 
-        if ( module instanceof IndySerializerModule )
-        {
-            ( (IndySerializerModule) module ).register( mapper );
-        }
+//        if ( module instanceof IndySerializerModule )
+//        {
+//            ( (IndySerializerModule) module ).register( mapper );
+//        }
     }
 
 }
