@@ -15,20 +15,18 @@
  */
 package org.commonjava.indy.service.repository.model.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-@ApiModel( "List of artifact store definitions" )
+//@ApiModel( "List of artifact store definitions" )
 public class StoreListingDTO<T extends ArtifactStore>
     implements Iterable<T>
 {
 
-    @ApiModelProperty( dataType = "org.commonjava.indy.model.core.ArtifactStore", required = true, value = "The store definition list" )
+//    @ApiModelProperty( dataType = "org.commonjava.indy.model.core.ArtifactStore", required = true, value = "The store definition list" )
     private List<T> items;
 
     public StoreListingDTO()

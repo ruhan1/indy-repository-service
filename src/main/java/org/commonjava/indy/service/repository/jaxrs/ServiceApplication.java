@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2020 Red Hat, Inc. (https://github.com/Commonjava/indy)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.util.jackson;
+package org.commonjava.indy.service.repository.jaxrs;
 
-import com.fasterxml.jackson.databind.Module;
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.info.Info;
 
-import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
-/**
- * Created by jdcasey on 8/26/15.
- */
-@Deprecated
-public interface ModuleSet
+@OpenAPIDefinition( info = @Info( title = "Indy Repository Service APIs", version = "1.0" ) )
+@ApplicationPath( "/api" )
+@ApplicationScoped
+public class ServiceApplication
+        extends Application
 {
-    Set<Module> getModules();
 }

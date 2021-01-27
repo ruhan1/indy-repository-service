@@ -1,49 +1,84 @@
-# Quarkus will choose application.yaml over application.properties.
 quarkus:
-    http:
-        port: 8080
-        read-timeout: 30m
-        limits:
-          max-body-size: 500M
+  kubernetes-config:
+    enabled: true
+  http:
+    port: 8080
+    read-timeout: 30m
+    limits:
+      max-body-size: 500M
 
-    package:
-        uber-jar: true
+  package:
+    uber-jar: true
 
-    # Logging (disable console on prod)
-    log:
+  # Logging (disable console on prod)
+  log:
+    level: INFO
+    min-level: INFO
+    category:
+      "org.commonjava.indy.service":
         level: INFO
-        category:
-            "org.commonjava.indy.service":
-                level: DEBUG
-        console:
-            level: DEBUG
-            enable: true
-        file:
-            enable: true
-            path: "log/indy-repository-service.log"
-            level: DEBUG
-            format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
-            rotation:
-                max-backup-index: 5
-                max-file-size: 10M
+    console:
+      enable: false
+    file:
+      enable: true
+      path: "log/indy-repository-service.log"
+      level: INFO
+      format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+      rotation:
+        max-backup-index: 5
+        max-file-size: 10M
 
-    swagger-ui:
-        always-include: true
+  swagger-ui:
+    always-include: true
 
-repository:
-    affectedGroupsExclude: ^build-\d+
-#    disposableStorePattern:
-    # ssl validation configuration for remote
-#    remote:
-#        sslRequired: false
-#        nosslHosts: localhost,localhost1,localhost2
+#repository:
+#  affectedGroupsExclude: ^build-\d+
+#  disposableStorePattern:
+  # ssl validation configuration for remote
+#  remote:
+#    sslRequired: false
+#    nosslHosts: localhost,localhost1,localhost2
 
-cassandra:
-    enabled: false
-#    host: localhost
-#    port: 9042
-#    user: user
-#    pass: pass
+#keycloak:
+#  enabled: false
+#
+#cassandra:
+#  enabled: true
+#  host: test.abc
+#  port: 9042
+#  user: userabc
+#  pass: passabc
+
+
+#store:
+
+
+"%dev":
+   quarkus:
+     kubernetes-config:
+       enabled: false
+     log:
+       level: TRACE
+       min-level: TRACE
+       category:
+         "org.commonjava.indy.service":
+           level: TRACE
+       console:
+         enable: true
+       file:
+         enable: true
+         path: "/tmp/indy-repository-service.log"
+         format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+         rotation:
+           max-backup-index: 5
+           max-file-size: 10M
+
+   cassandra:
+     enabled: false
+     host: localhost
+     port: 9042
+     user: user
+     pass: pass
 #    keyspace:
 #    replicaFactor:
 #    keyspaceReplicas:
@@ -54,10 +89,6 @@ cassandra:
 #        read: 3
 #        write: 3
 
-keycloak:
-    enabled: false
-
-store:
 
 
 

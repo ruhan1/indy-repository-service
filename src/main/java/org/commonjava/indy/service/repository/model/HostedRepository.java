@@ -15,8 +15,6 @@
  */
 package org.commonjava.indy.service.repository.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 
 import java.io.Externalizable;
@@ -24,7 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-@ApiModel( description = "Hosts artifact content on the local system", parent = ArtifactStore.class )
+//@ApiModel( description = "Hosts artifact content on the local system", parent = ArtifactStore.class )
 public class HostedRepository
         extends AbstractRepository
         implements Externalizable
@@ -37,7 +35,7 @@ public class HostedRepository
     private int snapshotTimeoutSeconds;
 
     // if readonly, default is not
-    @ApiModelProperty( required = false, dataType = "boolean", value = "identify if the hoste repo is readonly" )
+//    @ApiModelProperty( required = false, dataType = "boolean", value = "identify if the hoste repo is readonly" )
     private boolean readonly = false;
 
     public HostedRepository()

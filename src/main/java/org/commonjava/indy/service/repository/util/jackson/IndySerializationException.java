@@ -27,11 +27,6 @@ public class IndySerializationException
         super( msg, loc, rootCause );
     }
 
-    public IndySerializationException( final String msg, final JsonLocation loc )
-    {
-        super( msg, loc );
-    }
-
     private static final long serialVersionUID = 1L;
 
 }

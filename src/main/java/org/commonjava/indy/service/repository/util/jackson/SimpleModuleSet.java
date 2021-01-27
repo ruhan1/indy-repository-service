@@ -24,6 +24,7 @@ import java.util.Set;
 /**
  * Created by jdcasey on 8/26/15.
  */
+@Deprecated
 public class SimpleModuleSet
         implements ModuleSet
 {

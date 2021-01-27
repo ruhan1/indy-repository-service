@@ -28,13 +28,14 @@ import java.io.IOException;
 public class MapperUtil
 {
     private static final Logger logger = LoggerFactory.getLogger( MapperUtil.class );
+
     public static String patchLegacyStoreJson( ObjectMapper mapper, final String json )
             throws IOException
     {
         final JsonNode tree = mapper.readTree( json );
         logger.debug( "Patching JSON tree: {}", tree );
 
-        final JsonNode keyNode = tree.get(ArtifactStore.KEY_ATTR );
+        final JsonNode keyNode = tree.get( ArtifactStore.KEY_ATTR );
         StoreKey key;
         try
         {

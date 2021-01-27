@@ -17,6 +17,7 @@ package org.commonjava.indy.service.repository.util.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Deprecated
 public interface IndySerializerModule
 {
     void register( final ObjectMapper mapper );

@@ -16,7 +16,6 @@
 package org.commonjava.indy.service.repository.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 
 import java.io.Externalizable;
@@ -28,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@ApiModel( description = "Grouping of other artifact stores, with a defined order to the membership that determines content preference", parent = ArtifactStore.class )
+//@ApiModel( description = "Grouping of other artifact stores, with a defined order to the membership that determines content preference", parent = ArtifactStore.class )
 public class Group
     extends ArtifactStore
         implements Externalizable

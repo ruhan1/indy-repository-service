@@ -17,8 +17,6 @@ package org.commonjava.indy.service.repository.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +28,8 @@ import java.io.ObjectOutput;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@ApiModel( description = "Proxy to a remote server's artifact content, with local cache storage.",
-           parent = ArtifactStore.class )
+//@ApiModel( description = "Proxy to a remote server's artifact content, with local cache storage.",
+//           parent = ArtifactStore.class )
 public class RemoteRepository
         extends AbstractRepository
         implements Externalizable
@@ -44,7 +42,7 @@ public class RemoteRepository
 
     public static final int DEFAULT_MAX_CONNECTIONS = 30;
 
-    @ApiModelProperty( required = true, value = "The remote URL to proxy" )
+//    @ApiModelProperty( required = true, value = "The remote URL to proxy" )
     @JsonProperty( "url" )
     private String url;
 
@@ -101,16 +99,16 @@ public class RemoteRepository
     @JsonProperty( "server_trust_policy" )
     private String serverTrustPolicy;
 
-    @ApiModelProperty(
-            value = "Integer to indicate the pre-fetching priority of the remote, higher means more eager to do the pre-fetching of the content in the repo, 0 or below means disable the pre-fecthing." )
+//    @ApiModelProperty(
+//            value = "Integer to indicate the pre-fetching priority of the remote, higher means more eager to do the pre-fetching of the content in the repo, 0 or below means disable the pre-fecthing." )
     @JsonProperty( "prefetch_priority" )
     private Integer prefetchPriority = 0;
 
-    @ApiModelProperty( value = "Indicates if the remote needs to do rescan after prefetch" )
+//    @ApiModelProperty( value = "Indicates if the remote needs to do rescan after prefetch" )
     @JsonProperty( "prefetch_rescan" )
     private boolean prefetchRescan = false;
 
-    @ApiModelProperty( value = "The prefetch listing type, should be html or koji" )
+//    @ApiModelProperty( value = "The prefetch listing type, should be html or koji" )
     @JsonProperty( "prefetch_listing_type" )
     private String prefetchListingType = PREFETCH_LISTING_TYPE_HTML;
 
