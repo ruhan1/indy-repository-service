@@ -2,7 +2,7 @@ quarkus:
   kubernetes-config:
     enabled: true
 #    namespace: spmm-automation
-    secrets: indy-repo-service-secret
+    secrets: indy-repository-service-secrets
   http:
     port: 8080
     read-timeout: 30m
