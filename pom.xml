@@ -9,18 +9,13 @@
   <name>Indy :: Service :: Repository</name>
   <properties>
     <java.version>11</java.version>
-
     <atlas.version>1.1.1</atlas.version>
-
     <quarkus.version>1.11.0.Final</quarkus.version>
     <cassandra.version>3.7.2</cassandra.version>
-
     <junit.report.dir>${project.build.directory}/surefire-reports</junit.report.dir>
-
-    <skipSurefire>${skipTests}</skipSurefire>
+    <skipSurefire>false</skipSurefire>
     <test-forkCount>1C</test-forkCount>
     <test-redirectOutput>true</test-redirectOutput>
-
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -35,11 +30,6 @@
         <version>${quarkus.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.commonjava.indy</groupId>
-        <artifactId>indy-subsys-keycloak</artifactId>
-        <version>${indy.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -79,14 +69,14 @@
     <!--      <groupId>io.quarkus</groupId>-->
     <!--      <artifactId>quarkus-resteasy-mutiny</artifactId>-->
     <!--    </dependency>-->
+    <!-- quarkus deps start -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-      <version>2.0.1.Final</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -94,11 +84,11 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
+      <artifactId>quarkus-vertx-web</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-vertx-web</artifactId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -120,6 +110,13 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- quarkus deps end -->
+    <dependency>
+      <groupId>org.jboss.spec.javax.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      <version>2.0.1.Final</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -145,62 +142,55 @@
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-maven-plugin</artifactId>
-          <version>${quarkus.version}</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>generate-code</goal>
-                <goal>generate-code-tests</goal>
-                <goal>build</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-            <mavenExecutorId>forked-path</mavenExecutorId>
-            <useReleaseProfile>false</useReleaseProfile>
-            <arguments>-Prelease -DskipTests=true</arguments>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-          <configuration>
-            <skipTests>${skipSurefire}</skipTests>
-            <redirectTestOutputToFile>${test-redirectOutput}</redirectTestOutputToFile>
-            <forkCount>${test-forkCount}</forkCount>
-            <reportsDirectory>${junit.report.dir}</reportsDirectory>
-            <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
-            <!-- To support junit5 -->
-            <systemPropertyVariables>
-              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-              <maven.home>${maven.home}</maven.home>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <mavenExecutorId>forked-path</mavenExecutorId>
+          <useReleaseProfile>false</useReleaseProfile>
+          <arguments>-Prelease -DskipTests=true</arguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.1</version>
+        <configuration>
+          <skipTests>${skipSurefire}</skipTests>
+          <redirectTestOutputToFile>${test-redirectOutput}</redirectTestOutputToFile>
+          <forkCount>${test-forkCount}</forkCount>
+          <reportsDirectory>${junit.report.dir}</reportsDirectory>
+          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+          <!-- To support junit5 -->
+          <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
     </plugins>
+
   </build>
 </project>

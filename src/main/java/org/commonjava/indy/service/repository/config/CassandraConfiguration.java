@@ -17,7 +17,9 @@ package org.commonjava.indy.service.repository.config;
 
 import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Optional;
@@ -78,6 +80,14 @@ public class CassandraConfiguration
 
     public CassandraConfiguration()
     {
+    }
+
+    @PostConstruct
+    public void testProperties()
+    {
+        final var logger = LoggerFactory.getLogger( this.getClass() );
+        logger.info( "host: {}", getCassandraHost() );
+        logger.info( "keyspace: {}", getKeyspace() );
     }
 
     public Boolean isEnabled()

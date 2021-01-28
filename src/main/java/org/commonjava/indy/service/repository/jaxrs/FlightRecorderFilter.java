@@ -33,7 +33,7 @@ public class FlightRecorderFilter
 {
     private static final String METHOD_NAME = ResourceMethodInvoker.class.getName();
 
-    private static final Logger logger = LoggerFactory.getLogger( FlightRecorderFilter.class.getName() );
+    private static final Logger logger = LoggerFactory.getLogger( FlightRecorderFilter.class );
 
     @Override
     public void filter( ContainerRequestContext requestContext )
@@ -63,6 +63,7 @@ public class FlightRecorderFilter
         Object prop = requestContext.getProperty( JaxRSEvent.NAME );
         if ( prop == null )
         {
+            logger.trace( "No JFR event for tracking." );
             return;
         }
         JaxRSEvent event = (JaxRSEvent) prop;

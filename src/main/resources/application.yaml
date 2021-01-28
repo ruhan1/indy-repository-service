@@ -1,6 +1,8 @@
 quarkus:
   kubernetes-config:
     enabled: true
+#    namespace: spmm-automation
+    secrets: indy-repo-service-secret
   http:
     port: 8080
     read-timeout: 30m
@@ -20,9 +22,9 @@ quarkus:
     console:
       enable: false
     file:
+      level: INFO
       enable: true
       path: "log/indy-repository-service.log"
-      level: INFO
       format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
       rotation:
         max-backup-index: 5
@@ -42,13 +44,16 @@ quarkus:
 #keycloak:
 #  enabled: false
 #
-#cassandra:
-#  enabled: true
-#  host: test.abc
-#  port: 9042
-#  user: userabc
-#  pass: passabc
 
+cassandra:
+  enabled: true
+  host: localhost
+  port: 9042
+  user: testuser
+  pass: testpass
+  keyspace: indyreposervice
+  keyspaceReplicas: 3
+  replicaFactor: 3
 
 #store:
 
