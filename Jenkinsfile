@@ -71,27 +71,27 @@ pipeline {
                 archiveArtifacts artifacts: "$artifact", fingerprint: true
             }
         }
-//        stage('Build & Push Image') {
-//            when {
-//                allOf {
-//                    expression { my_bc != null }
-//                    expression { env.CHANGE_ID == null } // Not pull request
-//                }
-//            }
-//            steps {
-//                script {
-//                    def artifact_runner_file = sh(script: "ls $artifact_runner", returnStdout: true)?.trim()
-//                    def tarball_url = "${BUILD_URL}artifact/$artifact_runner_file"
-//                    openshift.withCluster() {
-//                        openshift.withProject() {
-//                            echo "Starting image build: ${openshift.project()}:${my_bc}"
-//                            def bc = openshift.selector("bc", my_bc)
-//                            def buildSel = bc.startBuild("-e tarball_url=${tarball_url}")
-//                            buildSel.logs("-f")
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        stage('Build & Push Image') {
+            when {
+                allOf {
+                    expression { my_bc != null }
+                    expression { env.CHANGE_ID == null } // Not pull request
+                }
+            }
+            steps {
+                script {
+                    def artifact_runner_file = sh(script: "ls $artifact_runner", returnStdout: true)?.trim()
+                    def tarball_url = "${BUILD_URL}artifact/$artifact_runner_file"
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Starting image build: ${openshift.project()}:${my_bc}"
+                            def bc = openshift.selector("bc", my_bc)
+                            def buildSel = bc.startBuild("-e tarball_url=${tarball_url}")
+                            buildSel.logs("-f")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
