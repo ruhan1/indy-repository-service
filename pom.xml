@@ -9,9 +9,16 @@
   <name>Indy :: Service :: Repository</name>
   <properties>
     <java.version>11</java.version>
-    <atlas.version>1.1.1</atlas.version>
+
+    <plugin.surefire.version>2.22.1</plugin.surefire.version>
+
+    <jacoco.version>0.8.4</jacoco.version>
+
     <quarkus.version>1.11.0.Final</quarkus.version>
     <cassandra.version>3.7.2</cassandra.version>
+
+    <atlas.version>1.1.1</atlas.version>
+
     <junit.report.dir>${project.build.directory}/surefire-reports</junit.report.dir>
     <skipSurefire>false</skipSurefire>
     <test-forkCount>1C</test-forkCount>
@@ -176,19 +183,54 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
+        <version>${plugin.surefire.version}</version>
         <configuration>
           <skipTests>${skipSurefire}</skipTests>
           <redirectTestOutputToFile>${test-redirectOutput}</redirectTestOutputToFile>
           <forkCount>${test-forkCount}</forkCount>
           <reportsDirectory>${junit.report.dir}</reportsDirectory>
-          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+          <argLine>${surefireArgLine} -Djdk.attach.allowAttachSelf=true</argLine>
           <!-- To support junit5 -->
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>prepare-unit-tests</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the VM argument line used when unit tests are run in surefire <argLine>. -->
+              <append>true</append>
+              <destFile>${project.build.directory}/jacoco.exec</destFile>
+              <propertyName>surefireArgLine</propertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
