@@ -44,6 +44,10 @@ public class RepoApiSerializerModule
     @Override
     public boolean equals( final Object other )
     {
+        if ( other == null )
+        {
+            return false;
+        }
         return getClass().equals( other.getClass() );
     }
 }
