@@ -7,6 +7,12 @@
     xmlns:jdbc="urn:infinispan:config:store:jdbc:11.0">
 
   <cache-container default-cache="local" name="IndyCacheManager" shutdown-hook="DEFAULT" statistics="true">
+    <serialization marshaller="org.infinispan.commons.marshall.JavaSerializationMarshaller">
+      <white-list>
+        <regex>org.commonjava.indy.service.repository.model.*</regex>
+      </white-list>
+    </serialization>
+
     <local-cache-configuration name="local-template" statistics="true">
       <memory max-count="20000" when-full="REMOVE">
       </memory>
