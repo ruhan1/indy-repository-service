@@ -142,6 +142,10 @@ public abstract class ArtifactStore
         {
             return true;
         }
+        if ( obj == null )
+        {
+            return false;
+        }
         if ( getClass() != obj.getClass() )
         {
             return false;
@@ -149,16 +153,12 @@ public abstract class ArtifactStore
         final ArtifactStore other = (ArtifactStore) obj;
         if ( key == null )
         {
-            if ( other.key != null )
-            {
-                return false;
-            }
+            return other.key == null;
         }
-        else if ( !key.equals( other.key ) )
+        else
         {
-            return false;
+            return key.equals( other.key );
         }
-        return true;
     }
 
     public boolean isDisabled()

@@ -33,7 +33,7 @@ import java.util.function.Function;
 // TODO: this locker is a interim placeholder for weft Locker
 public class Locker<K>
 {
-    private static final long DEFAULT_SWEEP_MS = 10 * 1000;
+    private static final long DEFAULT_SWEEP_MS = 10 * 1000L;
 
     private final Map<K, ReentrantLock> locks;
 
@@ -136,7 +136,7 @@ public class Locker<K>
                 }
             }
         }
-        while ( retry == Boolean.TRUE );
+        while ( Boolean.TRUE.equals( retry ) );
 
         logger.debug( "No retries, return null for locked operation on key: {}", key );
         return null;
@@ -164,7 +164,7 @@ public class Locker<K>
             catch ( ConcurrentModificationException e )
             {
                 Logger logger = LoggerFactory.getLogger( getClass() );
-                logger.warn( "Failed to create toScan. Abort the sweeping task for once", e.getMessage() );
+                logger.warn( "Failed to create toScan. Abort the sweeping task for once: {}", e.getMessage() );
                 return;
             }
 

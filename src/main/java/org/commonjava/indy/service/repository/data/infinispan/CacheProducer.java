@@ -15,7 +15,6 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
-import io.quarkus.runtime.StartupEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.interpolation.InterpolationException;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -56,8 +54,6 @@ public class CacheProducer
 
     private static final String ISPN_XML = "infinispan.xml";
 
-    private static final String ISPN_CLUSTER_XML = "infinispan-cluster.xml";
-
     private EmbeddedCacheManager cacheManager;
 
     @Inject
@@ -69,7 +65,7 @@ public class CacheProducer
     //    @Inject
     //    private IndyMetricsConfig metricsConfig;
 
-    private Map<String, BasicCacheHandle> caches = new ConcurrentHashMap<>(); // hold embedded and remote caches
+    private final Map<String, CacheHandle> caches = new ConcurrentHashMap<>(); // hold embedded and remote caches
 
     protected CacheProducer()
     {

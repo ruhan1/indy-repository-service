@@ -84,39 +84,20 @@ public class IndyWorkflowException
                 final String original = formattedMessage;
                 try
                 {
-                    formattedMessage = String.format( format.replaceAll( "\\{\\}", "%s" ), params );
+                    formattedMessage = String.format( format.replaceAll( "\\{}", "%s" ), params );
                 }
-                catch ( final Error e )
+                catch ( final Error | Exception e )
                 {
-                }
-                catch ( final RuntimeException e )
-                {
-                }
-                catch ( final Exception e )
-                {
+                    // do nothing
                 }
 
-                if ( formattedMessage == null || original == formattedMessage )
+                if ( formattedMessage == null || formattedMessage.equals( original ) )
                 {
                     try
                     {
                         formattedMessage = MessageFormat.format( format, params );
                     }
-                    catch ( IllegalArgumentException e )
-                    {
-                        formattedMessage = format;
-                    }
-                    catch ( final Error e )
-                    {
-                        formattedMessage = format;
-//                        throw e;
-                    }
-                    catch ( final RuntimeException e )
-                    {
-                        formattedMessage = format;
-//                        throw e;
-                    }
-                    catch ( final Exception e )
+                    catch ( Error | Exception e )
                     {
                         formattedMessage = format;
                     }

@@ -69,7 +69,7 @@ public class CacheHandle<K, V>
     // TODO: Why is this separate from {@link BasicCacheHandle#execute(Function)}?
     protected <R> R doExecuteCache( String metricName, Function<Cache<K, V>, R> operation )
     {
-        Supplier<R> execution = executionFor( operation );
+        Supplier<R> execution = executeFor( operation );
         //        if ( metricsManager != null )
         //        {
         //            return metricsManager.wrapWithStandardMetrics( execution, () -> getMetricName( metricName ) );
@@ -78,7 +78,7 @@ public class CacheHandle<K, V>
         return execution.get();
     }
 
-    private <R> Supplier<R> executionFor( final Function<Cache<K, V>, R> operation )
+    private <R> Supplier<R> executeFor( final Function<Cache<K, V>, R> operation )
     {
         Logger logger = LoggerFactory.getLogger( getClass() );
 

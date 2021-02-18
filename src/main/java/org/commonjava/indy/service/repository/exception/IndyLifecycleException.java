@@ -18,7 +18,7 @@ package org.commonjava.indy.service.repository.exception;
 import java.text.MessageFormat;
 
 public class IndyLifecycleException
-    extends Exception
+        extends Exception
 {
     private static final long serialVersionUID = 1L;
 
@@ -43,8 +43,7 @@ public class IndyLifecycleException
     {
         if ( formattedMessage == null )
         {
-            final String format = super.getMessage()
-                                       .replaceAll( "\\{\\}", "%s" );
+            final String format = super.getMessage().replaceAll( "\\{\\}", "%s" );
             if ( params == null || params.length < 1 )
             {
                 formattedMessage = format;
@@ -61,7 +60,7 @@ public class IndyLifecycleException
                     // do nothing
                 }
 
-                if ( formattedMessage == null || original == formattedMessage )
+                if ( formattedMessage == null || formattedMessage.equals( original ) )
                 {
                     try
                     {
