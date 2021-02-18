@@ -18,7 +18,6 @@ package org.commonjava.indy.service.repository.data.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
-import org.commonjava.indy.service.repository.config.CassandraConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

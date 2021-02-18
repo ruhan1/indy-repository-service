@@ -21,7 +21,6 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.StringSearchInterpolator;
-import org.commonjava.indy.service.repository.config.InfinispanConfiguration;
 import org.infinispan.Cache;
 import org.infinispan.commons.marshall.MarshallableTypeHints;
 import org.infinispan.configuration.ConfigurationManager;
@@ -43,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,8 +81,8 @@ public class CacheProducer
         this.cacheManager = cacheManager;
     }
 
-    @SuppressWarnings( "unused" )
-    public void onStart( @Observes StartupEvent start )
+    @PostConstruct
+    public void onStart()
     {
         cacheManager = startCacheManager();
     }
@@ -125,7 +123,9 @@ public class CacheProducer
             {
                 try
                 {
-                    logger.info( "Not found customized config {}, using CLASSPATH resource Infinispan configuration:\n\n{}\n\n", ispnConf, resourceStr );
+                    logger.info(
+                            "Not found customized config {}, using CLASSPATH resource Infinispan configuration:\n\n{}\n\n",
+                            ispnConf, resourceStr );
                     if ( mgr == null )
                     {
                         mgr = new DefaultCacheManager(

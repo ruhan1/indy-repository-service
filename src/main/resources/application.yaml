@@ -30,6 +30,8 @@ quarkus:
         level: WARN
       "org.infinispan":
         level: WARN
+      "io.agroal":
+        level: WARN
       "org.commonjava.indy.service":
         level: INFO
     console:
@@ -93,6 +95,8 @@ cassandra:
            level: INFO
          "org.infinispan":
            level: INFO
+         "io.agroal":
+           level: INFO
          "org.commonjava.indy.service":
            level: TRACE
        console:
@@ -110,6 +114,19 @@ cassandra:
 
    ispn:
      configDir: /tmp/infinispan.xml
+#     repo-data-pool: |
+#       dataSource.providerClassName=org.postgresql.ds.PGSimpleDataSource,\
+#       dataSource.jdbcUrl=jdbc:postgresql://localhost:5432/test,\
+#       dataSource.principal=db_user,\
+#       dataSource.credential=mySpecialPassword,\
+#       dataSource.minSize=10,\
+#       dataSource.initialSize=10,\
+#       dataSource.maxSize=100,\
+#       dataSource.reapTimeout_m=10,\
+#       dataSource.maxLifetime_m=28,\
+#       dataSource.leakTimeout_s=5,\
+#       metrics=true,\
+#       healthChecks=true
 
    cassandra:
      enabled: false
