@@ -16,6 +16,7 @@
 package org.commonjava.indy.service.repository.data;
 
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.data.annotations.MemStoreDataManager;
 import org.commonjava.indy.service.repository.event.NoOpStoreEventDispatcher;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
@@ -25,8 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,8 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-//@Alternative
-@Default
+@MemStoreDataManager
 public class MemoryStoreDataManager
         extends AbstractStoreDataManager
 {

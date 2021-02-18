@@ -9,16 +9,15 @@
   <name>Indy :: Service :: Repository</name>
   <properties>
     <java.version>11</java.version>
-
-    <plugin.surefire.version>2.22.1</plugin.surefire.version>
-
-    <jacoco.version>0.8.4</jacoco.version>
-
     <quarkus.version>1.11.0.Final</quarkus.version>
-    <cassandra.version>3.7.2</cassandra.version>
 
+    <cassandra.version>3.7.2</cassandra.version>
+    <infinispan.version>11.0.8.Final</infinispan.version>
+    <agroal.version>1.9</agroal.version>
     <atlas.version>1.1.1</atlas.version>
 
+    <jacoco.version>0.8.4</jacoco.version>
+    <plugin.surefire.version>2.22.1</plugin.surefire.version>
     <junit.report.dir>${project.build.directory}/surefire-reports</junit.report.dir>
     <skipSurefire>false</skipSurefire>
     <test-forkCount>1C</test-forkCount>
@@ -37,6 +36,38 @@
         <version>${quarkus.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>io.quarkus</groupId>-->
+<!--        <artifactId>quarkus-agroal</artifactId>-->
+<!--        <version>1.9.2.Final</version>-->
+<!--      </dependency>-->
+<!--      <dependency>-->
+<!--        <groupId>io.quarkus</groupId>-->
+<!--        <artifactId>quarkus-infinispan-embedded</artifactId>-->
+<!--        <version>1.6.1.Final</version>-->
+<!--      </dependency>-->
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-bom</artifactId>
+        <version>${infinispan.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.agroal</groupId>
+        <artifactId>agroal-api</artifactId>
+        <version>${agroal.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.agroal</groupId>
+        <artifactId>agroal-pool</artifactId>
+        <version>${agroal.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.2.5</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -62,6 +93,11 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>2.8.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-interpolation</artifactId>
+        <version>1.19</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -105,10 +141,18 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-config-yaml</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-kubernetes-config</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>io.quarkus</groupId>-->
+<!--      <artifactId>quarkus-infinispan-embedded</artifactId>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>io.quarkus</groupId>-->
+<!--      <artifactId>quarkus-kubernetes-config</artifactId>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>io.quarkus</groupId>-->
+<!--      <artifactId>quarkus-agroal</artifactId>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
@@ -144,6 +188,44 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-interpolation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-cachestore-jdbc</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.slf4j</groupId>
+          <artifactId>slf4j-jboss-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.agroal</groupId>
+      <artifactId>agroal-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.agroal</groupId>
+      <artifactId>agroal-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
     </dependency>
 
   </dependencies>

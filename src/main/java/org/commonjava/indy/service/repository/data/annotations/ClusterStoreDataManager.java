@@ -1,4 +1,4 @@
-package org.commonjava.indy.service.repository.data.cassandra;
+package org.commonjava.indy.service.repository.data.annotations;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;

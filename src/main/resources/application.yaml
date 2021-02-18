@@ -18,6 +18,20 @@ quarkus:
     level: INFO
     min-level: INFO
     category:
+      "org.jboss":
+        level: WARN
+      "io.quarkus":
+        level: WARN
+      "io.smallrye":
+        level: WARN
+      "org.eclipse":
+        level: WARN
+      "io.netty":
+        level: WARN
+      "org.infinispan":
+        level: WARN
+      "io.agroal":
+        level: WARN
       "org.commonjava.indy.service":
         level: INFO
     console:
@@ -34,7 +48,8 @@ quarkus:
   swagger-ui:
     always-include: true
 
-#repository:
+repository:
+  data-storage: cassandra
 #  affectedGroupsExclude: ^build-\d+
 #  disposableStorePattern:
   # ssl validation configuration for remote
@@ -42,9 +57,10 @@ quarkus:
 #    sslRequired: false
 #    nosslHosts: localhost,localhost1,localhost2
 
+
 #keycloak:
 #  enabled: false
-#
+
 
 cassandra:
   enabled: true
@@ -61,12 +77,26 @@ cassandra:
 
 "%dev":
    quarkus:
-     kubernetes-config:
-       enabled: false
+#     kubernetes-config:
+#       enabled: false
      log:
        level: TRACE
        min-level: TRACE
        category:
+         "org.jboss":
+           level: INFO
+         "io.quarkus":
+           level: INFO
+         "io.smallrye":
+           level: INFO
+         "org.eclipse":
+           level: INFO
+         "io.netty":
+           level: INFO
+         "org.infinispan":
+           level: INFO
+         "io.agroal":
+           level: INFO
          "org.commonjava.indy.service":
            level: TRACE
        console:
@@ -78,6 +108,25 @@ cassandra:
          rotation:
            max-backup-index: 5
            max-file-size: 10M
+
+   repository:
+     data-storage: infinispan
+
+   ispn:
+     configDir: /tmp/infinispan.xml
+#     repo-data-pool: |
+#       dataSource.providerClassName=org.postgresql.ds.PGSimpleDataSource,\
+#       dataSource.jdbcUrl=jdbc:postgresql://localhost:5432/test,\
+#       dataSource.principal=db_user,\
+#       dataSource.credential=mySpecialPassword,\
+#       dataSource.minSize=10,\
+#       dataSource.initialSize=10,\
+#       dataSource.maxSize=100,\
+#       dataSource.reapTimeout_m=10,\
+#       dataSource.maxLifetime_m=28,\
+#       dataSource.leakTimeout_s=5,\
+#       metrics=true,\
+#       healthChecks=true
 
    cassandra:
      enabled: false
