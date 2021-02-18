@@ -18,6 +18,18 @@ quarkus:
     level: INFO
     min-level: INFO
     category:
+      "org.jboss":
+        level: WARN
+      "io.quarkus":
+        level: WARN
+      "io.smallrye":
+        level: WARN
+      "org.eclipse":
+        level: WARN
+      "io.netty":
+        level: WARN
+      "org.infinispan":
+        level: WARN
       "org.commonjava.indy.service":
         level: INFO
     console:
@@ -34,7 +46,8 @@ quarkus:
   swagger-ui:
     always-include: true
 
-#repository:
+repository:
+  data-storage: cassandra
 #  affectedGroupsExclude: ^build-\d+
 #  disposableStorePattern:
   # ssl validation configuration for remote
@@ -42,9 +55,10 @@ quarkus:
 #    sslRequired: false
 #    nosslHosts: localhost,localhost1,localhost2
 
+
 #keycloak:
 #  enabled: false
-#
+
 
 cassandra:
   enabled: true
@@ -61,12 +75,24 @@ cassandra:
 
 "%dev":
    quarkus:
-     kubernetes-config:
-       enabled: false
+#     kubernetes-config:
+#       enabled: false
      log:
        level: TRACE
        min-level: TRACE
        category:
+         "org.jboss":
+           level: INFO
+         "io.quarkus":
+           level: INFO
+         "io.smallrye":
+           level: INFO
+         "org.eclipse":
+           level: INFO
+         "io.netty":
+           level: INFO
+         "org.infinispan":
+           level: INFO
          "org.commonjava.indy.service":
            level: TRACE
        console:
@@ -78,6 +104,12 @@ cassandra:
          rotation:
            max-backup-index: 5
            max-file-size: 10M
+
+   repository:
+     data-storage: infinispan
+
+   ispn:
+     configDir: /tmp/infinispan.xml
 
    cassandra:
      enabled: false

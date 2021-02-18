@@ -26,6 +26,10 @@ import java.util.Optional;
 @ApplicationScoped
 public class IndyRepositoryConfiguration
 {
+    public static final String STORAGE_INFINISPAN = "infinispan";
+
+    public static final String STORAGE_CASSANDRA = "cassandra";
+
     @Inject
     @ConfigProperty( name = "repository.affectedGroupsExclude" )
     private Optional<String> affectedGroupsExcludeFilter;
@@ -35,16 +39,20 @@ public class IndyRepositoryConfiguration
     private Optional<String> disposableStorePattern;
 
     @Inject
+    @ConfigProperty( name = "repository.data-storage" )
+    private Optional<String> storageType;
+
+    @Inject
     @ConfigProperty( name = "repository.storeValidationEnabled", defaultValue = "false" )
     private Boolean storeValidation;
 
-//    @PostConstruct
-//    public void testProperties()
-//    {
-//        final Logger logger = LoggerFactory.getLogger( this.getClass() );
-//        logger.info( "affectedGroupExcludeFilter: {}", getAffectedGroupsExcludeFilter() );
-//        logger.info( "disposableStorePattern: {}", getDisposableStorePattern() );
-//    }
+    //    @PostConstruct
+    //    public void testProperties()
+    //    {
+    //        final Logger logger = LoggerFactory.getLogger( this.getClass() );
+    //        logger.info( "affectedGroupExcludeFilter: {}", getAffectedGroupsExcludeFilter() );
+    //        logger.info( "disposableStorePattern: {}", getDisposableStorePattern() );
+    //    }
 
     public String getAffectedGroupsExcludeFilter()
     {
@@ -74,5 +82,15 @@ public class IndyRepositoryConfiguration
     public void setStoreValidation( Boolean storeValidation )
     {
         this.storeValidation = storeValidation;
+    }
+
+    public String getStorageType()
+    {
+        return storageType.orElse( "" );
+    }
+
+    public void setStorageType( String storageType )
+    {
+        this.storageType = Optional.of( storageType );
     }
 }
