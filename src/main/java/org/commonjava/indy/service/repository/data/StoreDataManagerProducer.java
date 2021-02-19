@@ -15,13 +15,13 @@
  */
 package org.commonjava.indy.service.repository.data;
 
-import jnr.ffi.Memory;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.annotations.ClusterStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.MemStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.StandaloneStoreDataManager;
 import org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager;
 import org.commonjava.indy.service.repository.data.infinispan.InfinispanStoreDataManager;
+import org.commonjava.indy.service.repository.data.mem.MemoryStoreDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 @ApplicationScoped
 public class StoreDataManagerProducer

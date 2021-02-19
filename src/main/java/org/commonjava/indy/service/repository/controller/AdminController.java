@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -112,7 +113,7 @@ public class AdminController
             ArtifactStoreQuery<ArtifactStore> query = storeManager.query().storeTypes( type );
             if ( !ALL_PACKAGE_TYPES.equals( packageType ) )
             {
-                return query.packageType( packageType ).getAll();
+                return new ArrayList<>( storeManager.getArtifactStoresByPkgAndType( packageType, type ) );
             }
             else
             {
@@ -159,7 +160,7 @@ public class AdminController
     {
         try
         {
-            return storeManager.query().packageType( packageType ).getRemoteRepositoryByUrl( url );
+            return storeManager.query().getRemoteRepositoryByUrl( packageType, url );
         }
         catch ( IndyDataException e )
         {
@@ -233,7 +234,7 @@ public class AdminController
         }
         catch ( IndyDataException e )
         {
-            e.printStackTrace();
+            logger.error( e.getMessage() );
         }
         return disabledArtifactStores;
     }
