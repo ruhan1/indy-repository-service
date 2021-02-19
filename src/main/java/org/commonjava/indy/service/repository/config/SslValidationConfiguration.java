@@ -36,13 +36,6 @@ public class SslValidationConfiguration
     @ConfigProperty( name = "repository.remote.nosslHosts" )
     private Optional<List<String>> remoteNoSSLHosts;
 
-//    @PostConstruct
-//    public void testProperties()
-//    {
-//        final Logger logger = LoggerFactory.getLogger( this.getClass() );
-//        logger.info( "remoteNoSSLHosts: {}", getRemoteNoSSLHosts() );
-//    }
-
     public Boolean isSSLRequired()
     {
         return sslRequired;

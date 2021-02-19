@@ -82,14 +82,6 @@ public class CassandraConfiguration
     {
     }
 
-//    @PostConstruct
-//    public void testProperties()
-//    {
-//        final var logger = LoggerFactory.getLogger( this.getClass() );
-//        logger.info( "host: {}", getCassandraHost() );
-//        logger.info( "keyspace: {}", getKeyspace() );
-//    }
-
     public Boolean isEnabled()
     {
         return enabled;
