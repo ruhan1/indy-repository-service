@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.data.mem.tck;
+package org.commonjava.indy.service.repository.data.mem;
 
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
-import org.commonjava.indy.service.repository.data.MemoryStoreDataManager;
+import org.commonjava.indy.service.repository.data.mem.MemoryStoreDataManager;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.event.NoOpStoreEventDispatcher;

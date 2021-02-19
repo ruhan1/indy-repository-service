@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.data.mem.tck;
+package org.commonjava.indy.service.repository.data.mem;
 
 import org.commonjava.indy.service.repository.data.tck.GroupDataManagerTCK;
 import org.commonjava.indy.service.repository.data.tck.TCKFixtureProvider;

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.data;
+package org.commonjava.indy.service.repository.data.mem;
 
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.MemStoreDataManager;
 import org.commonjava.indy.service.repository.event.NoOpStoreEventDispatcher;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
@@ -26,9 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.data.mem.tck;
+package org.commonjava.indy.service.repository.data.mem;
 
-import org.commonjava.indy.service.repository.data.tck.RepositoryDataManagerTCK;
+import org.commonjava.indy.service.repository.data.mem.MemoryStoreDataManager;
+import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.data.tck.TCKFixtureProvider;
 
-public class MemoryRepositoryManagementTest
-        extends RepositoryDataManagerTCK
+public class MemoryTCKFixtureProvider
+        implements TCKFixtureProvider
 {
 
-    private final MemoryTCKFixtureProvider
-            provider = new MemoryTCKFixtureProvider();
+    private final MemoryStoreDataManager dataManager = new MemoryStoreDataManager( true );
 
     @Override
-    protected TCKFixtureProvider getFixtureProvider()
+    public StoreDataManager getDataManager()
     {
-        return provider;
+        return dataManager;
     }
 
 }

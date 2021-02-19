@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.data.mem.tck;
+package org.commonjava.indy.service.repository.data.infinispan;
 
-import org.commonjava.indy.service.repository.data.MemoryStoreDataManager;
-import org.commonjava.indy.service.repository.data.StoreDataManager;
+import org.commonjava.indy.service.repository.data.tck.GroupDataManagerTCK;
 import org.commonjava.indy.service.repository.data.tck.TCKFixtureProvider;
 
-public class MemoryTCKFixtureProvider
-        implements TCKFixtureProvider
+public class InfinispanGroupManagementTest
+        extends GroupDataManagerTCK
 {
-
-    private final MemoryStoreDataManager dataManager = new MemoryStoreDataManager( true );
+    private InfinispanTCKFixtureProvider provider;
 
     @Override
-    public StoreDataManager getDataManager()
+    public void doSetup()
     {
-        return dataManager;
+        provider = new InfinispanTCKFixtureProvider();
+        provider.init();
     }
 
+    @Override
+    protected TCKFixtureProvider getFixtureProvider()
+    {
+        return provider;
+    }
 }
