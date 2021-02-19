@@ -46,13 +46,6 @@ public class IndyRepositoryConfiguration
     @ConfigProperty( name = "repository.storeValidationEnabled", defaultValue = "false" )
     private Boolean storeValidation;
 
-    //    @PostConstruct
-    //    public void testProperties()
-    //    {
-    //        final Logger logger = LoggerFactory.getLogger( this.getClass() );
-    //        logger.info( "affectedGroupExcludeFilter: {}", getAffectedGroupsExcludeFilter() );
-    //        logger.info( "disposableStorePattern: {}", getDisposableStorePattern() );
-    //    }
 
     public String getAffectedGroupsExcludeFilter()
     {
