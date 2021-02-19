@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.infinispan.cpool;
+package org.commonjava.indy.service.repository.data.infinispan.cpool;
 
-import org.commonjava.indy.service.repository.data.infinispan.cpool.CPInitialContextFactory;
 import org.junit.jupiter.api.Test;
 
 import javax.naming.InitialContext;
