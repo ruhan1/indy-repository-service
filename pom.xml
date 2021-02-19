@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.commonjava.indy.service</groupId>
   <artifactId>indy-repository-service</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <name>Indy :: Service :: Repository</name>
   <properties>
     <java.version>11</java.version>
-    <quarkus.version>1.11.0.Final</quarkus.version>
+    <quarkus.version>1.11.3.Final</quarkus.version>
 
     <cassandra.version>3.7.2</cassandra.version>
     <infinispan.version>11.0.8.Final</infinispan.version>
@@ -48,16 +48,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>io.quarkus</groupId>-->
-      <!--        <artifactId>quarkus-agroal</artifactId>-->
-      <!--        <version>1.9.2.Final</version>-->
-      <!--      </dependency>-->
-      <!--      <dependency>-->
-      <!--        <groupId>io.quarkus</groupId>-->
-      <!--        <artifactId>quarkus-infinispan-embedded</artifactId>-->
-      <!--        <version>1.6.1.Final</version>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-bom</artifactId>
@@ -155,11 +145,6 @@
       <groupId>org.commonjava.atlas</groupId>
       <artifactId>atlas-relationships-api</artifactId>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>io.quarkus</groupId>-->
-    <!--      <artifactId>quarkus-resteasy-mutiny</artifactId>-->
-    <!--    </dependency>-->
-    <!-- quarkus deps start -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
@@ -188,18 +173,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-config-yaml</artifactId>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>io.quarkus</groupId>-->
-    <!--      <artifactId>quarkus-infinispan-embedded</artifactId>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>io.quarkus</groupId>-->
-    <!--      <artifactId>quarkus-kubernetes-config</artifactId>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>io.quarkus</groupId>-->
-    <!--      <artifactId>quarkus-agroal</artifactId>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
