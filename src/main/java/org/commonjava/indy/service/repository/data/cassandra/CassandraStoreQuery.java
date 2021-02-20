@@ -9,6 +9,8 @@ import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -22,6 +24,8 @@ import static org.commonjava.indy.service.repository.data.cassandra.CassandraSto
 @ApplicationScoped
 public class CassandraStoreQuery
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
     CassandraClient client;
@@ -39,7 +43,7 @@ public class CassandraStoreQuery
 
     private PreparedStatement preparedArtifactStoreDel;
 
-    private PreparedStatement preparedArtifactStoreExistedQuery;
+//    private PreparedStatement preparedArtifactStoreExistedQuery;
 
     private PreparedStatement preparedArtifactStoresQueryByKeys;
 
@@ -93,8 +97,8 @@ public class CassandraStoreQuery
                 "SELECT packagetype, storeType, namehashprefix, name, description, transientMetadata, metadata, disabled, disableTimeout, pathStyle, pathMaskPatterns, authoritativeIndex, createTime, rescanInProgress, extras FROM "
                         + keySpace + "." + TABLE_STORE + " WHERE typekey=?" );
 
-        preparedArtifactStoreExistedQuery =
-                session.prepare( "SELECT name FROM " + keySpace + "." + TABLE_STORE + " LIMIT 1" );
+//        preparedArtifactStoreExistedQuery =
+//                session.prepare( "SELECT name FROM " + keySpace + "." + TABLE_STORE + " LIMIT 1" );
 
         preparedArtifactStoreDel = session.prepare( "DELETE FROM " + keySpace + "." + TABLE_STORE
                                                             + " WHERE typekey=? AND namehashprefix=? AND name=? IF EXISTS" );

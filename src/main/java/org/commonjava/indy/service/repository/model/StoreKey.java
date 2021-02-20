@@ -15,7 +15,6 @@
  */
 package org.commonjava.indy.service.repository.model;
 
-import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +26,10 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 public final class StoreKey
-    implements Comparable<StoreKey>, Externalizable
+        implements Comparable<StoreKey>, Externalizable
 {
     private static final int VERSION = 1;
 
@@ -57,7 +57,7 @@ public final class StoreKey
     @Deprecated
     public StoreKey( final StoreType type, final String name )
     {
-        this.packageType = MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+        this.packageType = MAVEN_PKG_KEY;
         this.type = type;
         this.name = name;
     }
@@ -151,13 +151,13 @@ public final class StoreKey
         // FIXME: We need to get to a point where it's safe for this to be an error and not default to maven.
         if ( parts.length < 2 )
         {
-            packageType = MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+            packageType = MAVEN_PKG_KEY;
             type = StoreType.remote;
             name = id;
         }
         else if ( parts.length < 3 || isBlank( parts[0] ) )
         {
-            packageType = MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+            packageType = MAVEN_PKG_KEY;
             type = StoreType.get( parts[0] );
             name = parts[1];
         }
