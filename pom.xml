@@ -307,11 +307,12 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${plugin.surefire.version}</version>
         <configuration>
-          <skipTests>${skipSurefire}</skipTests>
+          <skipTests>${skipTests}</skipTests>
           <redirectTestOutputToFile>${test-redirectOutput}</redirectTestOutputToFile>
           <forkCount>${test-forkCount}</forkCount>
           <reportsDirectory>${junit.report.dir}</reportsDirectory>
-          <argLine>${surefireArgLine} -Djdk.attach.allowAttachSelf=true</argLine>
+          <!-- TODO: As jacoco always crashed the @QuarkusTest ut cases, removed ${surefireArgLine} here. Will add it back to enable jacoco test coverage support when find solution -->
+          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
           <!-- To support junit5 -->
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>

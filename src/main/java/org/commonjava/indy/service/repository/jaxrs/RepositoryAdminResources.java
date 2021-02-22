@@ -598,7 +598,7 @@ public class RepositoryAdminResources
     @Operation( description = "Return All Invalidated Remote Repositories" )
     @APIResponses(
             { @APIResponse( responseCode = "200", description = "Return All Invalidated Remote Repositories" ) } )
-    @Path( "/all_invalid" )
+    @Path( "/invalid/all" )
     @GET
     public Response returnDisabledStores(
             final @Parameter( in = PATH, required = true ) @PathParam( "packageType" ) String packageType,

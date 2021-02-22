@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This customizer is u
+ * This customizer is used to init the jackson object mapper with indy customized features and modules
  */
 @Singleton
 public class IndyJacksonCustomizer
@@ -58,13 +58,13 @@ public class IndyJacksonCustomizer
         mapper.configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true );
 
         mapper.enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID );
-
         mapper.enable( MapperFeature.AUTO_DETECT_FIELDS );
         //        mapper.disable( MapperFeature.AUTO_DETECT_GETTERS );
 
         mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
-
         mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+
+        injectSingle( mapper, new RepoApiSerializerModule() );
 
         inject( mapper, injectedModules, injectedModuleSets );
 
