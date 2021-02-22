@@ -16,6 +16,7 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -25,6 +26,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
+@Tag( "integration" )
 public class RepositoryQueryResourcesTest
 {
     @Test
