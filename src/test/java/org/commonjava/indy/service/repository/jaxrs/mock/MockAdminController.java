@@ -19,10 +19,12 @@ import org.commonjava.indy.service.repository.controller.AdminController;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.GenericPackageTypeDescriptor;
+import org.commonjava.indy.service.repository.model.Group;
+import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
-import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
@@ -31,6 +33,8 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 @ApplicationScoped
 @Alternative
@@ -48,14 +52,12 @@ public class MockAdminController
     public List<ArtifactStore> getAllOfType( final String packageType, final StoreType type )
             throws IndyWorkflowException
     {
-        if ( MavenPackageTypeDescriptor.MAVEN_PKG_KEY.equals( packageType ) )
+        if ( MAVEN_PKG_KEY.equals( packageType ) )
         {
             if ( type == StoreType.remote )
             {
-                RemoteRepository repo1 =
-                        new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "test1", "http://repo.test1" );
-                RemoteRepository repo2 =
-                        new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "test2", "http://repo.test2" );
+                RemoteRepository repo1 = new RemoteRepository( MAVEN_PKG_KEY, "test1", "http://repo.test1" );
+                RemoteRepository repo2 = new RemoteRepository( MAVEN_PKG_KEY, "test2", "http://repo.test2" );
                 return Arrays.asList( repo1, repo2 );
             }
             if ( type == StoreType.hosted )
@@ -71,7 +73,7 @@ public class MockAdminController
     {
         if ( StoreKey.fromString( "maven:remote:exists" ).equals( key ) )
         {
-            return new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "exists", "http://repo.test1" );
+            return new RemoteRepository( MAVEN_PKG_KEY, "exists", "http://repo.test1" );
         }
 
         return null;
@@ -81,14 +83,12 @@ public class MockAdminController
     public List<RemoteRepository> getRemoteByUrl( final String url, final String packageType )
             throws IndyWorkflowException
     {
-        if ( MavenPackageTypeDescriptor.MAVEN_PKG_KEY.equals( packageType ) )
+        if ( MAVEN_PKG_KEY.equals( packageType ) )
         {
             if ( "http://repo.test".equals( url ) )
             {
-                return Arrays.asList(
-                        new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "exists1", "http://repo.test" ),
-                        new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "exists2",
-                                              "http://repo.test" ) );
+                return Arrays.asList( new RemoteRepository( MAVEN_PKG_KEY, "exists1", "http://repo.test" ),
+                                      new RemoteRepository( MAVEN_PKG_KEY, "exists2", "http://repo.test" ) );
             }
         }
         if ( GenericPackageTypeDescriptor.GENERIC_PKG_KEY.equals( packageType ) )
@@ -130,10 +130,17 @@ public class MockAdminController
     @Override
     public List<ArtifactStore> getDisabledRemoteRepositories()
     {
-        RemoteRepository repo1 =
-                new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "test1", "http://repo.test1" );
-        RemoteRepository repo2 =
-                new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "test2", "http://repo.test2" );
+        RemoteRepository repo1 = new RemoteRepository( MAVEN_PKG_KEY, "test1", "http://repo.test1" );
+        RemoteRepository repo2 = new RemoteRepository( MAVEN_PKG_KEY, "test2", "http://repo.test2" );
         return Arrays.asList( repo1, repo2 );
+    }
+
+    @Test
+    public List<ArtifactStore> getAllStores()
+    {
+        RemoteRepository repo1 = new RemoteRepository( MAVEN_PKG_KEY, "test1", "http://repo.test1" );
+        HostedRepository repo2 = new HostedRepository( MAVEN_PKG_KEY, "test2" );
+        Group group = new Group( MAVEN_PKG_KEY, "test3", repo1.getKey(), repo2.getKey() );
+        return Arrays.asList( repo1, repo2, group );
     }
 }
