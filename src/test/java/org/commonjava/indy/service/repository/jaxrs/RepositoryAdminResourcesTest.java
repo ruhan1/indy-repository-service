@@ -16,6 +16,8 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -24,11 +26,14 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -196,5 +201,119 @@ public class RepositoryAdminResourcesTest
                .post( "/api/admin/stores/maven/remote" )
                .then()
                .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
+    }
+
+    @Test
+    public void testChangeSuccess()
+    {
+        Map<String, String> repoToCreate = new HashMap<>();
+        repoToCreate.put( "packageType", "maven" );
+        repoToCreate.put( "type", "remote" );
+        repoToCreate.put( "name", "success" );
+        repoToCreate.put( "url", "http://repo.success" );
+        repoToCreate.put( "key", "maven:remote:success" );
+
+        given().when()
+               .body( repoToCreate )
+               .contentType( APPLICATION_JSON )
+               .put( "/api/admin/stores/maven/remote/success" )
+               .then()
+               .statusCode( OK.getStatusCode() );
+    }
+
+    @Test
+    public void testChangeNonSuccess()
+    {
+        Map<String, String> repoToCreate = new HashMap<>();
+        repoToCreate.put( "packageType", "maven" );
+        repoToCreate.put( "type", "remote" );
+        repoToCreate.put( "url", "http://repo.success" );
+        repoToCreate.put( "name", "nonsuccess" );
+        repoToCreate.put( "key", "maven:remote:nonsuccess" );
+        given().when()
+               .body( repoToCreate )
+               .contentType( APPLICATION_JSON )
+               .put( "/api/admin/stores/maven/remote/nonsuccess" )
+               .then()
+               .statusCode( NOT_MODIFIED.getStatusCode() );
+    }
+
+    @Test
+    public void testChangeBadReq()
+    {
+        Map<String, String> repoToCreate = new HashMap<>();
+        repoToCreate.put( "packageType", "maven" );
+        repoToCreate.put( "type", "remote" );
+        repoToCreate.put( "url", "http://repo.success" );
+        repoToCreate.put( "name", "wrong" );
+        repoToCreate.put( "key", "maven:remote:wrong" );
+        RestAssured.registerParser( APPLICATION_OCTET_STREAM, Parser.TEXT );
+        given().when()
+               .body( repoToCreate )
+               .contentType( APPLICATION_JSON )
+               .put( "/api/admin/stores/maven/remote/error" )
+               .then()
+               .statusCode( BAD_REQUEST.getStatusCode() )
+               .contentType( APPLICATION_OCTET_STREAM )
+               .body( is( "Store in URL path is: 'maven:remote:error' but in JSON it is: 'maven:remote:wrong'" ) );
+    }
+
+    @Test
+    public void testChangeError()
+    {
+        Map<String, String> repoToCreate = new HashMap<>();
+        repoToCreate.put( "packageType", "maven" );
+        repoToCreate.put( "type", "remote" );
+        repoToCreate.put( "url", "http://repo.success" );
+        repoToCreate.put( "name", "error" );
+        repoToCreate.put( "key", "maven:remote:error" );
+        given().when()
+               .body( repoToCreate )
+               .contentType( APPLICATION_JSON )
+               .put( "/api/admin/stores/maven/remote/error" )
+               .then()
+               .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
+    }
+
+    @Test
+    public void testDelete()
+    {
+        given().when()
+               .contentType( APPLICATION_JSON )
+               .delete( "/api/admin/stores/maven/remote/success" )
+               .then()
+               .statusCode( NO_CONTENT.getStatusCode() );
+    }
+
+    @Test
+    public void testDeleteError()
+    {
+        given().when()
+               .contentType( APPLICATION_JSON )
+               .delete( "/api/admin/stores/maven/remote/error" )
+               .then()
+               .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
+    }
+
+    @Test
+    public void testGetAllInValid()
+    {
+        given().when()
+               .get( "/api/admin/stores/maven/remote/invalid/all" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( MediaType.APPLICATION_JSON )
+               .body( "size()", is( 2 ) );
+    }
+
+    @Test
+    public void testGetAllInValidErrorType()
+    {
+        given().when()
+               .get( "/api/admin/stores/maven/hosted/invalid/all" )
+               .then()
+               .statusCode( BAD_REQUEST.getStatusCode() )
+               .contentType( MediaType.APPLICATION_JSON )
+               .body( "error", is( "Not supporte repository type of hosted" ) );
     }
 }

@@ -19,7 +19,6 @@ import org.commonjava.indy.service.repository.controller.AdminController;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.GenericPackageTypeDescriptor;
-import org.commonjava.indy.service.repository.model.PackageTypeDescriptor;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
@@ -115,5 +114,26 @@ public class MockAdminController
         }
 
         return false;
+    }
+
+    @Override
+    public void delete( final StoreKey key, final String user, final String changelog, final boolean deleteContent )
+            throws IndyWorkflowException
+    {
+        if ( key.equals( StoreKey.fromString( "maven:remote:error" ) ) )
+        {
+            throw new IndyWorkflowException( "error happened" );
+        }
+
+    }
+
+    @Override
+    public List<ArtifactStore> getDisabledRemoteRepositories()
+    {
+        RemoteRepository repo1 =
+                new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "test1", "http://repo.test1" );
+        RemoteRepository repo2 =
+                new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, "test2", "http://repo.test2" );
+        return Arrays.asList( repo1, repo2 );
     }
 }
