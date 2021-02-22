@@ -124,12 +124,12 @@ public class CassandraConfiguration
 
     public String getCassandraUser()
     {
-        return cassandraUser == null ? "" : cassandraUser.orElse( "" );
+        return cassandraUser.orElse( "" );
     }
 
     public String getCassandraPass()
     {
-        return cassandraPass == null ? "" : cassandraPass.orElse( "" );
+        return cassandraPass.orElse( "" );
     }
 
     public int getConnectTimeoutMillis()
