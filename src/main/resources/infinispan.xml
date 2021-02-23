@@ -27,6 +27,11 @@
       <memory max-count="100"/>
     </local-cache>
 
+    <local-cache name="affected-by-stores" configuration="local-template">
+      <memory max-count="999999" when-full="NONE">
+      </memory>
+    </local-cache>
+
 
   </cache-container>
 </infinispan>

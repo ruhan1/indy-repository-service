@@ -26,7 +26,6 @@ import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 import javax.ws.rs.core.Response;
@@ -38,7 +37,6 @@ import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeD
 
 @ApplicationScoped
 @Alternative
-@Priority( 1 )
 public class MockAdminController
         extends AdminController
 {

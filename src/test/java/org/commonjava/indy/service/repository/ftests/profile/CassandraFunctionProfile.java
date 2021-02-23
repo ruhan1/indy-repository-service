@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.jaxrs.mock;
+package org.commonjava.indy.service.repository.ftests.profile;
 
-import org.commonjava.indy.service.repository.jaxrs.SecurityManager;
-import org.jboss.resteasy.spi.HttpRequest;
+import io.quarkus.test.junit.QuarkusTestProfile;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
-import javax.ws.rs.core.SecurityContext;
+import java.util.HashMap;
+import java.util.Map;
 
-@ApplicationScoped
-@Alternative
-public class MockSecurityManager
-        extends SecurityManager
+public class CassandraFunctionProfile
+        implements QuarkusTestProfile
 {
-    public String getUser( SecurityContext context, HttpRequest request )
+    @Override
+    public Map<String, String> getConfigOverrides()
     {
-        return "systemUser";
+        Map<String, String> configs = new HashMap<>();
+        configs.put( "repository.data-storage", "cassandra" );
+        return configs;
+    }
+
+    @Override
+    public String getConfigProfile()
+    {
+        return "dev";
     }
 }

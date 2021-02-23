@@ -16,6 +16,7 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.Tag;
@@ -39,6 +40,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
+@TestProfile( MockTestProfile.class )
 @Tag( "integration" )
 public class RepositoryAdminResourcesTest
 {
