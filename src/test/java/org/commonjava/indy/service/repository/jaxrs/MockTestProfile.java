@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.jaxrs.mock;
+package org.commonjava.indy.service.repository.jaxrs;
 
-import org.commonjava.indy.service.repository.jaxrs.SecurityManager;
-import org.jboss.resteasy.spi.HttpRequest;
+import io.quarkus.test.junit.QuarkusTestProfile;
+import org.commonjava.indy.service.repository.jaxrs.mock.MockAdminController;
+import org.commonjava.indy.service.repository.jaxrs.mock.MockSecurityManager;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
-import javax.ws.rs.core.SecurityContext;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@ApplicationScoped
-@Alternative
-public class MockSecurityManager
-        extends SecurityManager
+public class MockTestProfile implements QuarkusTestProfile
 {
-    public String getUser( SecurityContext context, HttpRequest request )
-    {
-        return "systemUser";
-    }
+        @Override
+        public Set<Class<?>> getEnabledAlternatives() {
+            return Stream.of( MockAdminController.class, MockSecurityManager.class ).collect( Collectors.toSet() );
+        }
 }
