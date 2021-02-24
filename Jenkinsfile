@@ -14,12 +14,12 @@ pipeline {
                 sh 'printenv'
             }
         }
-        stage('Build') {
+        stage('Build & ITs') {
             when {
                 expression { env.CHANGE_ID != null } // Pull request
             }
             steps {
-                sh '${M2_HOME}/bin/mvn -B -V clean verify'
+                sh '${M2_HOME}/bin/mvn -B -V clean verify -Prun-its'
             }
         }
         stage('Load OCP Mappings') {
