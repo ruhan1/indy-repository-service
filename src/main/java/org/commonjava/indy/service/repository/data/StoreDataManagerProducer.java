@@ -36,7 +36,7 @@ public class StoreDataManagerProducer
     private final Logger logger = LoggerFactory.getLogger( this.getClass() );
 
     @Inject
-    private IndyRepositoryConfiguration repoConfig;
+    IndyRepositoryConfiguration repoConfig;
 
     @Produces
     @ApplicationScoped

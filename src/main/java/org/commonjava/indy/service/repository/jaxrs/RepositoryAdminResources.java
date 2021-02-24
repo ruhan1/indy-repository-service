@@ -84,16 +84,16 @@ public class RepositoryAdminResources
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private AdminController adminController;
+    AdminController adminController;
 
     @Inject
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Inject
-    private SecurityManager securityManager;
+    SecurityManager securityManager;
 
     @Inject
-    private ResponseHelper responseHelper;
+    ResponseHelper responseHelper;
 
     public RepositoryAdminResources()
     {

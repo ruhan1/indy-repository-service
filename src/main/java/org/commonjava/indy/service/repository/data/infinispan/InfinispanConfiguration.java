@@ -31,7 +31,7 @@ public class InfinispanConfiguration
 {
     @Inject
     @ConfigProperty( name = "ispn.configDir" )
-    private Optional<String> infinispanConfigDir;
+    Optional<String> infinispanConfigDir;
 
     public File getInfinispanConfigDir()
     {

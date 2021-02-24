@@ -69,7 +69,7 @@ public abstract class AbstractStoreDataManager
     StoreValidator storeValidator;
 
     @Inject
-    private IndyRepositoryConfiguration repoConfig;
+    IndyRepositoryConfiguration repoConfig;
 
     protected AbstractStoreDataManager()
     {

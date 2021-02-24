@@ -32,19 +32,19 @@ public class IndyRepositoryConfiguration
 
     @Inject
     @ConfigProperty( name = "repository.affectedGroupsExclude" )
-    private Optional<String> affectedGroupsExcludeFilter;
+    Optional<String> affectedGroupsExcludeFilter;
 
     @Inject
     @ConfigProperty( name = "repository.disposableStorePattern" )
-    private Optional<String> disposableStorePattern;
+    Optional<String> disposableStorePattern;
 
     @Inject
     @ConfigProperty( name = "repository.data-storage" )
-    private Optional<String> storageType;
+    Optional<String> storageType;
 
     @Inject
     @ConfigProperty( name = "repository.storeValidationEnabled", defaultValue = "false" )
-    private Boolean storeValidation;
+    Boolean storeValidation;
 
 
     public String getAffectedGroupsExcludeFilter()

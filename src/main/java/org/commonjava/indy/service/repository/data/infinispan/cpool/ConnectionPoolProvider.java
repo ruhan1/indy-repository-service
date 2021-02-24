@@ -40,7 +40,7 @@ public class ConnectionPoolProvider
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private ConnectionPoolConfig config;
+    ConnectionPoolConfig config;
 
 //    @Inject
 //    private MetricRegistry metricRegistry;

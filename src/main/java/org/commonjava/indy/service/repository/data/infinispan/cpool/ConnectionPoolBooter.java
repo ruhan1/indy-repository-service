@@ -32,10 +32,10 @@ public class ConnectionPoolBooter
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private Instance<ConnectionPoolProvider> connectionPoolProvider;
+    Instance<ConnectionPoolProvider> connectionPoolProvider;
 
     @Inject
-    private IndyRepositoryConfiguration repositoryConfiguration;
+    IndyRepositoryConfiguration repositoryConfiguration;
 
     public void init( @Observes StartupEvent start )
             throws IndyLifecycleException

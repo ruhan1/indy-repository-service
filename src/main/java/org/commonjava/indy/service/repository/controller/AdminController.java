@@ -51,13 +51,13 @@ public class AdminController
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private StoreDataManager storeManager;
+    StoreDataManager storeManager;
 
     @Inject
-    private IndyRepositoryConfiguration indyConfiguration;
+    IndyRepositoryConfiguration indyConfiguration;
 
     @Inject
-    private StoreValidator storeValidator;
+    StoreValidator storeValidator;
 
     protected AdminController()
     {

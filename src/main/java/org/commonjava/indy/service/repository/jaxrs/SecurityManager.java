@@ -31,7 +31,7 @@ public class SecurityManager
 {
 
     @Inject
-    private KeycloakConfiguration config;
+    KeycloakConfiguration config;
 
     public String getUser( SecurityContext context, HttpRequest request )
     {

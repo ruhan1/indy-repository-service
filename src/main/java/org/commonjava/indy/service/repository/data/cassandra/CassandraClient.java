@@ -35,7 +35,7 @@ public class CassandraClient
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private CassandraConfiguration config;
+    CassandraConfiguration config;
 
     private String host;
 
@@ -58,7 +58,7 @@ public class CassandraClient
     }
 
     @PostConstruct
-    private void init()
+    public void init()
     {
         if ( !config.isEnabled() )
         {

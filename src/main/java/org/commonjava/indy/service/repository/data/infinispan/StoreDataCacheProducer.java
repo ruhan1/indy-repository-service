@@ -34,7 +34,7 @@ public class StoreDataCacheProducer
     public static final String AFFECTED_BY_STORE_CACHE = "affected-by-stores";
 
     @Inject
-    private CacheProducer cacheProducer;
+    CacheProducer cacheProducer;
 
     @StoreDataCache
     @Produces

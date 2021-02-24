@@ -27,7 +27,7 @@ public class KeycloakConfiguration
 {
     @Inject
     @ConfigProperty( name = "keycloak.enabled", defaultValue = "false" )
-    private Boolean enabled;
+    Boolean enabled;
 
     public Boolean isEnabled()
     {
