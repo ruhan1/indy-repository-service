@@ -41,7 +41,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
-@Tag( "integration" )
+//@Tag( "integration" )
 public class RepositoryAdminResourcesTest
 {
     @Test

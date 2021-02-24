@@ -15,18 +15,19 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan.cpool;
 
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.Startup;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.exception.IndyLifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @ApplicationScoped
+@Startup
 public class ConnectionPoolBooter
 {
     private final Logger logger = LoggerFactory.getLogger( getClass() );
@@ -37,7 +38,8 @@ public class ConnectionPoolBooter
     @Inject
     IndyRepositoryConfiguration repositoryConfiguration;
 
-    public void init( @Observes StartupEvent start )
+    @PostConstruct
+    public void init()
             throws IndyLifecycleException
     {
         if ( IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repositoryConfiguration.getStorageType() ) )
