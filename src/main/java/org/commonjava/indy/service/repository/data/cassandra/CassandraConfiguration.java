@@ -32,51 +32,51 @@ public class CassandraConfiguration
 {
     @Inject
     @ConfigProperty( name = "cassandra.enabled", defaultValue = "false" )
-    private Boolean enabled;
+    Boolean enabled;
 
     @Inject
     @ConfigProperty( name = "cassandra.host", defaultValue = "localhost" )
-    private String cassandraHost;
+    String cassandraHost;
 
     @Inject
     @ConfigProperty( name = "cassandra.port", defaultValue = "9402" )
-    private int cassandraPort;
+    int cassandraPort;
 
     @Inject
     @ConfigProperty( name = "cassandra.user" )
-    private Optional<String> cassandraUser;
+    Optional<String> cassandraUser;
 
     @Inject
     @ConfigProperty( name = "cassandra.pass" )
-    private Optional<String> cassandraPass;
+    Optional<String> cassandraPass;
 
     @Inject
     @ConfigProperty( name = "cassandra.timeoutMillis.connect", defaultValue = "60000" )
-    private int connectTimeoutMillis;
+    int connectTimeoutMillis;
 
     @Inject
     @ConfigProperty( name = "cassandra.timeoutMillis.read", defaultValue = "60000" )
-    private int readTimeoutMillis;
+    int readTimeoutMillis;
 
     @Inject
     @ConfigProperty( name = "cassandra.retries.read", defaultValue = "3" )
-    private int readRetries;
+    int readRetries;
 
     @Inject
     @ConfigProperty( name = "cassandra.retries.write", defaultValue = "3" )
-    private int writeRetries;
+    int writeRetries;
 
     @Inject
     @ConfigProperty( name = "cassandra.keyspace" )
-    private Optional<String> keyspace;
+    Optional<String> keyspace;
 
     @Inject
     @ConfigProperty( name = "cassandra.replicaFactor", defaultValue = "0" )
-    private int replicationFactor;
+    int replicationFactor;
 
     @Inject
     @ConfigProperty( name = "cassandra.keyspaceReplicas", defaultValue = "0" )
-    private int keyspaceReplicas;
+    int keyspaceReplicas;
 
     public CassandraConfiguration()
     {

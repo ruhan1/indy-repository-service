@@ -30,11 +30,11 @@ public class SslValidationConfiguration
 {
     @Inject
     @ConfigProperty( name = "repository.remote.sslRequired", defaultValue = "false" )
-    private Boolean sslRequired;
+    Boolean sslRequired;
 
     @Inject
     @ConfigProperty( name = "repository.remote.nosslHosts" )
-    private Optional<List<String>> remoteNoSSLHosts;
+    Optional<List<String>> remoteNoSSLHosts;
 
     public Boolean isSSLRequired()
     {

@@ -43,7 +43,7 @@ public class ConnectionPoolConfig
 
     @Inject
     @ConfigProperty( name = "ispn." + POOL_NAME )
-    private Optional<String> poolJndiName;
+    Optional<String> poolJndiName;
 
     //    private static final String HEALTH_CHECKS_SUBKEY = "healthChecks";
 

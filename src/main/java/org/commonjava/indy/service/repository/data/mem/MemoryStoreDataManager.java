@@ -46,7 +46,7 @@ public class MemoryStoreDataManager
     private final Map<StoreKey, ArtifactStore> stores = new ConcurrentHashMap<>();
 
     @Inject
-    private StoreEventDispatcher dispatcher;
+    StoreEventDispatcher dispatcher;
 
     protected MemoryStoreDataManager()
     {

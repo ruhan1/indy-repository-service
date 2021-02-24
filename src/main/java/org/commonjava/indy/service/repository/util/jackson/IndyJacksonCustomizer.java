@@ -43,10 +43,10 @@ public class IndyJacksonCustomizer
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private Instance<Module> injectedModules;
+    Instance<Module> injectedModules;
 
     @Inject
-    private Instance<ModuleSet> injectedModuleSets;
+    Instance<ModuleSet> injectedModuleSets;
 
     @Deprecated
     private final Set<String> registeredModules = new HashSet<>();

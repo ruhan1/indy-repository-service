@@ -43,10 +43,10 @@ public class RepositoryQueryResources
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private AdminController adminController;
+    AdminController adminController;
 
     @Inject
-    private ResponseHelper responseHelper;
+    ResponseHelper responseHelper;
 
     public RepositoryQueryResources()
     {

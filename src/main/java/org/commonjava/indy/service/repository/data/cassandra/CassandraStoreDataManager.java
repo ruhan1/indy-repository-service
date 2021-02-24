@@ -41,10 +41,10 @@ public class CassandraStoreDataManager
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private CassandraStoreQuery storeQuery;
+    CassandraStoreQuery storeQuery;
 
     @Inject
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     protected CassandraStoreDataManager()
     {

@@ -27,7 +27,7 @@ public class InfinispanStoreDataByPkgMapStartupAction
 {
 
     @Inject
-    private StoreDataManager storeDataManager;
+    StoreDataManager storeDataManager;
 
     public void onStart( @Observes StartupEvent start )
     {

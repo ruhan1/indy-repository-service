@@ -56,21 +56,21 @@ public class InfinispanStoreDataManager
 
     @Inject
     @StoreDataCache
-    private CacheHandle<StoreKey, ArtifactStore> stores;
+    CacheHandle<StoreKey, ArtifactStore> stores;
 
     @Inject
     @StoreByPkgCache
-    private CacheHandle<String, Map<StoreType, Set<StoreKey>>> storesByPkg;
+    CacheHandle<String, Map<StoreType, Set<StoreKey>>> storesByPkg;
 
     @Inject
     @AffectedByStoreCache
-    private CacheHandle<StoreKey, Set<StoreKey>> affectedByStores;
+    CacheHandle<StoreKey, Set<StoreKey>> affectedByStores;
 
     @Inject
-    private StoreEventDispatcher dispatcher;
+    StoreEventDispatcher dispatcher;
 
     @Inject
-    private IndyRepositoryConfiguration indyConfiguration;
+    IndyRepositoryConfiguration indyConfiguration;
 
     @Override
     protected StoreEventDispatcher getStoreEventDispatcher()

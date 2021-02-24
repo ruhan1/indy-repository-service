@@ -57,7 +57,7 @@ public class CacheProducer
     private EmbeddedCacheManager cacheManager;
 
     @Inject
-    private InfinispanConfiguration ispnConfig;
+    InfinispanConfiguration ispnConfig;
 
     //    @Inject
     //    private DefaultMetricsManager metricsManager;
