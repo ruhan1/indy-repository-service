@@ -15,21 +15,23 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.Startup;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 @ApplicationScoped
+@Startup
 public class InfinispanStoreDataByPkgMapStartupAction
 {
 
     @Inject
     StoreDataManager storeDataManager;
 
-    public void onStart( @Observes StartupEvent start )
+    @PostConstruct
+    public void onStart()
     {
         if ( storeDataManager instanceof InfinispanStoreDataManager )
         {
