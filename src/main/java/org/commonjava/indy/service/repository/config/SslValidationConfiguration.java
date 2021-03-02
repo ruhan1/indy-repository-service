@@ -29,6 +29,10 @@ import java.util.Optional;
 public class SslValidationConfiguration
 {
     @Inject
+    @ConfigProperty( name = "repository.storeValidationEnabled", defaultValue = "false" )
+    Boolean storeValidationEnabled;
+
+    @Inject
     @ConfigProperty( name = "repository.remote.sslRequired", defaultValue = "false" )
     Boolean sslRequired;
 
@@ -54,5 +58,15 @@ public class SslValidationConfiguration
     public void setRemoteNoSSLHosts( List<String> remoteNoSSLHosts )
     {
         this.remoteNoSSLHosts = Optional.of( remoteNoSSLHosts );
+    }
+
+    public Boolean getStoreValidationEnabled()
+    {
+        return storeValidationEnabled;
+    }
+
+    public void setStoreValidationEnabled( Boolean storeValidationEnabled )
+    {
+        this.storeValidationEnabled = storeValidationEnabled;
     }
 }

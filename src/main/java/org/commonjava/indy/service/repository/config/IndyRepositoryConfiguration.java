@@ -42,10 +42,6 @@ public class IndyRepositoryConfiguration
     @ConfigProperty( name = "repository.data-storage" )
     Optional<String> storageType;
 
-    @Inject
-    @ConfigProperty( name = "repository.storeValidationEnabled", defaultValue = "false" )
-    Boolean storeValidation;
-
 
     public String getAffectedGroupsExcludeFilter()
     {
@@ -67,15 +63,6 @@ public class IndyRepositoryConfiguration
         this.disposableStorePattern = Optional.of( disposableStorePattern );
     }
 
-    public Boolean getStoreValidation()
-    {
-        return storeValidation;
-    }
-
-    public void setStoreValidation( Boolean storeValidation )
-    {
-        this.storeValidation = storeValidation;
-    }
 
     public String getStorageType()
     {
