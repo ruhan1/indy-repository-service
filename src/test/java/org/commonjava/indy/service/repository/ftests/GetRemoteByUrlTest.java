@@ -17,10 +17,19 @@ package org.commonjava.indy.service.repository.ftests;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
+import org.commonjava.indy.service.repository.ftests.matchers.StoreListingCheckMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
-import org.junit.jupiter.api.Disabled;
+import org.commonjava.indy.service.repository.model.RemoteRepository;
+import org.commonjava.test.http.expect.ExpectationServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 /**
  * <b>GIVEN:</b>
@@ -45,38 +54,76 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-@Disabled("not implemented yet")
 public class GetRemoteByUrlTest
         extends AbstractStoreManagementTest
 {
-//    @Rule
-//    public ExpectationServer server = new ExpectationServer();
+    public ExpectationServer server = new ExpectationServer();
+
+    @BeforeEach
+    public void before()
+            throws Exception
+    {
+        server.start();
+    }
+
+    @AfterEach
+    public void after()
+    {
+        server.stop();
+    }
 
     @Test
     public void getRemoteByUrl()
             throws Exception
     {
-        //TODO: need to use Quarkus way
-//        final String urlName = "urltest";
-//        final String url = server.formatUrl( urlName );
-//        final RemoteRepository remote1 =
-//                new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, newName(), url );
-//        assertThat( client.stores().create( remote1, name.getMethodName(), RemoteRepository.class ), notNullValue() );
-//
-//        final RemoteRepository remote2 =  new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, newName(), url );
-//        assertThat( client.stores().create( remote2, name.getMethodName(), RemoteRepository.class ), notNullValue() );
-//
-//        final RemoteRepository remote3 = new RemoteRepository( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, newName(), server.formatUrl("another test") );
-//        assertThat( client.stores().create( remote2, name.getMethodName(), RemoteRepository.class ), notNullValue() );
-//
-//        server.expect( url, 200, "" );
-//        final StoreListingDTO<RemoteRepository> remotes =
-//                client.stores().getRemoteByUrl( url, MavenPackageTypeDescriptor.MAVEN_PKG_KEY );
-//
-//        assertThat( remotes, notNullValue() );
-//        assertThat( remotes.getItems().contains( remote1 ), equalTo( true ));
-//        assertThat( remotes.getItems().contains( remote2 ), equalTo( true ));
-//        assertThat( remotes.getItems().contains( remote3 ), equalTo( false ));
+        final String urlName = "urltest";
+        final String url = server.formatUrl( urlName );
+        final RemoteRepository remote1 = new RemoteRepository( MAVEN_PKG_KEY, newName(), url );
+        String json = mapper.writeValueAsString( remote1 );
+        given().body( json )
+               .contentType( APPLICATION_JSON )
+               .post( getRepoTypeUrl( remote1.getKey() ) )
+               .then()
+               .body( new RepoEqualMatcher<>( mapper, remote1, RemoteRepository.class ) );
+
+        final RemoteRepository remote2 = new RemoteRepository( MAVEN_PKG_KEY, newName(), url );
+        json = mapper.writeValueAsString( remote2 );
+        given().body( json )
+               .contentType( APPLICATION_JSON )
+               .post( getRepoTypeUrl( remote2.getKey() ) )
+               .then()
+               .body( new RepoEqualMatcher<>( mapper, remote2, RemoteRepository.class ) );
+
+        final RemoteRepository remote3 =
+                new RemoteRepository( MAVEN_PKG_KEY, newName(), server.formatUrl( "another test" ) );
+        json = mapper.writeValueAsString( remote3 );
+        given().body( json )
+               .contentType( APPLICATION_JSON )
+               .post( getRepoTypeUrl( remote3.getKey() ) )
+               .then()
+               .body( new RepoEqualMatcher<>( mapper, remote3, RemoteRepository.class ) );
+
+        server.expect( url, 200, "" );
+
+        given().when()
+               .get( "/api/admin/stores/maven/remote/query/byUrl?url=" + url )
+               .then()
+               .body( new StoreListingCheckMatcher( mapper, s -> {
+                   if ( s == null )
+                   {
+                       return false;
+                   }
+                   if ( !s.getItems().contains( remote1 ) )
+                   {
+                       return false;
+                   }
+                   if ( !s.getItems().contains( remote2 ) )
+                   {
+                       return false;
+                   }
+                   return !s.getItems().contains( remote3 );
+               } ) );
+
     }
 
 }

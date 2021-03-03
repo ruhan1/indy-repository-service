@@ -104,7 +104,29 @@ public class ListStoresByTypeTest
         given().when()
                .get( "/api/admin/stores/_all/" + type.singularEndpointName() )
                .then()
-               .body( new StoreListingCheckMatcher( mapper, expected, banned ) );
+               .body( new StoreListingCheckMatcher( mapper, s -> {
+                   final List<? extends ArtifactStore> stores = s.getItems();
+
+                   for ( final ArtifactStore store : expected )
+                   {
+                       if ( !stores.contains( store ) )
+                       {
+                           return false;
+                       }
+                   }
+
+                   for ( final Set<ArtifactStore> bannedSet : banned )
+                   {
+                       for ( final ArtifactStore store : bannedSet )
+                       {
+                           if ( stores.contains( store ) )
+                           {
+                               return false;
+                           }
+                       }
+                   }
+                   return true;
+               } ) );
     }
 
 }

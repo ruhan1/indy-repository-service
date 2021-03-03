@@ -25,27 +25,20 @@ import org.hamcrest.Description;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
-import static org.apache.commons.lang3.StringUtils.join;
+import java.util.function.Function;
 
 public class StoreListingCheckMatcher
         extends BaseMatcher<ArtifactStore>
 {
-    private String mismatchDescription;
-
     private final ObjectMapper mapper;
 
-    private final Set<ArtifactStore> expected;
+    private final Function<StoreListingDTO<ArtifactStore>, Boolean> checkFunc;
 
-    private final List<Set<ArtifactStore>> banned;
-
-    public StoreListingCheckMatcher( final ObjectMapper mapper, final Set<ArtifactStore> expected,
-                                     final List<Set<ArtifactStore>> banned )
+    public StoreListingCheckMatcher( final ObjectMapper mapper,
+                                     final Function<StoreListingDTO<ArtifactStore>, Boolean> validateFunc )
     {
         this.mapper = mapper;
-        this.expected = expected;
-        this.banned = banned;
+        this.checkFunc = validateFunc;
     }
 
     @Override
@@ -55,35 +48,12 @@ public class StoreListingCheckMatcher
         try
         {
             dto = mapper.readValue( (String) actual, StoreListingDTO.class );
+            return checkFunc.apply( dto );
         }
         catch ( JsonProcessingException e )
         {
             throw new RuntimeException( e );
         }
-        final List<? extends ArtifactStore> stores = dto.getItems();
-
-        for ( final ArtifactStore store : expected )
-        {
-            if ( !stores.contains( store ) )
-            {
-                mismatchDescription = store.getKey() + " should be present in:\n  " + join( keys( stores ), "\n  " );
-                return false;
-            }
-        }
-
-        for ( final Set<ArtifactStore> bannedSet : banned )
-        {
-            for ( final ArtifactStore store : bannedSet )
-            {
-                if ( stores.contains( store ) )
-                {
-                    mismatchDescription =
-                            store.getKey() + " should NOT be present in:\n  " + join( keys( stores ), "\n  " );
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override
