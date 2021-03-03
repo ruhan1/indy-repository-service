@@ -38,12 +38,12 @@ public class RepoEqualMatcher<R extends ArtifactStore>
     }
 
     @Override
-    public boolean matches( Object actualRepo )
+    public boolean matches( Object actual )
     {
         try
         {
-            R actual = objectMapper.readValue( actualRepo.toString(), repoClass );
-            return expect.equals( actual );
+            final R actualRepo = objectMapper.readValue( actual.toString(), repoClass );
+            return expect.equals( actualRepo );
         }
         catch ( JsonProcessingException e )
         {
