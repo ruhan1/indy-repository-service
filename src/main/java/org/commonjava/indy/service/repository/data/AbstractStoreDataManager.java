@@ -35,6 +35,7 @@ import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
+import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
 import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
@@ -70,6 +71,9 @@ public abstract class AbstractStoreDataManager
 
     @Inject
     IndyRepositoryConfiguration repoConfig;
+
+    @Inject
+    SslValidationConfiguration validationConfig;
 
     protected AbstractStoreDataManager()
     {
@@ -386,7 +390,7 @@ public abstract class AbstractStoreDataManager
 
         logger.warn( "Storing {} using operation lock: {}", store, opLocks );
 
-        if ( repoConfig != null && repoConfig.getStoreValidation() && store.getType() != group )
+        if ( validationConfig != null && validationConfig.getStoreValidationEnabled() && store.getType() != group )
         {
             ArtifactStoreValidateData validateData = storeValidator.validate( store );
             if ( !validateData.isValid() )

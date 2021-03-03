@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.dto.StoreListingDTO;
+import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.join;
 
 public class StoreListingCheckMatcher
-        implements Matcher<ArtifactStore>
+        extends BaseMatcher<ArtifactStore>
 {
     private String mismatchDescription;
 
@@ -84,18 +84,6 @@ public class StoreListingCheckMatcher
             }
         }
         return true;
-    }
-
-    @Override
-    public void describeMismatch( Object actual, Description description )
-    {
-        description.appendText( this.mismatchDescription );
-    }
-
-    @Override
-    public void _dont_implement_Matcher___instead_extend_BaseMatcher_()
-    {
-
     }
 
     @Override
