@@ -31,12 +31,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 
+import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
-import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;

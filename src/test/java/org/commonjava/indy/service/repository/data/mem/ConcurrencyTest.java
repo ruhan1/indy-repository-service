@@ -15,11 +15,10 @@
  */
 package org.commonjava.indy.service.repository.data.mem;
 
+import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
-import org.commonjava.indy.service.repository.data.mem.MemoryStoreDataManager;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
-import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.event.NoOpStoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;

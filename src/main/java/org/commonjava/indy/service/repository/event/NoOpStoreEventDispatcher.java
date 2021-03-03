@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.event;
 
+import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 

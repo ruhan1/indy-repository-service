@@ -15,8 +15,8 @@
  */
 package org.commonjava.indy.service.repository.data;
 
+import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.model.HostedRepository;
-import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.StoreKey;
