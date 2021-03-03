@@ -16,13 +16,13 @@
 package org.commonjava.indy.service.repository.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
 import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.data.StoreValidator;
-import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.exception.InvalidArtifactStoreException;
@@ -38,7 +38,6 @@ import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;

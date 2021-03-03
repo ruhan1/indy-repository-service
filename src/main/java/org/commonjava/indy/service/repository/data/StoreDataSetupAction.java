@@ -16,8 +16,8 @@
 package org.commonjava.indy.service.repository.data;
 
 import io.quarkus.runtime.Startup;
+import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
-import org.commonjava.indy.service.repository.event.EventMetadata;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyLifecycleException;
 import org.commonjava.indy.service.repository.model.Group;
