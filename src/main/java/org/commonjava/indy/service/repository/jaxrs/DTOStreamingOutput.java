@@ -18,6 +18,9 @@ package org.commonjava.indy.service.repository.jaxrs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.output.CountingOutputStream;
+import org.commonjava.indy.service.repository.config.MetricsConfiguration;
+import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
+import org.commonjava.indy.service.repository.data.metrics.Meter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,10 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager.METER;
+import static org.commonjava.indy.service.repository.data.metrics.NameUtils.getDefaultName;
+import static org.commonjava.indy.service.repository.data.metrics.NameUtils.getName;
 
 public class DTOStreamingOutput
         implements StreamingOutput
@@ -38,22 +45,17 @@ public class DTOStreamingOutput
 
     private final Object dto;
 
-    //TODO: will think about metrics later
-    //    private final DefaultMetricsManager metricsManager;
+    private final DefaultMetricsManager metricsManager;
 
-    //    private final IndyMetricsConfig metricsConfig;
+    private final MetricsConfiguration metricsConfig;
 
-    //    public DTOStreamingOutput( final ObjectMapper mapper, final Object dto, final DefaultMetricsManager metricsManager )
-    //    {
-    //        this.mapper = mapper;
-    //        this.dto = dto;
-    //        this.metricsManager = metricsManager;
-    //        //        this.metricsConfig = metricsConfig;
-    //    }
-    public DTOStreamingOutput( final ObjectMapper mapper, final Object dto )
+    public DTOStreamingOutput( final ObjectMapper mapper, final Object dto, final DefaultMetricsManager metricsManager,
+                               final MetricsConfiguration metricsConfig )
     {
         this.mapper = mapper;
         this.dto = dto;
+        this.metricsManager = metricsManager;
+        this.metricsConfig = metricsConfig;
     }
 
     @Override
@@ -75,53 +77,40 @@ public class DTOStreamingOutput
     public void write( final OutputStream outputStream )
             throws IOException, WebApplicationException
     {
-        CountingOutputStream cout = new CountingOutputStream( outputStream );
+        AtomicReference<IOException> ioe = new AtomicReference<>();
+        metricsManager.wrapWithStandardMetrics( () -> {
+            CountingOutputStream cout = new CountingOutputStream( outputStream );
+            long start = System.nanoTime();
+            try
+            {
+                mapper.writeValue( cout, dto );
+            }
+            catch ( IOException e )
+            {
+                ioe.set( e );
+            }
+            finally
+            {
+                Logger logger = LoggerFactory.getLogger( getClass() );
+                logger.trace( "Wrote: {} bytes", cout.getByteCount() );
 
-        try
+                String name = getName( metricsConfig.getNodePrefix(), TRANSFER_METRIC_NAME,
+                                       getDefaultName( dto.getClass(), "write" ), METER );
+
+                long end = System.nanoTime();
+                double elapsed = ( end - start ) / NANOS_PER_SEC;
+
+                Meter meter = metricsManager.getMeter( name );
+                meter.mark( Math.round( cout.getByteCount() / elapsed ) );
+            }
+
+            return null;
+
+        }, () -> null );
+
+        if ( ioe.get() != null )
         {
-            mapper.writeValue( cout, dto );
+            throw ioe.get();
         }
-        finally
-        {
-            Logger logger = LoggerFactory.getLogger( getClass() );
-            logger.trace( "Wrote: {} bytes", cout.getByteCount() );
-
-        }
-        // TODO: This is metrics wrapped way, will rollback to this when enable metrics
-//        AtomicReference<IOException> ioe = new AtomicReference<>();
-//        metricsManager.wrapWithStandardMetrics( () -> {
-//            CountingOutputStream cout = new CountingOutputStream( outputStream );
-//            //            long start = System.nanoTime();
-//            try
-//            {
-//                mapper.writeValue( cout, dto );
-//            }
-//            catch ( IOException e )
-//            {
-//                ioe.set( e );
-//            }
-//            finally
-//            {
-//                Logger logger = LoggerFactory.getLogger( getClass() );
-//                logger.trace( "Wrote: {} bytes", cout.getByteCount() );
-//
-//                //                String name = getName( metricsConfig.getNodePrefix(), TRANSFER_METRIC_NAME,
-//                //                                       getDefaultName( dto.getClass(), "write" ), METER );
-//                //
-//                //                long end = System.nanoTime();
-//                //                double elapsed = ( end - start ) / NANOS_PER_SEC;
-//                //
-//                //                Meter meter = metricsManager.getMeter( name );
-//                //                meter.mark( Math.round( cout.getByteCount() / elapsed ) );
-//            }
-//
-//            return null;
-//
-//        }, () -> null );
-
-//        if ( ioe.get() != null )
-//        {
-//            throw ioe.get();
-//        }
     }
 }

@@ -15,6 +15,8 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
+import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
+import org.commonjava.indy.service.repository.data.metrics.NameUtils;
 import org.infinispan.commons.api.BasicCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,20 +25,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static org.commonjava.indy.service.repository.data.metrics.NameUtils.name;
+
 public class BasicCacheHandle<K, V>
 {
     private String name;
 
     protected BasicCache<K, V> cache;
 
-    //    protected DefaultMetricsManager metricsManager;
+    protected DefaultMetricsManager metricsManager;
 
     private String metricPrefix;
 
-    //    public String getMetricPrefix()
-    //    {
-    //        return metricPrefix;
-    //    }
+    public String getMetricPrefix()
+    {
+        return metricPrefix;
+    }
 
     private boolean stopped;
 
@@ -49,18 +53,14 @@ public class BasicCacheHandle<K, V>
     {
     }
 
-    protected BasicCacheHandle( String named, BasicCache<K, V> cache )
+    protected BasicCacheHandle( String named, BasicCache<K, V> cache, DefaultMetricsManager metricsManager,
+                                String metricPrefix )
     {
         this.name = named;
         this.cache = cache;
-        //        this.metricsManager = metricsManager;
-        //        this.metricPrefix = metricPrefix;
+        this.metricsManager = metricsManager;
+        this.metricPrefix = metricPrefix;
     }
-
-    //    public BasicCacheHandle( String named, BasicCache<K, V> cache )
-    //    {
-    //        this( named, cache, null, null );
-    //    }
 
     public String getName()
     {
@@ -80,10 +80,10 @@ public class BasicCacheHandle<K, V>
     protected <R> R doExecute( String metricName, Function<BasicCache<K, V>, R> operation )
     {
         Supplier<R> execution = executionFor( operation );
-        //        if ( metricsManager != null )
-        //        {
-        //            return metricsManager.wrapWithStandardMetrics( execution, () -> getMetricName( metricName ) );
-        //        }
+        if ( metricsManager != null )
+        {
+            return metricsManager.wrapWithStandardMetrics( execution, () -> getMetricName( metricName ) );
+        }
 
         return execution.get();
     }
@@ -167,10 +167,10 @@ public class BasicCacheHandle<K, V>
         } );
     }
 
-    //    protected String getMetricName( String opName )
-    //    {
-    //        return name( metricPrefix, opName );
-    //    }
+    protected String getMetricName( String opName )
+    {
+        return name( metricPrefix, opName );
+    }
 
     //    public Set<K> cacheKeySetByFilter( Predicate<K> filter )
     //    {
