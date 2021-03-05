@@ -19,6 +19,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 import org.junit.jupiter.api.Tag;

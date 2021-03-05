@@ -16,6 +16,7 @@
 package org.commonjava.indy.service.repository.data.infinispan;
 
 import org.apache.commons.lang3.StringUtils;
+import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
 import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +34,14 @@ public class CacheHandle<K, V>
     {
     }
 
-    //    public CacheHandle( String named, Cache<K, V> cache, DefaultMetricsManager metricsManager, String metricPrefix )
-    //    {
-    //        super( named, cache, metricsManager, metricPrefix );
-    //    }
+    public CacheHandle( String named, Cache<K, V> cache, DefaultMetricsManager metricsManager, String metricPrefix )
+    {
+        super( named, cache, metricsManager, metricPrefix );
+    }
 
     public CacheHandle( String named, Cache<K, V> cache )
     {
-        super( named, cache );
+        super( named, cache, null, null );
     }
 
     /**

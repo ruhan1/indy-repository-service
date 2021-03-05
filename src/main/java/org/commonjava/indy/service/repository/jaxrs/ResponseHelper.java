@@ -16,7 +16,10 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jnr.ffi.annotations.In;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.commonjava.indy.service.repository.config.MetricsConfiguration;
+import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +47,11 @@ public class ResponseHelper
     @Inject
     ObjectMapper mapper;
 
-    //TODO: will think about metrics later
-    //    @Inject
-    //    private DefaultMetricsManager metricsManager;
+    @Inject
+    DefaultMetricsManager metricsManager;
+
+    @Inject
+    MetricsConfiguration metricsConfig;
 
     public Response formatRedirect( final URI uri )
     {
@@ -71,7 +76,7 @@ public class ResponseHelper
         else
         {
             builder = Response.created( location )
-                              .entity( new DTOStreamingOutput( mapper, dto ) )
+                              .entity( new DTOStreamingOutput( mapper, dto, metricsManager, metricsConfig ) )
                               .type( APPLICATION_JSON );
         }
 
@@ -95,7 +100,8 @@ public class ResponseHelper
             return Response.noContent().build();
         }
 
-        ResponseBuilder builder = Response.ok( new DTOStreamingOutput( mapper, dto ), APPLICATION_JSON );
+        ResponseBuilder builder =
+                Response.ok( new DTOStreamingOutput( mapper, dto, metricsManager, metricsConfig ), APPLICATION_JSON );
 
         if ( builderModifier != null )
         {
@@ -156,7 +162,7 @@ public class ResponseHelper
             code = Status.fromStatusCode( statusCode );
             LOGGER.debug( "got error code from parameter: {}", code );
         }
-        else if ( ( error instanceof IndyWorkflowException) && ( (IndyWorkflowException) error ).getStatus() > 0 )
+        else if ( ( error instanceof IndyWorkflowException ) && ( (IndyWorkflowException) error ).getStatus() > 0 )
         {
             final int sc = ( (IndyWorkflowException) error ).getStatus();
             LOGGER.debug( "got error code from exception: {}", sc );
