@@ -19,7 +19,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -41,7 +40,6 @@ import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
-//@Tag( "integration" )
 public class RepositoryAdminResourcesTest
 {
     @Test
