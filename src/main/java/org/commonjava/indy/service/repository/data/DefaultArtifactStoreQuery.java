@@ -25,7 +25,7 @@ import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
-import org.commonjava.indy.service.repository.util.UrlInfo;
+import org.commonjava.indy.service.repository.model.UrlInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

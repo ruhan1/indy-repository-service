@@ -13,22 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.jaxrs;
+package org.commonjava.indy.service.repository.util;
 
-import org.commonjava.indy.service.repository.util.Constants;
-import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
-import org.eclipse.microprofile.openapi.annotations.info.Info;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-
-import static org.commonjava.indy.service.repository.util.Constants.API_PREFIX;
-
-@OpenAPIDefinition( info = @Info( title = "Indy Repository Service APIs", version = "1.0" ) )
-@ApplicationPath( API_PREFIX )
-@ApplicationScoped
-public class ServiceApplication
-        extends Application
+public class Constants
 {
+    public static final String API_PREFIX = "/api";
 }

@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
+
 /**
  * Utility class concerned with loading mapping of key String to {@link PackageTypeDescriptor} using {@link ServiceLoader}.
  * This class also provides methods for accessing the loaded descriptors in various ways.
@@ -41,12 +44,12 @@ public class PackageTypes
         ServiceLoader<PackageTypeDescriptor> descriptorLoader = ServiceLoader.load( PackageTypeDescriptor.class );
         descriptorLoader.forEach( ( descriptor ) -> descriptors.put( descriptor.getKey(), descriptor ) );
 
-        PACKAGE_TYPES = Collections.unmodifiableMap( descriptors );
+        PACKAGE_TYPES = unmodifiableMap( descriptors );
     }
 
     public static Set<PackageTypeDescriptor> getPackageTypeDescriptors()
     {
-        return Collections.unmodifiableSet( new HashSet<>( PACKAGE_TYPES.values() ) );
+        return unmodifiableSet( new HashSet<>( PACKAGE_TYPES.values() ) );
     }
 
     public static Map<String, PackageTypeDescriptor> getPackageTypeDescriptorMap()
@@ -56,7 +59,7 @@ public class PackageTypes
 
     public static Set<String> getPackageTypes()
     {
-        return Collections.unmodifiableSet( PACKAGE_TYPES.keySet() );
+        return unmodifiableSet( PACKAGE_TYPES.keySet() );
     }
 
     public static boolean contains( final String packageType )

@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.util;
 
+import org.commonjava.indy.service.repository.model.UrlInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;

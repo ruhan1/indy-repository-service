@@ -15,43 +15,29 @@
  */
 package org.commonjava.indy.service.repository.util;
 
-/**
- * ValuePipe can hold a single value object. We can use it to wrap a collection object to avoid unintentional
- * toString that may produce huge strings.
- * @param <T>
- */
-public class ValuePipe<T>
+import org.junit.jupiter.api.Test;
+
+import static org.commonjava.indy.service.repository.util.PathUtils.normalize;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public class PathUtilsTest
 {
 
-    private T value;
-
-    public ValuePipe()
+    @Test
+    public void normalizeFormatTest()
     {
+        assertThat( normalize( "/" ), equalTo( "/" ) );
+        assertThat( normalize(), equalTo( "/" ) );
+        assertThat( normalize( "dir/", "/", "child.txt" ), equalTo( "dir/child.txt" ) );
+
     }
 
-    public ValuePipe( T value )
+    @Test
+    public void normalizeDirectoryWithTrailingSlashAndChildFile()
     {
-        this.value = value;
-    }
-
-    public boolean isFilled()
-    {
-        return value != null;
-    }
-
-    public boolean isEmpty()
-    {
-        return value == null;
-    }
-
-    public synchronized T get()
-    {
-        return value;
-    }
-
-    public synchronized void set( final T value )
-    {
-        this.value = value;
+        assertThat( normalize( "dir/", "child.txt" ), equalTo( "dir/child.txt" ) );
+        assertThat( normalize( "file:/dir/", "child.txt" ), equalTo( "/dir/child.txt" ) );
     }
 
 }
