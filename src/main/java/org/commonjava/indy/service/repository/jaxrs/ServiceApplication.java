@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.jaxrs;
 
+import org.commonjava.indy.service.repository.util.Constants;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 
@@ -22,8 +23,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import static org.commonjava.indy.service.repository.util.Constants.API_PREFIX;
+
 @OpenAPIDefinition( info = @Info( title = "Indy Repository Service APIs", version = "1.0" ) )
-@ApplicationPath( "/api" )
+@ApplicationPath( API_PREFIX )
 @ApplicationScoped
 public class ServiceApplication
         extends Application

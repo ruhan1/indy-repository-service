@@ -44,7 +44,7 @@ import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
-import org.commonjava.indy.service.repository.util.ValuePipe;
+import org.commonjava.indy.service.repository.model.ValuePipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
