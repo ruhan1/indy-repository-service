@@ -66,8 +66,8 @@ cassandra:
   enabled: true
   host: localhost
   port: 9042
-  user: testuser
-  pass: testpass
+  user: cassandra
+  pass: cassandra
   keyspace: indyreposervice
   keyspaceReplicas: 3
   replicaFactor: 3
