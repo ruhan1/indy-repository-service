@@ -17,26 +17,47 @@ package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.MediaType;
 
 import static io.restassured.RestAssured.given;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
 public class RepositoryQueryResourcesTest
 {
     @Test
-    public void testGetAll(){
+    public void testGetAll()
+    {
         given().when()
                .get( "/api/stores/query/all" )
                .then()
                .statusCode( OK.getStatusCode() )
-               .contentType( MediaType.APPLICATION_JSON )
-               .body( "size()", is(1) )
-               .body( "items.size()", is( 3 ));
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
+
+    @Test
+    public void testGetAllByDefaultPackageTypes()
+    {
+        given().when()
+               .get( "/api/stores/query/byDefaultPkgTypes" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "items.size()", greaterThan( 1 ) );
+
+    }
+
+    public void test()
+    {
+
     }
 }
