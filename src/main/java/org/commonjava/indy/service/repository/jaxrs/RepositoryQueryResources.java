@@ -40,6 +40,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
 
@@ -178,8 +179,8 @@ public class RepositoryQueryResources
     @Path( "/concretes/inGroup" )
     @Produces( APPLICATION_JSON )
     public Response getOrderedConcreteEnabledStoresInGroup(
-            @Parameter( description = "Key of the repository contained in the groups", required = true,
-                        example = "maven:remote:central" ) @QueryParam( "storeKey" ) final String storeKey )
+            @Parameter( description = "Key of the group whom the repositories are contained in", required = true,
+                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey )
     {
         return generateStoreListingResponse( () -> queryController.getOrderedConcreteStoresInGroup( storeKey ) );
     }
@@ -187,14 +188,14 @@ public class RepositoryQueryResources
     @Operation( description = "Retrieve the enabled stores which are constituents of the specified group" )
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
-                  description = "The store definitions" )
+                  description = "The stores definitions, include the master group itself" )
     @APIResponse( responseCode = "404", description = "The store doesn't exist" )
     @GET
     @Path( "/inGroup" )
     @Produces( APPLICATION_JSON )
     public Response getOrderedEnabledStoresInGroup(
-            @Parameter( description = "Key of the repository contained in the groups", required = true,
-                        example = "maven:remote:central" ) @QueryParam( "storeKey" ) final String storeKey )
+            @Parameter( description = "Key of the group whom the repositories are contained in", required = true,
+                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey )
     {
         return generateStoreListingResponse( () -> queryController.getOrderedStoresInGroup( storeKey ) );
     }
@@ -205,13 +206,25 @@ public class RepositoryQueryResources
                   description = "The group definitions" )
     @APIResponse( responseCode = "404", description = "The groups don't exist" )
     @GET
-    @Path( "affectedBy" )
+    @Path( "/affectedBy" )
     @Produces( APPLICATION_JSON )
     public Response getGroupsAffectedBy(
             @Parameter( description = "Store keys whom the groups are affected by, use \",\" to split", required = true,
                         example = "maven:remote:central,maven:hosted:local" ) @QueryParam( "keys" ) final String keys )
     {
-        return generateStoreListingResponse( () -> queryController.getGroupsAffectedBy( keys ) );
+
+        return generateStoreListingResponse( () -> {
+            if ( keys == null )
+            {
+                throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKeys: can not be null" );
+            }
+            String[] keysArr = keys.split( "," );
+            if ( keys.length() == 0 )
+            {
+                throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKeys: can not be empty" );
+            }
+            return queryController.getGroupsAffectedBy( keysArr );
+        } );
     }
 
     //    @GET

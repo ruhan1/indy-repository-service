@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests;
+package org.commonjava.indy.service.repository.ftests.admin;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
-import org.commonjava.indy.service.repository.model.RemoteRepository;
+import org.commonjava.indy.service.repository.model.Group;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -27,33 +28,30 @@ import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-public class CreateRemoteRepoThenModifyAndVerifyTest
+public class CreateGroupThenModifyAndVerifyChangesTest
         extends AbstractStoreManagementTest
 {
 
     @Test
-    public void addAndModifyRemoteRepositoryThenRetrieveIt()
+    public void addAndModifyGroupThenRetrieveIt()
             throws Exception
     {
         final String name = newName();
-        final RemoteRepository repo = new RemoteRepository( MAVEN_PKG_KEY, name, "http://www.foo.com" );
+        final Group repo = new Group( MAVEN_PKG_KEY, name );
         String json = mapper.writeValueAsString( repo );
 
         given().body( json )
                .contentType( APPLICATION_JSON )
                .post( getRepoTypeUrl( repo.getKey() ) )
                .then()
-               .body( new RepoEqualMatcher<>( mapper, repo, RemoteRepository.class ) );
+               .body( new RepoEqualMatcher<>( mapper, repo, Group.class ) );
 
-        repo.setUrl( "https://www.foo.com/" );
-        assertThat( repo.getUrl(), equalTo( "https://www.foo.com/" ) );
+        repo.setDescription( "Testing" );
         json = mapper.writeValueAsString( repo );
         final String repoUrl = getRepoUrl( repo.getKey() );
         given().body( json ).contentType( APPLICATION_JSON ).put( repoUrl ).then().statusCode( OK.getStatusCode() );
@@ -61,8 +59,8 @@ public class CreateRemoteRepoThenModifyAndVerifyTest
         given().get( repoUrl )
                .then()
                .statusCode( OK.getStatusCode() )
-               .body( new RepoEqualMatcher<>( mapper, repo, RemoteRepository.class ) )
-               .body( "url", is( repo.getUrl() ) );
+               .body( new RepoEqualMatcher<>( mapper, repo, Group.class ) )
+               .body( "description", is( repo.getDescription() ) );
 
     }
 }

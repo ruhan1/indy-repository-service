@@ -1,0 +1,7 @@
+{
+  "key": "maven:remote:test2",
+  "packageType": "maven",
+  "name": "test2",
+  "type": "remote",
+  "url": "https://test.com/test2/"
+}

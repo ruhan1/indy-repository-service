@@ -13,50 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests;
+package org.commonjava.indy.service.repository.ftests.admin;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.delete;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-public class AddAndDeleteRemoteRepoTest
+public class CreateRemoteRepoThenModifyAndVerifyTest
         extends AbstractStoreManagementTest
 {
 
     @Test
-    public void addMinimalRemoteRepositoryAndDeleteIt()
+    public void addAndModifyRemoteRepositoryThenRetrieveIt()
             throws Exception
     {
         final String name = newName();
         final RemoteRepository repo = new RemoteRepository( MAVEN_PKG_KEY, name, "http://www.foo.com" );
-        final String json = mapper.writeValueAsString( repo );
+        String json = mapper.writeValueAsString( repo );
 
         given().body( json )
                .contentType( APPLICATION_JSON )
                .post( getRepoTypeUrl( repo.getKey() ) )
                .then()
-               .body( "url", is( "http://www.foo.com" ) )
                .body( new RepoEqualMatcher<>( mapper, repo, RemoteRepository.class ) );
+
+        repo.setUrl( "https://www.foo.com/" );
+        assertThat( repo.getUrl(), equalTo( "https://www.foo.com/" ) );
+        json = mapper.writeValueAsString( repo );
         final String repoUrl = getRepoUrl( repo.getKey() );
-        given().head( repoUrl ).then().statusCode( OK.getStatusCode() );
+        given().body( json ).contentType( APPLICATION_JSON ).put( repoUrl ).then().statusCode( OK.getStatusCode() );
 
-        delete( repoUrl );
+        given().get( repoUrl )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( new RepoEqualMatcher<>( mapper, repo, RemoteRepository.class ) )
+               .body( "url", is( repo.getUrl() ) );
 
-        given().head( repoUrl ).then().statusCode( NOT_FOUND.getStatusCode() );
     }
 }

@@ -24,7 +24,6 @@ import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
-import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -143,12 +142,12 @@ public class QueryController
                 "Failed to get all groups for package type {}", packageType );
     }
 
-    public List<Group> getGroupsAffectedBy( final String keys )
+    public List<Group> getGroupsAffectedBy( final String[] keys )
             throws IndyWorkflowException
     {
         return generateQueryResult( () -> {
             final Set<StoreKey> storeKeys = new HashSet<>();
-            for ( String s : keys.split( "," ) )
+            for ( String s : keys )
             {
                 StoreKey storeKey = validateStoreKey( s.trim() );
                 storeKeys.add( storeKey );
@@ -160,6 +159,11 @@ public class QueryController
     private StoreKey validateStoreKey( final String storeKey )
             throws IndyWorkflowException
     {
+        if ( storeKey == null )
+        {
+            throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(),
+                                             "Illegal storeKey: store key can not be null" );
+        }
         try
         {
             return fromString( storeKey );

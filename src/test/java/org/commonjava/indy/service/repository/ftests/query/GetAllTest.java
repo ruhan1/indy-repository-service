@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2021 Red Hat, Inc. (https://github.com/Commonjava/service-parent)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,43 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests;
+package org.commonjava.indy.service.repository.ftests.query;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
-import org.commonjava.indy.service.repository.model.Group;
-import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.hamcrest.CoreMatchers.is;
 
+/**
+ * <b>GIVEN:</b>
+ * <ul>
+ *     <li>3 remote repos, 3 hosted repos and 3 groups</li>
+ * </ul>
+ *
+ * <br/>
+ * <b>WHEN:</b>
+ * <ul>
+ *     <li>Client request query api for all repos</li>
+ * </ul>
+ *
+ * <br/>
+ * <b>THEN:</b>
+ * <ul>
+ *     <li>These 9 repos can be returned correctly</li>
+ * </ul>
+ */
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-@Disabled("Duplicated to AddAndDeleteHostedRepoTest")
-@Deprecated
-public class AddAndRetrieveGroupTest
-        extends AbstractStoreManagementTest
+public class GetAllTest
+        extends AbstractQueryFuncTest
 {
-
     @Test
-    public void addMinimalGroupAndRetrieveIt()
-            throws Exception
+    public void run()
     {
-        final String name = newName();
-        final Group repo = new Group( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, name );
-        final String json = mapper.writeValueAsString( repo );
-        given().body( json )
-               .contentType( APPLICATION_JSON )
-               .post( getRepoTypeUrl( repo.getKey() ) )
+        given().when()
+               .get( QUERY_BASE + "/all" )
                .then()
-               .body( new RepoEqualMatcher<>( mapper, repo, Group.class ) );
-
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", is( 9 ) );
     }
-
 }
