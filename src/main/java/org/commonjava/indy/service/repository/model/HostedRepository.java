@@ -16,13 +16,15 @@
 package org.commonjava.indy.service.repository.model;
 
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-//@ApiModel( description = "Hosts artifact content on the local system", parent = ArtifactStore.class )
+@Schema( description = "Hosts artifact content on the local system" )
 public class HostedRepository
         extends AbstractRepository
         implements Externalizable
@@ -35,7 +37,7 @@ public class HostedRepository
     private int snapshotTimeoutSeconds;
 
     // if readonly, default is not
-//    @ApiModelProperty( required = false, dataType = "boolean", value = "identify if the hoste repo is readonly" )
+    @Schema( type = SchemaType.BOOLEAN, description = "identify if the hoste repo is readonly" )
     private boolean readonly = false;
 
     public HostedRepository()
@@ -45,13 +47,13 @@ public class HostedRepository
 
     public HostedRepository( final String packageType, final String name )
     {
-        super(packageType, StoreType.hosted, name );
+        super( packageType, StoreType.hosted, name );
     }
 
     @Deprecated
     public HostedRepository( final String name )
     {
-        super(MavenPackageTypeDescriptor.MAVEN_PKG_KEY, StoreType.hosted, name );
+        super( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, StoreType.hosted, name );
     }
 
     @Override

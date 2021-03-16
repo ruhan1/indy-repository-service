@@ -18,6 +18,8 @@ package org.commonjava.indy.service.repository.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +30,8 @@ import java.io.ObjectOutput;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-//@ApiModel( description = "Proxy to a remote server's artifact content, with local cache storage.",
-//           parent = ArtifactStore.class )
+@Schema( description = "Proxy to a remote server's artifact content, with local cache storage.",
+         type = SchemaType.OBJECT )
 public class RemoteRepository
         extends AbstractRepository
         implements Externalizable
@@ -42,8 +44,8 @@ public class RemoteRepository
 
     public static final int DEFAULT_MAX_CONNECTIONS = 30;
 
-//    @ApiModelProperty( required = true, value = "The remote URL to proxy" )
     @JsonProperty( "url" )
+    @Schema( description = "The remote URL to proxy", required = true )
     private String url;
 
     @JsonProperty( "timeout_seconds" )
@@ -99,19 +101,18 @@ public class RemoteRepository
     @JsonProperty( "server_trust_policy" )
     private String serverTrustPolicy;
 
-//    @ApiModelProperty(
-//            value = "Integer to indicate the pre-fetching priority of the remote, higher means more eager to do the pre-fetching of the content in the repo, 0 or below means disable the pre-fecthing." )
+    @Schema(
+            description = "Integer to indicate the pre-fetching priority of the remote, higher means more eager to do the pre-fetching of the content in the repo, 0 or below means disable the pre-fecthing." )
     @JsonProperty( "prefetch_priority" )
     private Integer prefetchPriority = 0;
 
-//    @ApiModelProperty( value = "Indicates if the remote needs to do rescan after prefetch" )
+    @Schema( description = "Indicates if the remote needs to do rescan after prefetch" )
     @JsonProperty( "prefetch_rescan" )
     private boolean prefetchRescan = false;
 
-//    @ApiModelProperty( value = "The prefetch listing type, should be html or koji" )
+    @Schema( description = "The prefetch listing type, should be html or koji" )
     @JsonProperty( "prefetch_listing_type" )
     private String prefetchListingType = PREFETCH_LISTING_TYPE_HTML;
-
 
     @JsonProperty( "prefetch_rescan_time" )
     private String prefetchRescanTimestamp;
@@ -124,12 +125,12 @@ public class RemoteRepository
     @Deprecated
     public RemoteRepository( final String name, final String remoteUrl )
     {
-        this(MavenPackageTypeDescriptor.MAVEN_PKG_KEY, name, remoteUrl );
+        this( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, name, remoteUrl );
     }
 
     public RemoteRepository( final String packageType, String name, String remoteUrl )
     {
-        super(packageType, StoreType.remote, name );
+        super( packageType, StoreType.remote, name );
         this.url = remoteUrl;
         calculateFields();
     }
@@ -207,7 +208,8 @@ public class RemoteRepository
         }
         catch ( final MalformedURLException e )
         {
-            LOGGER.warn( String.format( "Failed to parse repository URL: '%s'. Reason: %s", this.url, e.getMessage() ) );
+            LOGGER.warn(
+                    String.format( "Failed to parse repository URL: '%s'. Reason: %s", this.url, e.getMessage() ) );
         }
 
         if ( url == null )
@@ -285,9 +287,7 @@ public class RemoteRepository
     @Override
     public String toString()
     {
-        return String.format(
-                "RemoteRepository [%s, %s]",
-                getName(), url );
+        return String.format( "RemoteRepository [%s, %s]", getName(), url );
     }
 
     public boolean isPassthrough()
