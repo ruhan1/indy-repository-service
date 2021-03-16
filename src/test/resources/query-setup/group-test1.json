@@ -1,0 +1,12 @@
+{
+  "key": "maven:group:test1",
+  "packageType": "maven",
+  "name": "test1",
+  "type": "group",
+  "constituents": [
+    "maven:remote:test1",
+    "maven:remote:test2",
+    "maven:hosted:test1",
+    "maven:hosted:test2"
+  ]
+}

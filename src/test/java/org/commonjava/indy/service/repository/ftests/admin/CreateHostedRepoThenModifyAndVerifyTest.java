@@ -13,50 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests;
+package org.commonjava.indy.service.repository.ftests.admin;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
-import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
-import org.commonjava.indy.service.repository.model.Group;
-import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
+import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.delete;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
+import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-public class AddAndDeleteGroupTest
+public class CreateHostedRepoThenModifyAndVerifyTest
         extends AbstractStoreManagementTest
 {
 
     @Test
-    public void addMinimalGroupThenDeleteIt()
+    public void addAndModifyHostedRepositoryThenRetrieveIt()
             throws Exception
     {
         final String name = newName();
-        final Group repo = new Group( MavenPackageTypeDescriptor.MAVEN_PKG_KEY, name );
-        final String json = mapper.writeValueAsString( repo );
+        final HostedRepository repo = new HostedRepository( MAVEN_PKG_KEY, name );
+        String json = mapper.writeValueAsString( repo );
+
         given().body( json )
                .contentType( APPLICATION_JSON )
                .post( getRepoTypeUrl( repo.getKey() ) )
                .then()
-               .body( new RepoEqualMatcher<>( mapper, repo, Group.class ) );
+               .body( new RepoEqualMatcher<>( mapper, repo, HostedRepository.class ) );
 
+        repo.setAllowReleases( !repo.isAllowReleases() );
+
+        json = mapper.writeValueAsString( repo );
         final String repoUrl = getRepoUrl( repo.getKey() );
-        given().head( repoUrl ).then().statusCode( OK.getStatusCode() );
+        given().body( json ).contentType( APPLICATION_JSON ).put( repoUrl ).then().statusCode( OK.getStatusCode() );
 
-        delete( repoUrl );
-
-        given().head( repoUrl ).then().statusCode( NOT_FOUND.getStatusCode() );
+        given().get( repoUrl )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( new RepoEqualMatcher<>( mapper, repo, HostedRepository.class ) )
+               .body( "allow_releases", is( repo.isAllowReleases() ) );
 
     }
 

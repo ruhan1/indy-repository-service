@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests;
+package org.commonjava.indy.service.repository.ftests.admin;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.HostedRepository;
@@ -25,42 +26,61 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
-import static org.hamcrest.CoreMatchers.is;
 
+/**
+ * This case test if the readonly hosted repo can be deleted
+ * when: <br />
+ * <ul>
+ *      <li>creates readonly hosted repo</li>
+ *      <li>deletes this readonly hosted repo once</li>
+ *      <li>updates the hosted repo to non-readonly</li>
+ *      <li>deletes it again</li>
+ * </ul>
+ * then: <br />
+ * <ul>
+ *     <li>the hosted repo can not be deleted with 405 error first time</li>
+ *     <li>the hosted repo can be deleted successfully with no error second time</li>
+ * </ul>
+ */
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-public class CreateHostedRepoThenModifyAndVerifyTest
+public class ReadonlyHostedRepoDeleteTest
         extends AbstractStoreManagementTest
 {
 
     @Test
-    public void addAndModifyHostedRepositoryThenRetrieveIt()
+    public void addReadonlyHostedAndDelete()
             throws Exception
     {
-        final String name = newName();
-        final HostedRepository repo = new HostedRepository( MAVEN_PKG_KEY, name );
+        final String nameHosted = newName();
+        final HostedRepository repo = new HostedRepository( MAVEN_PKG_KEY, nameHosted );
+        repo.setReadonly( true );
         String json = mapper.writeValueAsString( repo );
-
         given().body( json )
                .contentType( APPLICATION_JSON )
                .post( getRepoTypeUrl( repo.getKey() ) )
                .then()
                .body( new RepoEqualMatcher<>( mapper, repo, HostedRepository.class ) );
 
-        repo.setAllowReleases( !repo.isAllowReleases() );
-
-        json = mapper.writeValueAsString( repo );
         final String repoUrl = getRepoUrl( repo.getKey() );
+
+        given().delete( repoUrl ).then().statusCode( METHOD_NOT_ALLOWED.getStatusCode() );
+
+        given().head( repoUrl ).then().statusCode( OK.getStatusCode() );
+
+        repo.setReadonly( false );
+        json = mapper.writeValueAsString( repo );
         given().body( json ).contentType( APPLICATION_JSON ).put( repoUrl ).then().statusCode( OK.getStatusCode() );
 
-        given().get( repoUrl )
-               .then()
-               .statusCode( OK.getStatusCode() )
-               .body( new RepoEqualMatcher<>( mapper, repo, HostedRepository.class ) )
-               .body( "allow_releases", is( repo.isAllowReleases() ) );
+        given().delete( repoUrl ).then().statusCode( NO_CONTENT.getStatusCode() );
+
+        given().head( repoUrl ).then().statusCode( NOT_FOUND.getStatusCode() );
 
     }
 

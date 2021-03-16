@@ -13,45 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests;
+package org.commonjava.indy.service.repository.ftests.admin;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
+import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static io.restassured.RestAssured.delete;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-@Disabled(
-        "Disabling validating decorator around StoreDataManager until we can be more certain it's correct and stable for all use cases" )
-public class RemoteRepoInValidUrlTest
+public class AddAndDeleteRemoteRepoTest
         extends AbstractStoreManagementTest
 {
+
     @Test
-    public void run()
+    public void addMinimalRemoteRepositoryAndDeleteIt()
             throws Exception
     {
-        final String INVALID_REPO = "invalid-repo";
-        final String INVALID_URL = "this.is.not.valid.url";
-
-        final RemoteRepository repo = new RemoteRepository( MAVEN_PKG_KEY, INVALID_REPO, INVALID_URL );
+        final String name = newName();
+        final RemoteRepository repo = new RemoteRepository( MAVEN_PKG_KEY, name, "http://www.foo.com" );
         final String json = mapper.writeValueAsString( repo );
 
         given().body( json )
                .contentType( APPLICATION_JSON )
                .post( getRepoTypeUrl( repo.getKey() ) )
                .then()
-               .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
+               .body( "url", is( "http://www.foo.com" ) )
+               .body( new RepoEqualMatcher<>( mapper, repo, RemoteRepository.class ) );
+        final String repoUrl = getRepoUrl( repo.getKey() );
+        given().head( repoUrl ).then().statusCode( OK.getStatusCode() );
 
+        delete( repoUrl );
+
+        given().head( repoUrl ).then().statusCode( NOT_FOUND.getStatusCode() );
     }
-
 }

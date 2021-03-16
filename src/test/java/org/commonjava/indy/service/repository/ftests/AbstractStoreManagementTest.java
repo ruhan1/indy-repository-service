@@ -17,9 +17,11 @@ package org.commonjava.indy.service.repository.ftests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.commonjava.indy.service.repository.model.StoreKey;
-import org.commonjava.indy.service.repository.testutil.TestUtil;
 
 import java.util.Random;
+
+import static java.lang.String.format;
+import static org.commonjava.indy.service.repository.testutil.TestUtil.prepareCustomizedMapper;
 
 public class AbstractStoreManagementTest
 {
@@ -31,7 +33,7 @@ public class AbstractStoreManagementTest
 
     protected static final String ADMIN_REPO_NAME_BASE = "/api/admin/stores/%s/%s/%s";
 
-    protected final ObjectMapper mapper = TestUtil.prepareCustomizedMapper();
+    protected final ObjectMapper mapper = prepareCustomizedMapper();
 
     protected String newName()
     {
@@ -47,17 +49,17 @@ public class AbstractStoreManagementTest
 
     protected String newUrl()
     {
-        return String.format( "http://%s.com/", newName() );
+        return format( "http://%s.com/", newName() );
     }
 
-    protected String getRepoTypeUrl( final StoreKey key )
+    protected static String getRepoTypeUrl( final StoreKey key )
     {
-        return String.format( ADMIN_REPO_TYPE_BASE, key.getPackageType(), key.getType() );
+        return format( ADMIN_REPO_TYPE_BASE, key.getPackageType(), key.getType() );
     }
 
-    protected String getRepoUrl( final StoreKey key )
+    protected static String getRepoUrl( final StoreKey key )
     {
-        return String.format( ADMIN_REPO_NAME_BASE, key.getPackageType(), key.getType(), key.getName() );
+        return format( ADMIN_REPO_NAME_BASE, key.getPackageType(), key.getType(), key.getName() );
     }
 
 }

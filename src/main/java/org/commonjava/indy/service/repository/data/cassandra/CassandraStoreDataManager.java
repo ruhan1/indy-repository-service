@@ -112,9 +112,7 @@ public class CassandraStoreDataManager
     {
         Set<DtxArtifactStore> dtxArtifactStoreSet = storeQuery.getAllArtifactStores();
         Set<ArtifactStore> artifactStoreSet = new HashSet<>();
-        dtxArtifactStoreSet.forEach( dtxArtifactStore -> {
-            artifactStoreSet.add( toArtifactStore( dtxArtifactStore ) );
-        } );
+        dtxArtifactStoreSet.forEach( dtxArtifactStore -> artifactStoreSet.add( toArtifactStore( dtxArtifactStore ) ) );
         return artifactStoreSet;
     }
 
