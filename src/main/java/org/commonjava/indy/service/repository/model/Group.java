@@ -17,6 +17,7 @@ package org.commonjava.indy.service.repository.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -27,9 +28,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-//@ApiModel( description = "Grouping of other artifact stores, with a defined order to the membership that determines content preference", parent = ArtifactStore.class )
+@Schema(
+        description = "Grouping of other artifact stores, with a defined order to the membership that determines content preference" )
 public class Group
-    extends ArtifactStore
+        extends ArtifactStore
         implements Externalizable
 {
 

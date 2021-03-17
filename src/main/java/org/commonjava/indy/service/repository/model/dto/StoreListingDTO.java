@@ -15,18 +15,22 @@
  */
 package org.commonjava.indy.service.repository.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-//@ApiModel( "List of artifact store definitions" )
+@Schema( type = SchemaType.OBJECT, discriminatorProperty = "type", description = "List of artifact store definitions" )
 public class StoreListingDTO<T extends ArtifactStore>
-    implements Iterable<T>
+        implements Iterable<T>
 {
 
-//    @ApiModelProperty( dataType = "org.commonjava.indy.model.core.ArtifactStore", required = true, value = "The store definition list" )
+    @JsonProperty
+    @Schema( implementation = ArtifactStore.class, description = "The store definition list", required = true )
     private List<T> items;
 
     public StoreListingDTO()
@@ -61,8 +65,7 @@ public class StoreListingDTO<T extends ArtifactStore>
         {
             for ( final T item : items )
             {
-                sb.append( "\n  " )
-                  .append( item );
+                sb.append( "\n  " ).append( item );
             }
         }
 

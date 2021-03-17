@@ -52,8 +52,7 @@ public class EndpointViewListing
     @Override
     public Iterator<EndpointView> iterator()
     {
-        return items == null ? Collections.<EndpointView> emptySet()
-                                          .iterator() : items.iterator();
+        return items == null ? Collections.emptyIterator() : items.iterator();
     }
 
     public void setItems( final List<EndpointView> items )

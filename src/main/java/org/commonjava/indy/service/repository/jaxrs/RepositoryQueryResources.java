@@ -85,7 +85,7 @@ public class RepositoryQueryResources
     @Path( "/allRemotes" )
     @Produces( APPLICATION_JSON )
     public Response getAllRemoteRepositories( @Parameter( description = "package type for the remotes", required = true,
-                                                          example = "maven|npm|generic-http" )
+                                                          example = "maven" )
                                               @QueryParam( "packageType" ) final String packageType )
     {
         return generateStoreListingResponse( () -> queryController.getAllRemoteRepositories( packageType ) );
