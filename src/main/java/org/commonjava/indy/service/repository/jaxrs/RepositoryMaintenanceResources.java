@@ -48,7 +48,7 @@ import static javax.ws.rs.core.Response.ok;
 @ApplicationScoped
 public class RepositoryMaintenanceResources
 {
-    private static final String MEDIATYPE_APPLICATION_ZIP = "application/zip";
+    public static final String MEDIATYPE_APPLICATION_ZIP = "application/zip";
 
     @Inject
     MaintenanceController maintController;
