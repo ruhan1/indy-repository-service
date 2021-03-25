@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.controller;
 
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.commonjava.event.common.EventMetadata;
@@ -98,7 +99,7 @@ public class MaintenanceController
         final List<String> skipped = new ArrayList<>();
         final List<String> failed = new ArrayList<>();
         final Map<String, String> payload = new HashMap<>();
-        logger.debug( "Start Processing!" );
+        logger.info( "Start extracting repos definitions from bundle!" );
         try (ZipInputStream zip = new ZipInputStream( zipStream ))
         {
             if ( zip.available() > 0 )
@@ -124,11 +125,15 @@ public class MaintenanceController
                 }
             }
         }
+        logger.info( "Repos definitions extraction from bundle finished.\n\n" );
+        logger.info( "Start importing repos definitions to data store." );
         for ( Map.Entry<String, String> entry : payload.entrySet() )
         {
             try
             {
-                ArtifactStore store = serializer.readValue( entry.getValue(), ArtifactStore.class );
+                ArtifactStore store = serializer.readerFor( ArtifactStore.class )
+                                                .with( JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS )
+                                                .readValue( entry.getValue() );
                 if ( storeDataManager.hasArtifactStore( store.getKey() ) )
                 {
                     skipped.add( entry.getKey() );
@@ -137,16 +142,20 @@ public class MaintenanceController
                 {
                     storeDataManager.storeArtifactStore( store, new ChangeSummary( ChangeSummary.SYSTEM_USER,
                                                                                    "Import artifact store" ), true,
-                                                         true, new EventMetadata() );
+                                                         false, new EventMetadata() );
                 }
             }
-            catch ( IndyDataException | IOException e )
+            catch ( Exception e )
             {
                 logger.warn( "Cannot persist store definition for {}, Reason: {} : {}", entry.getKey(),
                              e.getClass().getName(), e.getMessage() );
                 failed.add( entry.getKey() );
             }
         }
+        logger.info( "Repos definitions importing finished.\n\n" );
+
+        logger.info( "Repository importing process done. result as below:\n skipped: {}\n\n failed: {}\n\n", skipped,
+                     failed );
 
         return of( "skipped", skipped, "failed", failed );
     }

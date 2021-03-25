@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.commonjava.event.common.EventMetadata;
+import org.commonjava.event.store.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
-import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.config.SslValidationConfiguration;

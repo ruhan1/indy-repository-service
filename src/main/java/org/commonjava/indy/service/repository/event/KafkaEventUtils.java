@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.change;
+package org.commonjava.indy.service.repository.event;
 
-import org.commonjava.indy.service.repository.model.ArtifactStore;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Alternative;
 
 /**
- * Enumeration of the types of configuration updates that can happen for {@link ArtifactStore}'s.
+ * This event dispatcher will dispatch Store Event through kafka
  */
-public enum ArtifactStoreUpdateType
+//@ApplicationScoped
+@Alternative
+public class KafkaEventUtils
 {
-
-    /** Definite creation of new store. */
-    ADD,
-    /** upadting an existing store. */
-    UPDATE
-
+    public static <T> void fireEvent( Event<T> dispatcher, T event )
+    {
+        
+    }
 }
