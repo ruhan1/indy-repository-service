@@ -56,8 +56,4 @@ public class RepositoryQueryResourcesTest
 
     }
 
-    public void test()
-    {
-
-    }
 }

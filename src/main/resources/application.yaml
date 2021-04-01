@@ -1,9 +1,4 @@
 quarkus:
-#  kubernetes-config:
-#    enabled: true
-#    secrets:
-#      ~: indy-repository-service-secrets
-#      enabled: true
   http:
     port: 8080
     read-timeout: 30m
@@ -48,6 +43,21 @@ quarkus:
   swagger-ui:
     always-include: true
 
+kafka:
+  bootstrap:
+    servers: "localhost:9092"
+
+mp:
+  messaging:
+    outgoing:
+      store-event:
+        connector: "smallrye-kafka"
+        topics: "store-event"
+        value:
+          serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
+          deserializer: "org.commonjava.indy.service.repository.event.StoreEventDeserializer"
+
+
 repository:
   data-storage: cassandra
 #  affectedGroupsExclude: ^build-\d+
@@ -73,6 +83,7 @@ cassandra:
   replicaFactor: 3
 
 #store:
+
 
 
 "%dev":

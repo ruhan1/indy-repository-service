@@ -17,7 +17,7 @@ package org.commonjava.indy.service.repository.event;
 
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.ArtifactStoreUpdateType;
-import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.StoreKey;
 
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
@@ -30,47 +30,47 @@ public class NoOpStoreEventDispatcher
 {
 
     @Override
-    public void deleting( final EventMetadata eventMetadata, final ArtifactStore... stores )
+    public void deleting( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
     }
 
     @Override
-    public void deleted( final EventMetadata eventMetadata, final ArtifactStore... stores )
+    public void deleted( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
     }
 
     @Override
     public void updating( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
-                          final Map<ArtifactStore, ArtifactStore> stores )
+                          final Map<StoreKey, StoreKey> storeKeys )
     {
     }
 
     @Override
     public void updated( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
-                         final Map<ArtifactStore, ArtifactStore> stores )
+                         final Map<StoreKey, StoreKey> storeKeys )
     {
     }
 
     @Override
-    public void enabling( EventMetadata eventMetadata, ArtifactStore... stores )
-    {
-
-    }
-
-    @Override
-    public void enabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void disabling( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void disabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void disabling( EventMetadata eventMetadata, StoreKey... storeKeys )
+    {
+
+    }
+
+    @Override
+    public void disabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }

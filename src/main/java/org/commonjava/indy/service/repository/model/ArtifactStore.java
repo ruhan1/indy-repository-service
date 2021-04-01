@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.commonjava.event.store.Store;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.DiscriminatorMapping;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -47,7 +46,7 @@ import java.util.TimeZone;
                 @DiscriminatorMapping( schema = RemoteRepository.class ),
                 @DiscriminatorMapping( schema = Group.class ) } )
 public abstract class ArtifactStore
-        implements Externalizable, Store
+        implements Externalizable
 {
 
     private static final int ARTIFACT_STORE_VERSION = 1;

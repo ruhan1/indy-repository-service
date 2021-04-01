@@ -18,7 +18,7 @@ package org.commonjava.indy.service.repository.testutil;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
-import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.StoreKey;
 
 import java.util.Map;
 
@@ -27,47 +27,47 @@ public class StoreEventDispatcherStub
 {
 
     @Override
-    public void deleting( final EventMetadata metadata, final ArtifactStore... stores )
+    public void deleting( final EventMetadata metadata, final StoreKey... storeKeys )
     {
     }
 
     @Override
-    public void deleted( final EventMetadata metadata, final ArtifactStore... stores )
+    public void deleted( final EventMetadata metadata, final StoreKey... storeKeys )
     {
     }
 
     @Override
     public void updating( final ArtifactStoreUpdateType type, final EventMetadata metadata,
-                          final Map<ArtifactStore, ArtifactStore> stores )
+                          final Map<StoreKey, StoreKey> storeKeys )
     {
     }
 
     @Override
     public void updated( final ArtifactStoreUpdateType type, final EventMetadata metadata,
-                         final Map<ArtifactStore, ArtifactStore> stores )
+                         final Map<StoreKey, StoreKey> storeKeys )
     {
     }
 
     @Override
-    public void enabling( EventMetadata eventMetadata, ArtifactStore... stores )
-    {
-
-    }
-
-    @Override
-    public void enabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void disabling( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void disabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void disabling( EventMetadata eventMetadata, StoreKey... storeKeys )
+    {
+
+    }
+
+    @Override
+    public void disabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }

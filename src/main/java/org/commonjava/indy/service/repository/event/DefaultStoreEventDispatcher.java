@@ -16,14 +16,13 @@
 package org.commonjava.indy.service.repository.event;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.event.store.ArtifactStoreDeletePostEvent;
-import org.commonjava.event.store.ArtifactStoreDeletePreEvent;
-import org.commonjava.event.store.ArtifactStoreEnablementEvent;
-import org.commonjava.event.store.ArtifactStorePostUpdateEvent;
-import org.commonjava.event.store.ArtifactStorePreUpdateEvent;
 import org.commonjava.event.store.ArtifactStoreUpdateType;
-import org.commonjava.event.store.Store;
-import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.event.store.EventStoreKey;
+import org.commonjava.event.store.StoreEnablementEvent;
+import org.commonjava.event.store.StorePostDeleteEvent;
+import org.commonjava.event.store.StorePostUpdateEvent;
+import org.commonjava.event.store.StorePreDeleteEvent;
+import org.commonjava.event.store.StorePreUpdateEvent;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,19 +58,19 @@ public class DefaultStoreEventDispatcher
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private Event<ArtifactStorePreUpdateEvent> updatePreEvent;
+    Event<StorePreUpdateEvent> updatePreEvent;
 
     @Inject
-    private Event<ArtifactStorePostUpdateEvent> updatePostEvent;
+    Event<StorePostUpdateEvent> updatePostEvent;
 
     @Inject
-    private Event<ArtifactStoreDeletePreEvent> preDelEvent;
+    Event<StorePreDeleteEvent> preDelEvent;
 
     @Inject
-    private Event<ArtifactStoreDeletePostEvent> postDelEvent;
+    Event<StorePostDeleteEvent> postDelEvent;
 
     @Inject
-    private Event<ArtifactStoreEnablementEvent> enablementEvent;
+    Event<StoreEnablementEvent> enablementEvent;
 
     //    @Inject
     //    @WeftManaged
@@ -81,31 +80,30 @@ public class DefaultStoreEventDispatcher
     private ExecutorService executor = Executors.newFixedThreadPool( 8 );
 
     @Override
-    public void deleting( final EventMetadata eventMetadata, final ArtifactStore... stores )
+    public void deleting( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
         if ( preDelEvent != null )
         {
-            logger.trace( "Dispatch pre-delete event for: {}", Arrays.asList( stores ) );
+            logger.trace( "Dispatch pre-delete event for: {}", Arrays.asList( storeKeys ) );
 
-            final ArtifactStoreDeletePreEvent event =
-                    new ArtifactStoreDeletePreEvent( eventMetadata, stream( stores ).collect( Collectors.toSet() ) );
+            final StorePreDeleteEvent event =
+                    new StorePreDeleteEvent( stream( storeKeys ).collect( Collectors.toSet() ) );
 
             fireEvent( preDelEvent, event );
         }
     }
 
     @Override
-    public void deleted( final EventMetadata eventMetadata, final ArtifactStore... stores )
+    public void deleted( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
         if ( postDelEvent != null )
         {
-            final List<StoreKey> storeList =
-                    stream( stores ).map( ArtifactStore::getKey ).collect( Collectors.toList() );
+            final List<StoreKey> storeList = Arrays.asList( storeKeys );
 
             logger.trace( "Dispatch post-delete event for: {}", storeList );
 
-            final ArtifactStoreDeletePostEvent event =
-                    new ArtifactStoreDeletePostEvent( eventMetadata, stream( stores ).collect( Collectors.toSet() ) );
+            final StorePostDeleteEvent event =
+                    new StorePostDeleteEvent( stream( storeKeys ).collect( Collectors.toSet() ) );
 
             fireEvent( postDelEvent, event );
 
@@ -114,64 +112,61 @@ public class DefaultStoreEventDispatcher
 
     @Override
     public void updating( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
-                          final Map<ArtifactStore, ArtifactStore> changeMap )
+                          final Map<StoreKey, StoreKey> changeMap )
     {
-        final ArtifactStorePreUpdateEvent event =
-                new ArtifactStorePreUpdateEvent( type, eventMetadata, new HashMap<>( changeMap ) );
+        final StorePreUpdateEvent event = new StorePreUpdateEvent( type, new HashMap<>( changeMap ) );
         fireEvent( updatePreEvent, event );
     }
 
     @Override
     public void updated( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
-                         final Map<ArtifactStore, ArtifactStore> changeMap )
+                         final Map<StoreKey, StoreKey> changeMap )
     {
-        final Map<Store, Store> changesForStores = new HashMap<>( changeMap );
+        final Map<EventStoreKey, EventStoreKey> changesForStores = new HashMap<>( changeMap );
         executor.execute( () -> {
-            final ArtifactStorePostUpdateEvent event =
-                    new ArtifactStorePostUpdateEvent( type, eventMetadata, changesForStores );
+            final StorePostUpdateEvent event = new StorePostUpdateEvent( type, changesForStores );
             fireEvent( updatePostEvent, event );
         } );
     }
 
     @Override
-    public void enabling( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
-        logger.trace( "Dispatch pre-enable event for: {}", Arrays.asList( stores ) );
+        logger.trace( "Dispatch pre-enable event for: {}", Arrays.asList( storeKeys ) );
 
-        fireEnablement( true, eventMetadata, false, stores );
+        fireEnablement( true, eventMetadata, false, storeKeys );
     }
 
     @Override
-    public void enabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
-        logger.trace( "Dispatch post-enable event for: {}", Arrays.asList( stores ) );
+        logger.trace( "Dispatch post-enable event for: {}", Arrays.asList( storeKeys ) );
 
         executor.execute( () -> {
-            fireEnablement( false, eventMetadata, false, stores );
+            fireEnablement( false, eventMetadata, false, storeKeys );
         } );
     }
 
     @Override
-    public void disabling( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void disabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
-        fireEnablement( true, eventMetadata, true, stores );
+        fireEnablement( true, eventMetadata, true, storeKeys );
     }
 
     @Override
-    public void disabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void disabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
         executor.execute( () -> {
-            fireEnablement( false, eventMetadata, true, stores );
+            fireEnablement( false, eventMetadata, true, storeKeys );
         } );
     }
 
     private void fireEnablement( boolean preprocess, EventMetadata eventMetadata, boolean disabling,
-                                 ArtifactStore... stores )
+                                 StoreKey... stores )
     {
         if ( enablementEvent != null )
         {
-            final ArtifactStoreEnablementEvent event =
-                    new ArtifactStoreEnablementEvent( preprocess, eventMetadata, disabling, stores );
+            final StoreEnablementEvent event = new StoreEnablementEvent( preprocess, disabling, stores );
 
             if ( preprocess )
             {

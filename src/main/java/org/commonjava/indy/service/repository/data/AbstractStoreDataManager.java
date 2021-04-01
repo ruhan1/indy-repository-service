@@ -15,22 +15,6 @@
  */
 package org.commonjava.indy.service.repository.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.inject.Inject;
-
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
@@ -48,12 +32,30 @@ import org.commonjava.indy.service.repository.model.ValuePipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Collections.*;
-import static javax.ws.rs.core.Response.Status.*;
-import static org.apache.commons.lang3.StringUtils.*;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Collections.emptySet;
+import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.commonjava.indy.service.repository.data.StoreUpdateAction.DELETE;
 import static org.commonjava.indy.service.repository.data.StoreUpdateAction.STORE;
-import static org.commonjava.indy.service.repository.model.StoreType.*;
+import static org.commonjava.indy.service.repository.model.StoreType.group;
+import static org.commonjava.indy.service.repository.model.StoreType.hosted;
 
 public abstract class AbstractStoreDataManager
         implements StoreDataManager
@@ -113,17 +115,18 @@ public abstract class AbstractStoreDataManager
         {
             logger.debug( "Firing store pre-update event for: {} (originally: {})", store, original );
             dispatcher.updating( exists ? ArtifactStoreUpdateType.UPDATE : ArtifactStoreUpdateType.ADD, eventMetadata,
-                                 Collections.singletonMap( store, original ) );
+                                 Collections.singletonMap( store.getKey(),
+                                                           original == null ? null : original.getKey() ) );
 
             if ( exists )
             {
                 if ( store.isDisabled() && !original.isDisabled() )
                 {
-                    dispatcher.disabling( eventMetadata, store );
+                    dispatcher.disabling( eventMetadata, store.getKey() );
                 }
                 else if ( !store.isDisabled() && original.isDisabled() )
                 {
-                    dispatcher.enabling( eventMetadata, store );
+                    dispatcher.enabling( eventMetadata, store.getKey() );
                 }
             }
         }
@@ -138,17 +141,17 @@ public abstract class AbstractStoreDataManager
         {
             logger.debug( "Firing store post-update event for: {} (originally: {})", store, original );
             dispatcher.updated( exists ? ArtifactStoreUpdateType.UPDATE : ArtifactStoreUpdateType.ADD, eventMetadata,
-                                Collections.singletonMap( store, original ) );
+                                Collections.singletonMap( store.getKey(), original==null?null:original.getKey() ) );
 
             if ( exists )
             {
                 if ( store.isDisabled() && !original.isDisabled() )
                 {
-                    dispatcher.disabled( eventMetadata, store );
+                    dispatcher.disabled( eventMetadata, store.getKey() );
                 }
                 else if ( !store.isDisabled() && original.isDisabled() )
                 {
-                    dispatcher.enabled( eventMetadata, store );
+                    dispatcher.enabled( eventMetadata, store.getKey() );
                 }
             }
         }
@@ -167,7 +170,7 @@ public abstract class AbstractStoreDataManager
         if ( dispatcher != null && isStarted() && fireEvents )
         {
             eventMetadata.set( StoreDataManager.CHANGE_SUMMARY, summary );
-            dispatcher.deleting( eventMetadata, store );
+            dispatcher.deleting( eventMetadata, store.getKey() );
         }
     }
 
@@ -178,13 +181,13 @@ public abstract class AbstractStoreDataManager
         StoreEventDispatcher dispatcher = getStoreEventDispatcher();
         if ( dispatcher != null && isStarted() && fireEvents )
         {
-            dispatcher.deleted( eventMetadata, store );
+            dispatcher.deleted( eventMetadata, store.getKey() );
         }
 
         refreshAffectedBy( store, null, StoreUpdateAction.DELETE );
     }
 
-//    @Measure
+    //    @Measure
     protected void refreshAffectedBy( final ArtifactStore store, final ArtifactStore original,
                                       StoreUpdateAction action )
     {

@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.model;
 
+import org.commonjava.event.store.EventStoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 public final class StoreKey
-        implements Comparable<StoreKey>, Externalizable
+        implements Comparable<StoreKey>, Externalizable, EventStoreKey
 {
     private static final int VERSION = 1;
 
@@ -39,7 +40,9 @@ public final class StoreKey
 
     private String name;
 
-    public StoreKey(){}
+    public StoreKey()
+    {
+    }
 
     public StoreKey( final String packageType, final StoreType type, final String name )
     {
@@ -140,7 +143,7 @@ public final class StoreKey
         Logger logger = LoggerFactory.getLogger( StoreKey.class );
         logger.debug( "Parsing raw string: '{}' to StoreKey", id );
 
-        String[] parts = id.split(":");
+        String[] parts = id.split( ":" );
 
         logger.debug( "Got {} parts: {}", parts.length, Arrays.asList( parts ) );
 
@@ -176,6 +179,42 @@ public final class StoreKey
         // logger.info( "parsed store-key with type: '{}' and name: '{}'", type, name );
 
         return new StoreKey( packageType, type, name );
+    }
+
+    @Override
+    public String stringKey()
+    {
+        return toString();
+    }
+
+    @Override
+    public EventStoreKey keyFromString( String s )
+    {
+        return fromString( s );
+    }
+
+    @Override
+    public String packageType()
+    {
+        return packageType;
+    }
+
+    @Override
+    public String storeType()
+    {
+        return type.singularEndpointName();
+    }
+
+    @Override
+    public String name()
+    {
+        return name;
+    }
+
+    @Override
+    public EventStoreKey copyOf()
+    {
+        return new StoreKey( this.packageType, this.type, this.name );
     }
 
     @Override
