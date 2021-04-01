@@ -65,10 +65,10 @@ public class CacheProducer
     InfinispanConfiguration ispnConfig;
 
     @Inject
-    private DefaultMetricsManager metricsManager;
+    DefaultMetricsManager metricsManager;
 
     @Inject
-    private MetricsConfiguration metricsConfig;
+    MetricsConfiguration metricsConfig;
 
     private final Map<String, CacheHandle> caches = new ConcurrentHashMap<>(); // hold embedded and remote caches
 

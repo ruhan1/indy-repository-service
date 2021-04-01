@@ -58,7 +58,7 @@ public class MaintenanceController
     StoreDataManager storeDataManager;
 
     @Inject
-    private ObjectMapper serializer;
+    ObjectMapper serializer;
 
     public File getRepoBundle()
             throws IOException

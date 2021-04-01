@@ -77,10 +77,10 @@ public class ApiVersioningFilter
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private Versioning indyVersioning;
+    Versioning indyVersioning;
 
     @Inject
-    private DeprecatedApis indyDeprecatedApis;
+    DeprecatedApis indyDeprecatedApis;
 
     public ApiVersioningFilter()
     {
