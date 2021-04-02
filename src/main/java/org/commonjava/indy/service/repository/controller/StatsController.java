@@ -40,10 +40,10 @@ public class StatsController
     private static final String ADDONS_LOGIC = "addonsLogic";
 
     @Inject
-    private Versioning versioning;
+    Versioning versioning;
 
     @Inject
-    private StoreDataManager dataManager;
+    StoreDataManager dataManager;
 
     protected StatsController()
     {
