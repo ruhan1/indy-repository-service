@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2021 Red Hat, Inc. (https://github.com/Commonjava/service-parent)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.event;
+package org.commonjava.indy.service.repository.change.event;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Alternative;
+import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
+import org.commonjava.event.store.IndyStoreEvent;
 
-/**
- * This event dispatcher will dispatch Store Event through kafka
- */
-//@ApplicationScoped
-@Alternative
-public class KafkaEventUtils
+public class StoreEventDeserializer
+        extends ObjectMapperDeserializer<IndyStoreEvent>
 {
-    public static <T> void fireEvent( Event<T> dispatcher, T event )
+    public StoreEventDeserializer()
     {
-        
+        super( IndyStoreEvent.class );
     }
 }

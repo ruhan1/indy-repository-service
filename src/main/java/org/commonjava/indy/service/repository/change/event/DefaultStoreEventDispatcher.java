@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.event;
+package org.commonjava.indy.service.repository.change.event;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.event.store.ArtifactStoreUpdateType;
 import org.commonjava.event.store.EventStoreKey;
 import org.commonjava.event.store.StoreEnablementEvent;
 import org.commonjava.event.store.StorePostDeleteEvent;
 import org.commonjava.event.store.StorePostUpdateEvent;
 import org.commonjava.event.store.StorePreDeleteEvent;
 import org.commonjava.event.store.StorePreUpdateEvent;
+import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -40,7 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
-import static org.commonjava.indy.service.repository.event.EventUtils.fireEvent;
 
 /**
  * Pre-events (deleting, updating, enabling) are single-threaded (inline to user thread) so there isn't a race
@@ -57,76 +55,84 @@ public class DefaultStoreEventDispatcher
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    @Inject
-    Event<StorePreUpdateEvent> updatePreEvent;
+    //    @Inject
+    //    CDIEventUtils cdiEvent;
 
     @Inject
-    Event<StorePostUpdateEvent> updatePostEvent;
-
-    @Inject
-    Event<StorePreDeleteEvent> preDelEvent;
-
-    @Inject
-    Event<StorePostDeleteEvent> postDelEvent;
-
-    @Inject
-    Event<StoreEnablementEvent> enablementEvent;
+    KafkaEventUtils kafkaEvent;
 
     //    @Inject
     //    @WeftManaged
     //    @ExecutorConfig( named = CoreEventManagerConstants.DISPATCH_EXECUTOR_NAME,
     //                     threads = CoreEventManagerConstants.DISPATCH_EXECUTOR_THREADS,
     //                     priority = CoreEventManagerConstants.DISPATCH_EXECUTOR_PRIORITY )
-    private ExecutorService executor = Executors.newFixedThreadPool( 8 );
+    private final ExecutorService executor = Executors.newFixedThreadPool( 8 );
 
     @Override
     public void deleting( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
-        if ( preDelEvent != null )
+        if ( kafkaEvent != null )
         {
             logger.trace( "Dispatch pre-delete event for: {}", Arrays.asList( storeKeys ) );
 
-            final StorePreDeleteEvent event =
-                    new StorePreDeleteEvent( stream( storeKeys ).collect( Collectors.toSet() ) );
+            final StorePreDeleteEvent event = new StorePreDeleteEvent(
+                    stream( storeKeys ).map( StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
 
-            fireEvent( preDelEvent, event );
+            kafkaEvent.fireEvent( event );
         }
     }
 
     @Override
     public void deleted( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
-        if ( postDelEvent != null )
+        if ( kafkaEvent != null )
         {
             final List<StoreKey> storeList = Arrays.asList( storeKeys );
 
             logger.trace( "Dispatch post-delete event for: {}", storeList );
 
-            final StorePostDeleteEvent event =
-                    new StorePostDeleteEvent( stream( storeKeys ).collect( Collectors.toSet() ) );
+            final StorePostDeleteEvent event = new StorePostDeleteEvent(
+                    stream( storeKeys ).map( StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
 
-            fireEvent( postDelEvent, event );
+            kafkaEvent.fireEvent( event );
 
         }
     }
 
     @Override
-    public void updating( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
+    public void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
                           final Map<StoreKey, StoreKey> changeMap )
     {
-        final StorePreUpdateEvent event = new StorePreUpdateEvent( type, new HashMap<>( changeMap ) );
-        fireEvent( updatePreEvent, event );
+        final Map<EventStoreKey, EventStoreKey> eventChangeMap = toEventChangeMap( changeMap );
+        final StorePreUpdateEvent event = new StorePreUpdateEvent( type, eventChangeMap );
+        kafkaEvent.fireEvent( event );
     }
 
     @Override
-    public void updated( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
+    public void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
                          final Map<StoreKey, StoreKey> changeMap )
     {
-        final Map<EventStoreKey, EventStoreKey> changesForStores = new HashMap<>( changeMap );
+        final Map<EventStoreKey, EventStoreKey> eventChangeMap = toEventChangeMap( changeMap );
         executor.execute( () -> {
-            final StorePostUpdateEvent event = new StorePostUpdateEvent( type, changesForStores );
-            fireEvent( updatePostEvent, event );
+            final StorePostUpdateEvent event = new StorePostUpdateEvent( type, eventChangeMap );
+            kafkaEvent.fireEvent( event );
         } );
+    }
+
+    private Map<EventStoreKey, EventStoreKey> toEventChangeMap( final Map<StoreKey, StoreKey> changeMap )
+    {
+        final Map<EventStoreKey, EventStoreKey> eventChangeMap = new HashMap<>( changeMap.size() );
+        changeMap.forEach( ( key, value ) -> {
+            if ( value != null )
+            {
+                eventChangeMap.put( key.toEventStoreKey(), value.toEventStoreKey() );
+            }
+            else
+            {
+                eventChangeMap.put( key.toEventStoreKey(), null );
+            }
+        } );
+        return eventChangeMap;
     }
 
     @Override
@@ -164,18 +170,20 @@ public class DefaultStoreEventDispatcher
     private void fireEnablement( boolean preprocess, EventMetadata eventMetadata, boolean disabling,
                                  StoreKey... stores )
     {
-        if ( enablementEvent != null )
+        if ( kafkaEvent != null )
         {
-            final StoreEnablementEvent event = new StoreEnablementEvent( preprocess, disabling, stores );
+            final EventStoreKey[] eventStoreKeys =
+                    (EventStoreKey[]) stream( stores ).map( StoreKey::toEventStoreKey ).toArray();
+            final StoreEnablementEvent event = new StoreEnablementEvent( preprocess, disabling, eventStoreKeys );
 
             if ( preprocess )
             {
-                fireEvent( enablementEvent, event );
+                kafkaEvent.fireEvent( event );
             }
             else
             {
                 executor.execute( () -> {
-                    fireEvent( enablementEvent, event );
+                    kafkaEvent.fireEvent( event );
                 } );
             }
         }

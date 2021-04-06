@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.ClusterStoreDataManager;
-import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
+import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.model.AbstractRepository;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;

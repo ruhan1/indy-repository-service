@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.event;
+package org.commonjava.indy.service.repository.change.event;
 
+import org.commonjava.event.store.IndyStoreEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 /**
  * Common way to insulate the system from event processing failures. Event handling is derivative or peripheral
@@ -28,24 +31,23 @@ import javax.enterprise.event.Event;
  *
  * Created by jdcasey on 11/1/17.
  */
-public class EventUtils
+@ApplicationScoped
+@Deprecated
+public class CDIEventUtils
 {
-    public static <T> void fireEvent( Event<T> dispatcher, T event )
+    @Inject
+    Event<IndyStoreEvent> eventEmitter;
+
+    public void fireEvent( IndyStoreEvent event )
     {
-        Logger logger = LoggerFactory.getLogger( EventUtils.class );
+        Logger logger = LoggerFactory.getLogger( CDIEventUtils.class );
         try
         {
-            if ( dispatcher != null )
-            {
-                logger.trace( "Firing event: {}", event );
-                dispatcher.fire( event );
-            }
-            else
-            {
-                logger.error( "Cannot fire event: {}. Reason: Event dispatcher is null!", event );
-            }
+            logger.trace( "Firing event: {}", event );
+            eventEmitter.fire( event );
         }
         catch ( RuntimeException e )
+
         {
             logger.error( String.format( "Error processing event: %s. Reason: %s", event, e.getMessage() ), e );
         }

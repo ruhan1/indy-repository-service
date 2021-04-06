@@ -16,12 +16,12 @@
 package org.commonjava.indy.service.repository.data;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.event.store.ArtifactStoreUpdateType;
+import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
-import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
+import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -114,7 +114,7 @@ public abstract class AbstractStoreDataManager
         if ( dispatcher != null && isStarted() && fireEvents )
         {
             logger.debug( "Firing store pre-update event for: {} (originally: {})", store, original );
-            dispatcher.updating( exists ? ArtifactStoreUpdateType.UPDATE : ArtifactStoreUpdateType.ADD, eventMetadata,
+            dispatcher.updating( exists ? StoreUpdateType.UPDATE : StoreUpdateType.ADD, eventMetadata,
                                  Collections.singletonMap( store.getKey(),
                                                            original == null ? null : original.getKey() ) );
 
@@ -140,7 +140,7 @@ public abstract class AbstractStoreDataManager
         if ( dispatcher != null && isStarted() && fireEvents )
         {
             logger.debug( "Firing store post-update event for: {} (originally: {})", store, original );
-            dispatcher.updated( exists ? ArtifactStoreUpdateType.UPDATE : ArtifactStoreUpdateType.ADD, eventMetadata,
+            dispatcher.updated( exists ? StoreUpdateType.UPDATE : StoreUpdateType.ADD, eventMetadata,
                                 Collections.singletonMap( store.getKey(), original==null?null:original.getKey() ) );
 
             if ( exists )

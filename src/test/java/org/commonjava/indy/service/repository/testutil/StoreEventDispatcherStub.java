@@ -16,8 +16,8 @@
 package org.commonjava.indy.service.repository.testutil;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.event.store.ArtifactStoreUpdateType;
-import org.commonjava.indy.service.repository.event.StoreEventDispatcher;
+import org.commonjava.event.store.StoreUpdateType;
+import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.model.StoreKey;
 
 import java.util.Map;
@@ -37,13 +37,13 @@ public class StoreEventDispatcherStub
     }
 
     @Override
-    public void updating( final ArtifactStoreUpdateType type, final EventMetadata metadata,
+    public void updating( final StoreUpdateType type, final EventMetadata metadata,
                           final Map<StoreKey, StoreKey> storeKeys )
     {
     }
 
     @Override
-    public void updated( final ArtifactStoreUpdateType type, final EventMetadata metadata,
+    public void updated( final StoreUpdateType type, final EventMetadata metadata,
                          final Map<StoreKey, StoreKey> storeKeys )
     {
     }

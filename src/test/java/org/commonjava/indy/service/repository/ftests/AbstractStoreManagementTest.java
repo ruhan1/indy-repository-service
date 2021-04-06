@@ -16,13 +16,18 @@
 package org.commonjava.indy.service.repository.ftests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.StoreKey;
+import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
 
 import java.util.Random;
 
 import static java.lang.String.format;
 import static org.commonjava.indy.service.repository.testutil.TestUtil.prepareCustomizedMapper;
 
+@QuarkusTestResource( KafkaTestResourceLifecycleManager.class )
 public class AbstractStoreManagementTest
 {
     private static final int NAME_LEN = 8;

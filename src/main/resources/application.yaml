@@ -49,14 +49,16 @@ kafka:
 
 mp:
   messaging:
+    emitter:
+      # the default buffer size for emitter's OnOverflow buffer strategy of back-pressure control
+      default-buffer-size: 1024
     outgoing:
       store-event:
         connector: "smallrye-kafka"
         topics: "store-event"
         value:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
-          deserializer: "org.commonjava.indy.service.repository.event.StoreEventDeserializer"
-
+          deserializer: "org.commonjava.indy.service.repository.change.event.StoreEventDeserializer"
 
 repository:
   data-storage: cassandra

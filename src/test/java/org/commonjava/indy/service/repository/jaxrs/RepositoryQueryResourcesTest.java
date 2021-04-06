@@ -15,8 +15,10 @@
  */
 package org.commonjava.indy.service.repository.jaxrs;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 
 @QuarkusTest
+@QuarkusTestResource( KafkaTestResourceLifecycleManager.class )
 @TestProfile( MockTestProfile.class )
 public class RepositoryQueryResourcesTest
 {

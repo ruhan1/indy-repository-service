@@ -30,7 +30,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 public final class StoreKey
-        implements Comparable<StoreKey>, Externalizable, EventStoreKey
+        implements Comparable<StoreKey>, Externalizable
 {
     private static final int VERSION = 1;
 
@@ -147,9 +147,9 @@ public final class StoreKey
 
         logger.debug( "Got {} parts: {}", parts.length, Arrays.asList( parts ) );
 
-        String packageType = null;
+        String packageType;
         String name;
-        StoreType type = null;
+        StoreType type;
 
         // FIXME: We need to get to a point where it's safe for this to be an error and not default to maven.
         if ( parts.length < 2 )
@@ -179,42 +179,6 @@ public final class StoreKey
         // logger.info( "parsed store-key with type: '{}' and name: '{}'", type, name );
 
         return new StoreKey( packageType, type, name );
-    }
-
-    @Override
-    public String stringKey()
-    {
-        return toString();
-    }
-
-    @Override
-    public EventStoreKey keyFromString( String s )
-    {
-        return fromString( s );
-    }
-
-    @Override
-    public String packageType()
-    {
-        return packageType;
-    }
-
-    @Override
-    public String storeType()
-    {
-        return type.singularEndpointName();
-    }
-
-    @Override
-    public String name()
-    {
-        return name;
-    }
-
-    @Override
-    public EventStoreKey copyOf()
-    {
-        return new StoreKey( this.packageType, this.type, this.name );
     }
 
     @Override
@@ -287,5 +251,16 @@ public final class StoreKey
         }
 
         this.name = (String) in.readObject();
+    }
+
+    public EventStoreKey toEventStoreKey()
+    {
+        return new EventStoreKey( this.packageType, this.type.singularEndpointName(), this.name );
+    }
+
+    public static StoreKey fromEventStoreKey( final EventStoreKey eventStoreKey )
+    {
+        return new StoreKey( eventStoreKey.getPackageType(), StoreType.get( eventStoreKey.getStoreType() ),
+                             eventStoreKey.getStoreName() );
     }
 }

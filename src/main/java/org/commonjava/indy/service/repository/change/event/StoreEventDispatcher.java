@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.event;
+package org.commonjava.indy.service.repository.change.event;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.event.store.ArtifactStoreUpdateType;
+import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
 
@@ -33,10 +33,10 @@ public interface StoreEventDispatcher
 
     void deleted( final EventMetadata eventMetadata, final StoreKey... stores );
 
-    void updating( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
+    void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
                    final Map<StoreKey, StoreKey> stores );
 
-    void updated( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
+    void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
                   final Map<StoreKey, StoreKey> stores );
 
     void enabling( final EventMetadata eventMetadata, final StoreKey... stores );
