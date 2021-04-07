@@ -17,6 +17,9 @@ package org.commonjava.indy.service.repository.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +27,7 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.PKG_TYPE_MAVEN;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -42,9 +46,12 @@ public class RemoteRepositoryTest
         remote.setServerCertPem( "AAAAFFFASDFADSFASDFSADFa" );
         remote.setServerTrustPolicy( "self-signed" );
 
-        String json = new ObjectMapper().writeValueAsString( remote );
+        String json = mapper.writeValueAsString( remote );
 
-        System.out.println( json );
+        assertThat( json, containsString( "server_certificate_pem" ) );
+        assertThat( json, containsString( "AAAAFFFASDFADSFASDFSADFa" ) );
+        assertThat( json, containsString( "server_trust_policy" ) );
+        assertThat( json, containsString( "self-signed" ) );
     }
 
     @Test
@@ -57,7 +64,10 @@ public class RemoteRepositoryTest
 
         String json = mapper.writeValueAsString( remote );
 
-        System.out.println( json );
+        assertThat( json, containsString( "key_certificate_pem" ) );
+        assertThat( json, containsString( "AAAAFFFASDFADSFASDFSADFa" ) );
+        assertThat( json, containsString( "key_password" ) );
+        assertThat( json, containsString( "testme" ) );
     }
 
     @Test

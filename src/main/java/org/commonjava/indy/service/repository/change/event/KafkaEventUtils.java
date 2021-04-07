@@ -57,6 +57,7 @@ public class KafkaEventUtils
     {
         try
         {
+            logger.trace( "Firing event: {}", event );
             emitter.send( event );
         }
         catch ( RuntimeException e )

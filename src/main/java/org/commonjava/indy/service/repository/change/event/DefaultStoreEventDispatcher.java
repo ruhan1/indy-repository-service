@@ -55,8 +55,6 @@ public class DefaultStoreEventDispatcher
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    //    @Inject
-    //    CDIEventUtils cdiEvent;
 
     @Inject
     KafkaEventUtils kafkaEvent;

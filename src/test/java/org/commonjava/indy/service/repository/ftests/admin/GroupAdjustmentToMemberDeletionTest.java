@@ -15,7 +15,6 @@
  */
 package org.commonjava.indy.service.repository.ftests.admin;
 
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
@@ -23,7 +22,6 @@ import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
-import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -68,7 +66,7 @@ public class GroupAdjustmentToMemberDeletionTest
 
         delete( getRepoUrl( hosted.getKey() ) );
 
-        Thread.sleep( 500 ); // to make cascading deletion finish
+        waitForEventPropagationWithMultiplier( 5 ); // to make cascading deletion finish
 
         // TODO: need to finish the StoreDataManager.postStore function to make this pass.
         given().get( getRepoUrl( group.getKey() ) )
