@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.model;
 
+import org.commonjava.event.store.EventStoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,9 @@ public final class StoreKey
 
     private String name;
 
-    public StoreKey(){}
+    public StoreKey()
+    {
+    }
 
     public StoreKey( final String packageType, final StoreType type, final String name )
     {
@@ -140,13 +143,13 @@ public final class StoreKey
         Logger logger = LoggerFactory.getLogger( StoreKey.class );
         logger.debug( "Parsing raw string: '{}' to StoreKey", id );
 
-        String[] parts = id.split(":");
+        String[] parts = id.split( ":" );
 
         logger.debug( "Got {} parts: {}", parts.length, Arrays.asList( parts ) );
 
-        String packageType = null;
+        String packageType;
         String name;
-        StoreType type = null;
+        StoreType type;
 
         // FIXME: We need to get to a point where it's safe for this to be an error and not default to maven.
         if ( parts.length < 2 )
@@ -248,5 +251,16 @@ public final class StoreKey
         }
 
         this.name = (String) in.readObject();
+    }
+
+    public EventStoreKey toEventStoreKey()
+    {
+        return new EventStoreKey( this.packageType, this.type.singularEndpointName(), this.name );
+    }
+
+    public static StoreKey fromEventStoreKey( final EventStoreKey eventStoreKey )
+    {
+        return new StoreKey( eventStoreKey.getPackageType(), StoreType.get( eventStoreKey.getStoreType() ),
+                             eventStoreKey.getStoreName() );
     }
 }

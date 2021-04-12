@@ -16,14 +16,23 @@
 package org.commonjava.indy.service.repository.ftests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.StoreKey;
+import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
+import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
 import static java.lang.String.format;
 import static org.commonjava.indy.service.repository.testutil.TestUtil.prepareCustomizedMapper;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class AbstractStoreManagementTest
+@QuarkusTestResource( KafkaTestResourceLifecycleManager.class )
+public abstract class AbstractStoreManagementTest
 {
     private static final int NAME_LEN = 8;
 
@@ -62,4 +71,23 @@ public class AbstractStoreManagementTest
         return format( ADMIN_REPO_NAME_BASE, key.getPackageType(), key.getType(), key.getName() );
     }
 
+    protected void waitForEventPropagationWithMultiplier( final int multiplier )
+    {
+        long ms = 100L * multiplier;
+
+        Logger logger = LoggerFactory.getLogger( getClass() );
+        logger.info( "Waiting {}ms for Indy server events to clear.", ms );
+        // give events time to propagate
+        try
+        {
+            Thread.sleep( ms );
+        }
+        catch ( InterruptedException e )
+        {
+            e.printStackTrace();
+            fail( "Thread interrupted while waiting for server events to propagate." );
+        }
+
+        logger.info( "Resuming test" );
+    }
 }

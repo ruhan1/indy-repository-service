@@ -16,14 +16,15 @@
 package org.commonjava.indy.service.repository.data.mem;
 
 import org.commonjava.event.common.EventMetadata;
+import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
-import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
-import org.commonjava.indy.service.repository.event.NoOpStoreEventDispatcher;
+import org.commonjava.indy.service.repository.change.event.NoOpStoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
+import org.commonjava.indy.service.repository.model.StoreKey;
 import org.jboss.byteman.contrib.bmunit.BMRule;
 import org.jboss.byteman.contrib.bmunit.BMRules;
 import org.jboss.byteman.contrib.bmunit.BMUnitConfig;
@@ -162,8 +163,8 @@ public class ConcurrencyTest
         }
 
         @Override
-        public void updating( ArtifactStoreUpdateType type, EventMetadata eventMetadata,
-                              Map<ArtifactStore, ArtifactStore> stores )
+        public void updating( StoreUpdateType type, EventMetadata eventMetadata,
+                              Map<ArtifactStore, ArtifactStore> storeKeys )
         {
             for ( int i = 0; i < 2; i++ )
             {
@@ -212,7 +213,7 @@ public class ConcurrencyTest
         }
 
         @Override
-        public void deleting( EventMetadata eventMetadata, ArtifactStore... stores )
+        public void deleting( EventMetadata eventMetadata, StoreKey... storeKeys )
         {
             completionService.submit( ()->{
                 Logger logger = LoggerFactory.getLogger( getClass() );

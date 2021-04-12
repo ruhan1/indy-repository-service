@@ -69,7 +69,7 @@ import static org.commonjava.indy.service.repository.model.version.Versioning.HE
  *  The servlet container respect the priority and choose the right method to use.
  */
 @ApplicationScoped
-@WebFilter( "/*" )
+@WebFilter( "/api/admin/*" )
 public class ApiVersioningFilter
         implements Filter
 {

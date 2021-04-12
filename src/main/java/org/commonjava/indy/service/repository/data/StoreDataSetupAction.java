@@ -61,7 +61,7 @@ public class StoreDataSetupAction
                 final RemoteRepository central =
                         new RemoteRepository( MAVEN_PKG_KEY, "central", "https://repo.maven.apache.org/maven2/" );
                 central.setCacheTimeoutSeconds( 86400 );
-                storeManager.storeArtifactStore( central, summary, true, true,
+                storeManager.storeArtifactStore( central, summary, true, false,
                                                  new EventMetadata().set( StoreDataManager.EVENT_ORIGIN,
                                                                           DEFAULT_SETUP ) );
 
@@ -74,7 +74,7 @@ public class StoreDataSetupAction
                 local.setAllowSnapshots( true );
                 local.setSnapshotTimeoutSeconds( 86400 );
 
-                storeManager.storeArtifactStore( local, summary, true, true,
+                storeManager.storeArtifactStore( local, summary, true, false,
                                                  new EventMetadata().set( StoreDataManager.EVENT_ORIGIN,
                                                                           DEFAULT_SETUP ) );
             }
@@ -85,7 +85,7 @@ public class StoreDataSetupAction
                 pub.addConstituent( new StoreKey( MAVEN_PKG_KEY, StoreType.remote, "central" ) );
                 pub.addConstituent( new StoreKey( MAVEN_PKG_KEY, StoreType.hosted, "local-deployments" ) );
 
-                storeManager.storeArtifactStore( pub, summary, true, true,
+                storeManager.storeArtifactStore( pub, summary, true, false,
                                                  new EventMetadata().set( StoreDataManager.EVENT_ORIGIN,
                                                                           DEFAULT_SETUP ) );
             }

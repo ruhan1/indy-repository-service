@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2021 Red Hat, Inc. (https://github.com/Commonjava/service-parent)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.change;
+package org.commonjava.indy.service.repository.change.event;
 
-import org.commonjava.indy.service.repository.model.ArtifactStore;
+import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
+import org.commonjava.event.store.IndyStoreEvent;
 
-/**
- * Enumeration of the types of configuration updates that can happen for {@link ArtifactStore}'s.
- */
-public enum ArtifactStoreUpdateType
+public class StoreEventDeserializer
+        extends ObjectMapperDeserializer<IndyStoreEvent>
 {
-
-    /** Definite creation of new store. */
-    ADD,
-    /** upadting an existing store. */
-    UPDATE
-
+    public StoreEventDeserializer()
+    {
+        super( IndyStoreEvent.class );
+    }
 }

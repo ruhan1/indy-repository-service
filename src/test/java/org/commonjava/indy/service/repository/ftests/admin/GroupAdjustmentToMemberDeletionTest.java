@@ -23,7 +23,6 @@ import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -33,10 +32,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
-@QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
+@QuarkusTest
 @Tag( "function" )
-@Disabled("StoreManager.postStore not implemented yet, will cause this ftest fail.")
+//@Disabled("StoreManager.postStore not implemented yet, will cause this ftest fail.")
 public class GroupAdjustmentToMemberDeletionTest
         extends AbstractStoreManagementTest
 {
@@ -62,11 +61,12 @@ public class GroupAdjustmentToMemberDeletionTest
                .contentType( APPLICATION_JSON )
                .post( getRepoTypeUrl( group.getKey() ) )
                .then()
-               .body( new RepoEqualMatcher<>( mapper, group, Group.class ) );
+               .body( new RepoEqualMatcher<>( mapper, group, Group.class ) )
+               .body( "constituents.size()", CoreMatchers.is( 1 ) );
 
         delete( getRepoUrl( hosted.getKey() ) );
 
-        Thread.sleep( 500 ); // to make cascading deletion finish
+        waitForEventPropagationWithMultiplier( 5 ); // to make cascading deletion finish
 
         // TODO: need to finish the StoreDataManager.postStore function to make this pass.
         given().get( getRepoUrl( group.getKey() ) )

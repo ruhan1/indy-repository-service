@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.event;
+package org.commonjava.indy.service.repository.change.event;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
+import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.StoreKey;
 
 import javax.enterprise.event.Event;
 import java.util.Map;
@@ -28,20 +29,22 @@ import java.util.Map;
 public interface StoreEventDispatcher
 {
 
-    void deleting( final EventMetadata eventMetadata, final ArtifactStore... stores );
+    void deleting( final EventMetadata eventMetadata, final StoreKey... stores );
 
-    void deleted( final EventMetadata eventMetadata, final ArtifactStore... stores );
+    void deleted( final EventMetadata eventMetadata, final StoreKey... stores );
 
-    void updating(final ArtifactStoreUpdateType type, final EventMetadata eventMetadata, final Map<ArtifactStore, ArtifactStore> stores );
+    void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
+                   final Map<ArtifactStore, ArtifactStore> stores );
 
-    void updated( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata, final Map<ArtifactStore, ArtifactStore> stores );
+    void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
+                  final Map<ArtifactStore, ArtifactStore> stores );
 
-    void enabling( final EventMetadata eventMetadata, final ArtifactStore...stores );
+    void enabling( final EventMetadata eventMetadata, final StoreKey... stores );
 
-    void enabled( final EventMetadata eventMetadata, final ArtifactStore...stores );
+    void enabled( final EventMetadata eventMetadata, final StoreKey... stores );
 
-    void disabling( final EventMetadata eventMetadata, final ArtifactStore... stores );
+    void disabling( final EventMetadata eventMetadata, final StoreKey... stores );
 
-    void disabled( final EventMetadata eventMetadata, final ArtifactStore...stores );
+    void disabled( final EventMetadata eventMetadata, final StoreKey... stores );
 
 }

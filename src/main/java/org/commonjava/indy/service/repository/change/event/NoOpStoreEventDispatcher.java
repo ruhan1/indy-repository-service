@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.event;
+package org.commonjava.indy.service.repository.change.event;
 
 import org.commonjava.event.common.EventMetadata;
-import org.commonjava.indy.service.repository.change.ArtifactStoreUpdateType;
+import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.StoreKey;
 
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
@@ -30,47 +31,47 @@ public class NoOpStoreEventDispatcher
 {
 
     @Override
-    public void deleting( final EventMetadata eventMetadata, final ArtifactStore... stores )
+    public void deleting( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
     }
 
     @Override
-    public void deleted( final EventMetadata eventMetadata, final ArtifactStore... stores )
+    public void deleted( final EventMetadata eventMetadata, final StoreKey... storeKeys )
     {
     }
 
     @Override
-    public void updating(final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
+    public void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
+                          final Map<ArtifactStore, ArtifactStore> stores )
+    {
+    }
+
+    @Override
+    public void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
                          final Map<ArtifactStore, ArtifactStore> stores )
     {
     }
 
     @Override
-    public void updated( final ArtifactStoreUpdateType type, final EventMetadata eventMetadata,
-                         final Map<ArtifactStore, ArtifactStore> stores )
-    {
-    }
-
-    @Override
-    public void enabling( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void enabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void enabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void disabling( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void disabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
 
     @Override
-    public void disabled( EventMetadata eventMetadata, ArtifactStore... stores )
+    public void disabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
 
     }
