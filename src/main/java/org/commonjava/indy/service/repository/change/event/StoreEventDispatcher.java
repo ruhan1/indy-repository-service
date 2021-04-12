@@ -34,10 +34,10 @@ public interface StoreEventDispatcher
     void deleted( final EventMetadata eventMetadata, final StoreKey... stores );
 
     void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
-                   final Map<StoreKey, StoreKey> stores );
+                   final Map<ArtifactStore, ArtifactStore> stores );
 
     void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
-                  final Map<StoreKey, StoreKey> stores );
+                  final Map<ArtifactStore, ArtifactStore> stores );
 
     void enabling( final EventMetadata eventMetadata, final StoreKey... stores );
 

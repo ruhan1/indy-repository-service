@@ -18,10 +18,10 @@ package org.commonjava.indy.service.repository.data;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
-import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
+import static java.util.Collections.singletonMap;
 import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -115,8 +116,7 @@ public abstract class AbstractStoreDataManager
         {
             logger.debug( "Firing store pre-update event for: {} (originally: {})", store, original );
             dispatcher.updating( exists ? StoreUpdateType.UPDATE : StoreUpdateType.ADD, eventMetadata,
-                                 Collections.singletonMap( store.getKey(),
-                                                           original == null ? null : original.getKey() ) );
+                                 singletonMap( store, original ) );
 
             if ( exists )
             {
@@ -141,7 +141,7 @@ public abstract class AbstractStoreDataManager
         {
             logger.debug( "Firing store post-update event for: {} (originally: {})", store, original );
             dispatcher.updated( exists ? StoreUpdateType.UPDATE : StoreUpdateType.ADD, eventMetadata,
-                                Collections.singletonMap( store.getKey(), original==null?null:original.getKey() ) );
+                                singletonMap( store, original ) );
 
             if ( exists )
             {

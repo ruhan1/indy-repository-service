@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2021 Red Hat, Inc. (https://github.com/Commonjava/indy)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,28 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.OK;
 import static org.awaitility.Awaitility.await;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
+/**
+ * This case test if the repo creation will trigger the creation event correctly
+ * when: <br />
+ * <ul>
+ *      <li>creates a repo</li>
+ * </ul>
+ * then: <br />
+ * <ul>
+ *     <li>There will be 2 events generated with type of PreUpdate and PostUpdate</li>
+ *     <li>These two events will have correct info with creation</li>
+ * </ul>
+ */
 @QuarkusTest
 @TestProfile( ISPNFunctionProfile.class )
 @Tag( "function" )
-public class CreateAndUpdateGroupWithEventTest
+public class CreateRepoWithEventTest
         extends AbstractStoreEventTest
 {
     @Test
@@ -62,27 +73,23 @@ public class CreateAndUpdateGroupWithEventTest
                .then()
                .body( new RepoEqualMatcher<>( mapper, repo, Group.class ) );
 
-        repo.setDescription( "Testing" );
-        json = mapper.writeValueAsString( repo );
-        final String repoUrl = getRepoUrl( repo.getKey() );
-        given().body( json ).contentType( APPLICATION_JSON ).put( repoUrl ).then().statusCode( OK.getStatusCode() );
-
         final InMemorySink<IndyStoreEvent> eventsChannel = connector.sink( KafkaEventUtils.CHANNEL_STORE );
         await().<List<? extends Message<IndyStoreEvent>>>until( eventsChannel::received,
-                                                                t -> t.size() >= 4 );  // to wait for event sending
+                                                                t -> t.size() >= 2 );  // to wait for event sending
 
         List<? extends Message<IndyStoreEvent>> events = eventsChannel.received();
-        assertThat( events.size(), is( 4 ) );
-        IndyStoreEvent storeEvent = eventsChannel.received().get( 2 ).getPayload();
+        assertThat( events.size(), is( 2 ) );
+        IndyStoreEvent storeEvent = eventsChannel.received().get( 0 ).getPayload();
         assertThat( storeEvent.getEventType(), is( StoreEventType.PreUpdate ) );
         StorePreUpdateEvent preUpdate = (StorePreUpdateEvent) storeEvent;
-        assertThat( preUpdate.getType(), is( StoreUpdateType.UPDATE ) );
+        assertThat( preUpdate.getType(), is( StoreUpdateType.ADD ) );
         assertThat( preUpdate.getKeys(), contains( repo.getKey().toEventStoreKey() ) );
 
-        storeEvent = eventsChannel.received().get( 3 ).getPayload();
+        storeEvent = eventsChannel.received().get( 1 ).getPayload();
         assertThat( storeEvent.getEventType(), is( StoreEventType.PostUpdate ) );
         StorePostUpdateEvent postUpdate = (StorePostUpdateEvent) storeEvent;
-        assertThat( postUpdate.getType(), is( StoreUpdateType.UPDATE ) );
+        assertThat( postUpdate.getType(), is( StoreUpdateType.ADD ) );
         assertThat( postUpdate.getKeys(), contains( repo.getKey().toEventStoreKey() ) );
+
     }
 }

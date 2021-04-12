@@ -69,6 +69,7 @@ public abstract class ArtifactStore
 
     private String description;
 
+    @JsonIgnore
     private transient Map<String, Object> transientMetadata;
 
     private Map<String, String> metadata;

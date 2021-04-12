@@ -17,6 +17,7 @@ package org.commonjava.indy.service.repository.change.event;
 
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.StoreUpdateType;
+import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
 
 import javax.enterprise.inject.Alternative;
@@ -41,13 +42,13 @@ public class NoOpStoreEventDispatcher
 
     @Override
     public void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
-                          final Map<StoreKey, StoreKey> storeKeys )
+                          final Map<ArtifactStore, ArtifactStore> stores )
     {
     }
 
     @Override
     public void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
-                         final Map<StoreKey, StoreKey> storeKeys )
+                         final Map<ArtifactStore, ArtifactStore> stores )
     {
     }
 

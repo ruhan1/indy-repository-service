@@ -23,6 +23,8 @@ import org.commonjava.event.store.StorePostUpdateEvent;
 import org.commonjava.event.store.StorePreDeleteEvent;
 import org.commonjava.event.store.StorePreUpdateEvent;
 import org.commonjava.event.store.StoreUpdateType;
+import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.StoreDiffer;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 
 /**
@@ -55,7 +57,6 @@ public class DefaultStoreEventDispatcher
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-
     @Inject
     KafkaEventUtils kafkaEvent;
 
@@ -71,10 +72,10 @@ public class DefaultStoreEventDispatcher
     {
         if ( kafkaEvent != null )
         {
-            logger.trace( "Dispatch pre-delete event for: {}", Arrays.asList( storeKeys ) );
+            logger.trace( "Dispatch pre-delete event for: {}", asList( storeKeys ) );
 
-            final StorePreDeleteEvent event = new StorePreDeleteEvent(
-                    stream( storeKeys ).map( StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
+            final StorePreDeleteEvent event = new StorePreDeleteEvent( eventMetadata, stream( storeKeys ).map(
+                    StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
 
             kafkaEvent.fireEvent( event );
         }
@@ -85,12 +86,12 @@ public class DefaultStoreEventDispatcher
     {
         if ( kafkaEvent != null )
         {
-            final List<StoreKey> storeList = Arrays.asList( storeKeys );
+            final List<StoreKey> storeList = asList( storeKeys );
 
             logger.trace( "Dispatch post-delete event for: {}", storeList );
 
-            final StorePostDeleteEvent event = new StorePostDeleteEvent(
-                    stream( storeKeys ).map( StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
+            final StorePostDeleteEvent event = new StorePostDeleteEvent( eventMetadata, stream( storeKeys ).map(
+                    StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
 
             kafkaEvent.fireEvent( event );
 
@@ -99,20 +100,30 @@ public class DefaultStoreEventDispatcher
 
     @Override
     public void updating( final StoreUpdateType type, final EventMetadata eventMetadata,
-                          final Map<StoreKey, StoreKey> changeMap )
+                          final Map<ArtifactStore, ArtifactStore> changeMap )
     {
-        final Map<EventStoreKey, EventStoreKey> eventChangeMap = toEventChangeMap( changeMap );
-        final StorePreUpdateEvent event = new StorePreUpdateEvent( type, eventChangeMap );
+        final Map<EventStoreKey, Map<String, List<Object>>> newChangeMap = new HashMap<>( changeMap.size() );
+        for ( Map.Entry<ArtifactStore, ArtifactStore> e : changeMap.entrySet() )
+        {
+            newChangeMap.put( e.getKey().getKey().toEventStoreKey(),
+                              StoreDiffer.instance().diffArtifactStores( e.getKey(), e.getValue() ) );
+        }
+        final StorePreUpdateEvent event = new StorePreUpdateEvent( type, eventMetadata, newChangeMap );
         kafkaEvent.fireEvent( event );
     }
 
     @Override
     public void updated( final StoreUpdateType type, final EventMetadata eventMetadata,
-                         final Map<StoreKey, StoreKey> changeMap )
+                         final Map<ArtifactStore, ArtifactStore> changeMap )
     {
-        final Map<EventStoreKey, EventStoreKey> eventChangeMap = toEventChangeMap( changeMap );
+        final Map<EventStoreKey, Map<String, List<Object>>> newChangeMap = new HashMap<>( changeMap.size() );
+        for ( Map.Entry<ArtifactStore, ArtifactStore> e : changeMap.entrySet() )
+        {
+            newChangeMap.put( e.getKey().getKey().toEventStoreKey(),
+                              StoreDiffer.instance().diffArtifactStores( e.getKey(), e.getValue() ) );
+        }
         executor.execute( () -> {
-            final StorePostUpdateEvent event = new StorePostUpdateEvent( type, eventChangeMap );
+            final StorePostUpdateEvent event = new StorePostUpdateEvent( type, eventMetadata, newChangeMap );
             kafkaEvent.fireEvent( event );
         } );
     }
@@ -136,7 +147,7 @@ public class DefaultStoreEventDispatcher
     @Override
     public void enabling( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
-        logger.trace( "Dispatch pre-enable event for: {}", Arrays.asList( storeKeys ) );
+        logger.trace( "Dispatch pre-enable event for: {}", asList( storeKeys ) );
 
         fireEnablement( true, eventMetadata, false, storeKeys );
     }
@@ -144,7 +155,7 @@ public class DefaultStoreEventDispatcher
     @Override
     public void enabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
-        logger.trace( "Dispatch post-enable event for: {}", Arrays.asList( storeKeys ) );
+        logger.trace( "Dispatch post-enable event for: {}", asList( storeKeys ) );
 
         executor.execute( () -> {
             fireEnablement( false, eventMetadata, false, storeKeys );
@@ -172,7 +183,8 @@ public class DefaultStoreEventDispatcher
         {
             final EventStoreKey[] eventStoreKeys =
                     (EventStoreKey[]) stream( stores ).map( StoreKey::toEventStoreKey ).toArray();
-            final StoreEnablementEvent event = new StoreEnablementEvent( preprocess, disabling, eventStoreKeys );
+            final StoreEnablementEvent event =
+                    new StoreEnablementEvent( eventMetadata, preprocess, disabling, eventStoreKeys );
 
             if ( preprocess )
             {
