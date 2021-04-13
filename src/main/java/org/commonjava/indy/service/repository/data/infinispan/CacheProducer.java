@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.StringSearchInterpolator;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.config.MetricsConfiguration;
 import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
 import org.infinispan.Cache;
@@ -65,6 +66,9 @@ public class CacheProducer
     InfinispanConfiguration ispnConfig;
 
     @Inject
+    IndyRepositoryConfiguration repoConfig;
+
+    @Inject
     DefaultMetricsManager metricsManager;
 
     @Inject
@@ -90,6 +94,12 @@ public class CacheProducer
 
     private EmbeddedCacheManager startCacheManager()
     {
+        if ( !IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repoConfig.getStorageType() ) )
+        {
+            logger.info( "Not an infinispan store data manager enabled, so will not init this cache producer" );
+            return null;
+        }
+
         // FIXME This is just here to trigger shutdown hook init for embedded log4j in infinispan-embedded-query.
         // FIXES:
         //
@@ -156,6 +166,11 @@ public class CacheProducer
      */
     public synchronized <K, V> CacheHandle<K, V> getCache( String named )
     {
+        if ( cacheManager == null )
+        {
+            throw new IllegalStateException(
+                    "CacheManager is not initialized. Have you enabled the infinispan store data manager? (repository.data-storage)" );
+        }
         logger.debug( "Get embedded cache, name: {}", named );
         return (CacheHandle) caches.computeIfAbsent( named, ( k ) -> {
             Cache<K, V> cache = cacheManager.getCache( k );

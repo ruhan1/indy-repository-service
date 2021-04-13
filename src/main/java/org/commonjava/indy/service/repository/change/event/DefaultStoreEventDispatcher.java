@@ -23,6 +23,7 @@ import org.commonjava.event.store.StorePostUpdateEvent;
 import org.commonjava.event.store.StorePreDeleteEvent;
 import org.commonjava.event.store.StorePreUpdateEvent;
 import org.commonjava.event.store.StoreUpdateType;
+import org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreDiffer;
 import org.commonjava.indy.service.repository.model.StoreKey;

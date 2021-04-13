@@ -20,7 +20,7 @@ import io.smallrye.reactive.messaging.connectors.InMemoryConnector;
 
 import java.util.Map;
 
-import static org.commonjava.indy.service.repository.change.event.KafkaEventUtils.CHANNEL_STORE;
+import static org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils.CHANNEL_STORE;
 
 public class KafkaTestResourceLifecycleManager
         implements QuarkusTestResourceLifecycleManager

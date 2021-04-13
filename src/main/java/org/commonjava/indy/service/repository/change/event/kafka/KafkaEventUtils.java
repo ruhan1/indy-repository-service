@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.change.event;
+package org.commonjava.indy.service.repository.change.event.kafka;
 
 import org.commonjava.event.store.IndyStoreEvent;
 import org.eclipse.microprofile.reactive.messaging.Channel;
