@@ -23,7 +23,7 @@ import org.commonjava.event.store.StoreEventType;
 import org.commonjava.event.store.StorePostUpdateEvent;
 import org.commonjava.event.store.StorePreUpdateEvent;
 import org.commonjava.event.store.StoreUpdateType;
-import org.commonjava.indy.service.repository.change.event.KafkaEventUtils;
+import org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.Group;

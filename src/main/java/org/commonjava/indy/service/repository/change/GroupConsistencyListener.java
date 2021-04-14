@@ -21,7 +21,6 @@ import org.commonjava.event.store.EventStoreKey;
 import org.commonjava.event.store.IndyStoreEvent;
 import org.commonjava.event.store.StoreEventType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
-import org.commonjava.indy.service.repository.change.event.KafkaEventUtils;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.Group;
@@ -34,7 +33,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Set;
 
-import static org.commonjava.indy.service.repository.change.event.KafkaEventUtils.CHANNEL_INTERNAL;
+import static org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils.CHANNEL_INTERNAL;
 import static org.commonjava.indy.service.repository.model.StoreKey.fromEventStoreKey;
 
 @ApplicationScoped

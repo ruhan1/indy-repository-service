@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2020 Red Hat, Inc.
+ * Copyright (C) 2011-2021 Red Hat, Inc. (https://github.com/Commonjava/indy)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.change.event;
+package org.commonjava.indy.service.repository.change.event.kafka;
 
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
-import org.commonjava.event.store.IndyStoreEvent;
+import org.commonjava.indy.service.repository.model.StoreKey;
 
-public class StoreEventDeserializer
-        extends ObjectMapperDeserializer<IndyStoreEvent>
+public class StoreKeyMapperDeserializer extends ObjectMapperDeserializer<StoreKey>
 {
-    public StoreEventDeserializer()
+    public StoreKeyMapperDeserializer( Class<StoreKey> type )
     {
-        super( IndyStoreEvent.class );
+        super( type );
     }
 }

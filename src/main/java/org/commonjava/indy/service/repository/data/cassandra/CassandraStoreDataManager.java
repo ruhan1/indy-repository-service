@@ -61,6 +61,9 @@ public class CassandraStoreDataManager
     @Inject
     ObjectMapper objectMapper;
 
+    @Inject
+    StoreEventDispatcher eventDispatcher;
+
     protected CassandraStoreDataManager()
     {
     }
@@ -74,7 +77,8 @@ public class CassandraStoreDataManager
     @Override
     protected StoreEventDispatcher getStoreEventDispatcher()
     {
-        return null;
+        logger.trace( "Use {} as store event dispatcher", eventDispatcher.getClass() );
+        return eventDispatcher;
     }
 
     @Override

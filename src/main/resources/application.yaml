@@ -11,10 +11,12 @@ quarkus:
   # Logging (disable console on prod)
   log:
     level: INFO
-    min-level: INFO
+    min-level: TRACE
     category:
       "org.jboss":
         level: WARN
+      "org.apache.kafka":
+        level: ERROR
       "io.quarkus":
         level: WARN
       "io.smallrye":
@@ -30,7 +32,7 @@ quarkus:
       "org.commonjava.indy.service":
         level: INFO
     console:
-      enable: false
+      enable: true
     file:
       level: INFO
       enable: true
@@ -58,10 +60,10 @@ mp:
         topics: "store-event"
         value:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
-          deserializer: "org.commonjava.indy.service.repository.change.event.StoreEventDeserializer"
+          deserializer: "org.commonjava.indy.service.repository.change.event.kafka.StoreEventDeserializer"
 
 repository:
-  data-storage: cassandra
+  data-storage: infinispan
 #  affectedGroupsExclude: ^build-\d+
 #  disposableStorePattern:
   # ssl validation configuration for remote
@@ -98,6 +100,8 @@ cassandra:
        category:
          "org.jboss":
            level: INFO
+         "org.apache.kafka":
+           level: ERROR
          "io.quarkus":
            level: INFO
          "io.smallrye":
