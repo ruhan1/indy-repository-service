@@ -60,7 +60,6 @@ mp:
         topics: "store-event"
         value:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
-          deserializer: "org.commonjava.indy.service.repository.change.event.kafka.StoreEventDeserializer"
 
 repository:
   data-storage: cassandra
