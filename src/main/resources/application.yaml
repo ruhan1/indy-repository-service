@@ -16,7 +16,7 @@ quarkus:
       "org.jboss":
         level: WARN
       "org.apache.kafka":
-        level: ERROR
+        level: WARN
       "io.quarkus":
         level: WARN
       "io.smallrye":
@@ -30,7 +30,7 @@ quarkus:
       "io.agroal":
         level: WARN
       "org.commonjava.indy.service":
-        level: INFO
+        level: TRACE
     console:
       enable: true
     file:
@@ -63,7 +63,7 @@ mp:
           deserializer: "org.commonjava.indy.service.repository.change.event.kafka.StoreEventDeserializer"
 
 repository:
-  data-storage: infinispan
+  data-storage: cassandra
 #  affectedGroupsExclude: ^build-\d+
 #  disposableStorePattern:
   # ssl validation configuration for remote

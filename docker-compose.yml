@@ -38,16 +38,3 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-
-  indy_repository_service:
-    image: "indy-repository-service:latest"
-    container_name: "indy-repository-service"
-    build:
-      dockerfile: ./src/main/image/Dockerfile
-      context: ./
-    depends_on:
-      - cassandra
-      - kafka
-    ports:
-      - "8080:8080"
-    restart: always

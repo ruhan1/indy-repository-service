@@ -49,7 +49,9 @@ public class KafkaEventUtils
 
     public void fireEvent( IndyStoreEvent event )
     {
+        logger.trace( "Firing event to internal: {}", event );
         handleEvent( internalEventEmitter, event, "Can not processing internal event." );
+        logger.trace( "Firing event to external: {}", event );
         handleEvent( eventEmitter, event, "Can not processing external event." );
     }
 
@@ -57,7 +59,6 @@ public class KafkaEventUtils
     {
         try
         {
-            logger.trace( "Firing event: {}", event );
             emitter.send( event );
         }
         catch ( RuntimeException e )
