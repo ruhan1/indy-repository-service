@@ -63,6 +63,7 @@ public class IndyJacksonCustomizer
 
         mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
         mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+//        mapper.disable( SerializationFeature.FAIL_ON_EMPTY_BEANS );
 
         injectSingle( mapper, new RepoApiSerializerModule() );
 
