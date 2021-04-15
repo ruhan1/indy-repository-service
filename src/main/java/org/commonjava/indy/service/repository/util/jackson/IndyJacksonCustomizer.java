@@ -26,7 +26,6 @@ import io.quarkus.jackson.ObjectMapperCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,12 +44,6 @@ public class IndyJacksonCustomizer
     @Inject
     Instance<Module> injectedModules;
 
-    @Inject
-    Instance<ModuleSet> injectedModuleSets;
-
-//    @Deprecated
-//    private final Set<String> registeredModules = new HashSet<>();
-
     public void customize( ObjectMapper mapper )
     {
         mapper.setSerializationInclusion( JsonInclude.Include.NON_EMPTY );
@@ -63,15 +56,15 @@ public class IndyJacksonCustomizer
 
         mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
         mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
-//        mapper.disable( SerializationFeature.FAIL_ON_EMPTY_BEANS );
+        //        mapper.disable( SerializationFeature.FAIL_ON_EMPTY_BEANS );
 
         injectSingle( mapper, new RepoApiSerializerModule() );
 
-        inject( mapper, injectedModules, injectedModuleSets );
+        inject( mapper, injectedModules );
 
     }
 
-    private void inject( ObjectMapper mapper, Iterable<Module> modules, Iterable<ModuleSet> moduleSets )
+    private void inject( ObjectMapper mapper, Iterable<Module> modules )
     {
         Set<Module> injected = new HashSet<>();
 
@@ -81,20 +74,6 @@ public class IndyJacksonCustomizer
             for ( final Module module : modules )
             {
                 injected.add( module );
-            }
-        }
-
-        if ( moduleSets != null )
-        {
-            for ( ModuleSet moduleSet : moduleSets )
-            {
-                logger.trace( "Adding module-set to object mapper..." );
-
-                Set<Module> set = moduleSet.getModules();
-                if ( set != null )
-                {
-                    injected.addAll( set );
-                }
             }
         }
 
@@ -111,12 +90,6 @@ public class IndyJacksonCustomizer
         logger.info( "Registering object-mapper module: {}", module );
 
         mapper.registerModule( module );
-//        registeredModules.add( module.getClass().getSimpleName() );
-
-//        if ( module instanceof IndySerializerModule )
-//        {
-//            ( (IndySerializerModule) module ).register( mapper );
-//        }
     }
 
 }
