@@ -15,17 +15,20 @@
  */
 package org.commonjava.indy.service.repository.ftests.admin.event;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.smallrye.reactive.messaging.connectors.InMemoryConnector;
 import io.smallrye.reactive.messaging.connectors.InMemorySink;
 import org.commonjava.event.store.IndyStoreEvent;
 import org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
+import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
+@QuarkusTestResource( KafkaTestResourceLifecycleManager.class )
 public abstract class AbstractStoreEventTest
         extends AbstractStoreManagementTest
 {
