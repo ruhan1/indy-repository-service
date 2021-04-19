@@ -16,12 +16,7 @@
 package org.commonjava.indy.service.repository.ftests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.TestProfile;
-import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.commonjava.indy.service.repository.model.StoreKey;
-import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
-import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +26,6 @@ import static java.lang.String.format;
 import static org.commonjava.indy.service.repository.testutil.TestUtil.prepareCustomizedMapper;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@QuarkusTestResource( KafkaTestResourceLifecycleManager.class )
 public abstract class AbstractStoreManagementTest
 {
     private static final int NAME_LEN = 8;
