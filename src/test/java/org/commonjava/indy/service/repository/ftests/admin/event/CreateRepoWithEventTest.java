@@ -82,13 +82,13 @@ public class CreateRepoWithEventTest
         IndyStoreEvent storeEvent = eventsChannel.received().get( 0 ).getPayload();
         assertThat( storeEvent.getEventType(), is( StoreEventType.PreUpdate ) );
         StorePreUpdateEvent preUpdate = (StorePreUpdateEvent) storeEvent;
-        assertThat( preUpdate.getType(), is( StoreUpdateType.ADD ) );
+        assertThat( preUpdate.getUpdateType(), is( StoreUpdateType.ADD ) );
         assertThat( preUpdate.getKeys(), contains( repo.getKey().toEventStoreKey() ) );
 
         storeEvent = eventsChannel.received().get( 1 ).getPayload();
         assertThat( storeEvent.getEventType(), is( StoreEventType.PostUpdate ) );
         StorePostUpdateEvent postUpdate = (StorePostUpdateEvent) storeEvent;
-        assertThat( postUpdate.getType(), is( StoreUpdateType.ADD ) );
+        assertThat( postUpdate.getUpdateType(), is( StoreUpdateType.ADD ) );
         assertThat( postUpdate.getKeys(), contains( repo.getKey().toEventStoreKey() ) );
 
     }
