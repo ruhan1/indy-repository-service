@@ -45,7 +45,7 @@ public class GroupConsistencyListener
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private StoreDataManager storeDataManager;
+    StoreDataManager storeDataManager;
 
     private void processChanged( final EventStoreKey eventKey )
     {
