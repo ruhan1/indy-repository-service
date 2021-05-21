@@ -37,27 +37,16 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 public class StatsController
 {
 
-    private static final String ADDONS_LOGIC = "addonsLogic";
-
     @Inject
     Versioning versioning;
 
     @Inject
     StoreDataManager dataManager;
 
-    protected StatsController()
-    {
-    }
-
     public StatsController( final StoreDataManager dataManager, final Versioning versioning )
     {
         this.dataManager = dataManager;
         this.versioning = versioning;
-    }
-
-    @PostConstruct
-    public void init()
-    {
     }
 
     public Versioning getVersionInfo()
@@ -68,10 +57,10 @@ public class StatsController
     public EndpointViewListing getEndpointsListing( final String baseUri, final JaxRsUriFormatter uriFormatter )
             throws IndyWorkflowException
     {
-        final List<ArtifactStore> stores = new ArrayList<>();
+        final List<ArtifactStore> stores;
         try
         {
-            stores.addAll( dataManager.getAllArtifactStores() );
+            stores = new ArrayList<>( dataManager.getAllArtifactStores() );
         }
         catch ( final IndyDataException e )
         {

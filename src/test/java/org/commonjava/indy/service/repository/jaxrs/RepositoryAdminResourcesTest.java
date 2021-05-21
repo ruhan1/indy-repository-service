@@ -15,12 +15,10 @@
  */
 package org.commonjava.indy.service.repository.jaxrs;
 
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
-import org.commonjava.indy.service.repository.testutil.KafkaTestResourceLifecycleManager;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -41,7 +39,6 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
-@QuarkusTestResource( KafkaTestResourceLifecycleManager.class )
 @TestProfile( MockTestProfile.class )
 public class RepositoryAdminResourcesTest
 {
