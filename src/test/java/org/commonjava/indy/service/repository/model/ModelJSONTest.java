@@ -16,32 +16,57 @@
 package org.commonjava.indy.service.repository.model;
 
 import org.apache.commons.io.IOUtils;
+import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import static org.commonjava.indy.service.repository.model.StoreType.hosted;
+import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.PKG_TYPE_MAVEN;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModelJSONTest
         extends AbstractSerializatinTest
 {
 
-    @Test
-    public void deserializeHostedRepo()
+    String loadJson( final String resource )
             throws Exception
     {
-        final String resource = "hosted-with-storage.json";
-        final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resource );
+        final InputStream is = Thread.currentThread()
+                                     .getContextClassLoader()
+                                     .getResourceAsStream( resource );
         if ( is == null )
         {
             fail( "Cannot find classpath resource: " + resource );
         }
 
-        final String json = IOUtils.toString( is, Charset.defaultCharset() );
+        return IOUtils.toString( is, Charset.defaultCharset() );
+    }
+
+    @Test
+    public void deserializeHostedRepoWithObjKey()
+            throws Exception
+    {
+        final String json = loadJson( "hosted-with-storage-objkey.json" );
         System.out.println( json );
         final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
         System.out.println( repo );
+        assertThat( repo.getPackageType(), is( PKG_TYPE_MAVEN ) );
+        assertThat( repo.getType(), is( hosted ) );
     }
 
+    @Test
+    public void deserializeHostedRepoWithStringKey()
+            throws Exception
+    {
+        final String json = loadJson( "hosted-with-storage-stringkey.json" );
+        System.out.println( json );
+        final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
+        System.out.println( repo );
+        assertThat( repo.getPackageType(), is( PKG_TYPE_MAVEN ) );
+        assertThat( repo.getType(), is( hosted ) );
+    }
 }
