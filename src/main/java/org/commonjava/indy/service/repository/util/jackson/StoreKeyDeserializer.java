@@ -17,8 +17,10 @@ package org.commonjava.indy.service.repository.util.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.commonjava.indy.service.repository.model.StoreKey;
+import org.commonjava.indy.service.repository.model.StoreType;
 
 import java.io.IOException;
 
@@ -37,6 +39,14 @@ public final class StoreKeyDeserializer
             throws IOException
     {
         final String keyStr = parser.getText();
+        if ( keyStr != null && keyStr.trim().equals( "{" ) )
+        {
+            JsonNode node = parser.getCodec().readTree( parser );
+            String pkgType = node.get( "packageType" ).textValue();
+            String type = node.get( "type" ).textValue();
+            String name = node.get( "name" ).textValue();
+            return new StoreKey( pkgType, StoreType.get( type ), name );
+        }
         return StoreKey.fromString( keyStr );
     }
 
