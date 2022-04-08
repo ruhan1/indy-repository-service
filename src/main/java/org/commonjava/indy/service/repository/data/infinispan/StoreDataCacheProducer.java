@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
+import org.commonjava.indy.service.repository.data.cassandra.RemoteKojiStoreDataCache;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
@@ -32,6 +33,8 @@ public class StoreDataCacheProducer
     public static final String STORE_BY_PKG_CACHE = "store-by-package";
 
     public static final String AFFECTED_BY_STORE_CACHE = "affected-by-stores";
+
+    public static final String REMOTE_KOJI_STORE = "remote-koji-stores";
 
     @Inject
     CacheProducer cacheProducer;
@@ -59,5 +62,14 @@ public class StoreDataCacheProducer
     {
         return cacheProducer.getCache( AFFECTED_BY_STORE_CACHE );
     }
+
+    @RemoteKojiStoreDataCache
+    @Produces
+    @ApplicationScoped
+    public CacheHandle<StoreKey, ArtifactStore> getRemoteKojiStoreDataCache()
+    {
+        return cacheProducer.getCache(REMOTE_KOJI_STORE);
+    }
+
 
 }

@@ -24,8 +24,8 @@ import org.commonjava.indy.service.repository.model.PackageTypes;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
-import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 import org.commonjava.indy.service.repository.model.UrlInfo;
+import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -283,7 +282,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
         }
         catch ( Exception error )
         {
-            logger.error( "Failed to find repository, url: '{}'. Reason: {}", url, error.getMessage() );
+            logger.warn( "Failed to find repository, url: '{}'. Reason: {}", url, error.getMessage() );
             return result;
         }
 
@@ -352,7 +351,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                     }
                     catch ( UnknownHostException ue )
                     {
-                        logger.warn( "Failed to filter remote: ip fetch error.", ue );
+                        logger.warn( "Failed to filter remote: {}, ip fetch error: {}.", store.getKey(), ue.getMessage() );
                     }
 
                     logger.debug( "ip not same: ip for url:{}-{}; ip for searching repo: {}-{}", url, ipForUrl,
@@ -545,60 +544,63 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
 
         final List<ArtifactStore> result = new ArrayList<>();
 
-        AtomicReference<IndyDataException> errorRef = new AtomicReference<>();
-        LinkedList<Group> toCheck = new LinkedList<>();
-        Set<StoreKey> seen = new HashSet<>();
-        toCheck.add( master );
+        return getMembersOrdering( master, result, includeGroups, recurseGroups );
+    }
 
-        while ( !toCheck.isEmpty() )
+    private List<ArtifactStore> getMembersOrdering( final Group groupRepo, final List<ArtifactStore> result,
+                                                    final boolean includeGroups, final boolean recurseGroups )
+            throws IndyDataException
+    {
+
+        if ( groupRepo == null || groupRepo.isDisabled() && Boolean.TRUE.equals( this.enabled ) )
         {
-            Group next = toCheck.removeFirst();
+            return result;
+        }
 
-            if ( next == null || next.isDisabled() && Boolean.TRUE.equals( this.enabled ) )
+        Set<StoreKey> seen = result != null ?
+                result.stream().map( ArtifactStore::getKey ).collect( Collectors.toSet() ) :
+                new HashSet<>();
+        AtomicReference<IndyDataException> errorRef = new AtomicReference<>();
+
+        List<StoreKey> members = new ArrayList<>( groupRepo.getConstituents() );
+        if ( includeGroups )
+        {
+            result.add( groupRepo );
+        }
+
+        members.forEach( ( key ) -> {
+            if ( !seen.contains( key ) )
             {
-                continue;
-            }
-
-            List<StoreKey> members = new ArrayList<>( next.getConstituents() );
-            if ( includeGroups )
-            {
-                result.add( next );
-            }
-
-            members.forEach( ( key ) -> {
-                if ( !seen.contains( key ) )
+                seen.add( key );
+                final StoreType type = key.getType();
+                try
                 {
-                    seen.add( key );
-                    final StoreType type = key.getType();
-                    try
+                    if ( recurseGroups && type == group )
                     {
-                        if ( recurseGroups && type == group )
-                        {
-                            // if we're here, we're definitely recursing groups...
-                            Group group = (Group) dataManager.getArtifactStore( key );
-                            toCheck.addFirst( group );
-                        }
-                        else
-                        {
-                            final ArtifactStore store = dataManager.getArtifactStore( key );
-                            if ( store != null && !( store.isDisabled() && Boolean.TRUE.equals( this.enabled ) ) )
-                            {
-                                result.add( store );
-                            }
-                        }
+                        // if we're here, we're definitely recursing groups...
+                        Group group = (Group) dataManager.getArtifactStore( key );
+                        getMembersOrdering( group, result, includeGroups, recurseGroups );
                     }
-                    catch ( IndyDataException e )
+                    else
                     {
-                        errorRef.set( e );
+                        final ArtifactStore store = dataManager.getArtifactStore( key );
+                        if ( store != null && !( store.isDisabled() && Boolean.TRUE.equals( this.enabled ) ) )
+                        {
+                            result.add( store );
+                        }
                     }
                 }
-            } );
-
-            IndyDataException error = errorRef.get();
-            if ( error != null )
-            {
-                throw error;
+                catch ( IndyDataException e )
+                {
+                    errorRef.set( e );
+                }
             }
+        } );
+
+        IndyDataException error = errorRef.get();
+        if ( error != null )
+        {
+            throw error;
         }
 
         return result;

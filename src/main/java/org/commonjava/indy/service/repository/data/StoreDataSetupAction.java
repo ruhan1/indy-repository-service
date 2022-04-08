@@ -18,6 +18,7 @@ package org.commonjava.indy.service.repository.data;
 import io.quarkus.runtime.Startup;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyLifecycleException;
 import org.commonjava.indy.service.repository.model.Group;
@@ -55,6 +56,13 @@ public class StoreDataSetupAction
         {
             logger.info( "Verfiying that Indy basic stores are installed..." );
             storeManager.install();
+
+            if ( storeManager instanceof CassandraStoreDataManager )
+            {
+                logger.info( "Init the cache of remote stores based on the store data" );
+
+                ( (CassandraStoreDataManager) storeManager ).initRemoteStoresCache();
+            }
 
             if ( storeManager.query().getRemoteRepository( MAVEN_PKG_KEY, "central" ) == null )
             {

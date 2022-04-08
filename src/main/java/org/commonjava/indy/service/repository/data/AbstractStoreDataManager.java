@@ -528,7 +528,6 @@ public abstract class AbstractStoreDataManager
 
     @Override
     public Set<Group> affectedBy( Collection<StoreKey> keys, EventMetadata eventMetadata )
-            throws IndyDataException
     {
         Set<Group> groups = null;
         if ( eventMetadata != null )
