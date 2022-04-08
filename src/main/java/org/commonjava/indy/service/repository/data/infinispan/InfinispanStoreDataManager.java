@@ -49,6 +49,7 @@ import static org.commonjava.indy.service.repository.model.StoreType.group;
 
 @ApplicationScoped
 @StandaloneStoreDataManager
+@Deprecated
 public class InfinispanStoreDataManager
         extends AbstractStoreDataManager
 {

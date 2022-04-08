@@ -15,31 +15,12 @@
  */
 package org.commonjava.indy.service.repository.data.cassandra;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
-import org.commonjava.indy.service.repository.data.infinispan.InfinispanStoreDataManager;
+import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
 import org.commonjava.indy.service.repository.data.tck.TCKFixtureProvider;
-import org.commonjava.indy.service.repository.model.ArtifactStore;
-import org.commonjava.indy.service.repository.model.StoreKey;
-import org.commonjava.indy.service.repository.model.StoreType;
 import org.commonjava.indy.service.repository.testutil.TestUtil;
-import org.infinispan.Cache;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
-
-import java.util.Map;
-import java.util.Set;
-
-import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCacheProducer.AFFECTED_BY_STORE_CACHE;
-import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCacheProducer.STORE_BY_PKG_CACHE;
-import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCacheProducer.STORE_DATA_CACHE;
 
 public class CassandraTCKFixtureProvider
         implements TCKFixtureProvider
@@ -64,8 +45,8 @@ public class CassandraTCKFixtureProvider
         client = new CassandraClient( config );
 
         CassandraStoreQuery storeQuery = new CassandraStoreQuery( client, config );
-
-        dataManager = new CassandraStoreDataManager( storeQuery, TestUtil.prepareCustomizedMapper() );
+        DefaultCacheManager cacheManager = new DefaultCacheManager();
+        dataManager = new CassandraStoreDataManager( storeQuery, TestUtil.prepareCustomizedMapper(), new CacheProducer( null, cacheManager ) );
     }
 
     @Override

@@ -18,13 +18,18 @@ package org.commonjava.indy.service.repository.data.cassandra;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.ClusterStoreDataManager;
-import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
+import org.commonjava.indy.service.repository.data.infinispan.BasicCacheHandle;
+import org.commonjava.indy.service.repository.data.infinispan.CacheHandle;
+import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
+import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.AbstractRepository;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
+import org.commonjava.indy.service.repository.model.PathStyle;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
@@ -40,12 +45,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.commonjava.indy.service.repository.data.StoreUpdateAction.STORE;
 import static org.commonjava.indy.service.repository.model.StoreType.group;
+import static org.commonjava.indy.service.repository.model.StoreType.remote;
 
 @ApplicationScoped
 @ClusterStoreDataManager
@@ -62,16 +69,29 @@ public class CassandraStoreDataManager
     ObjectMapper objectMapper;
 
     @Inject
+    private CacheProducer cacheProducer;
+
+    @Inject
     StoreEventDispatcher eventDispatcher;
+
+    @Inject
+    @RemoteKojiStoreDataCache
+    private CacheHandle<StoreKey, ArtifactStore> remoteKojiStores;
+
+    private final String ARTIFACT_STORE = "artifact-store";
+
+    private final Integer STORE_EXPIRATION_IN_MINS = 15;
 
     protected CassandraStoreDataManager()
     {
     }
 
-    CassandraStoreDataManager( final CassandraStoreQuery storeQuery, final ObjectMapper objectMapper )
+    CassandraStoreDataManager( final CassandraStoreQuery storeQuery, final ObjectMapper objectMapper,
+                               final CacheProducer cacheProducer )
     {
         this.storeQuery = storeQuery;
         this.objectMapper = objectMapper;
+        this.cacheProducer = cacheProducer;
     }
 
     @Override
@@ -87,10 +107,16 @@ public class CassandraStoreDataManager
 
         logger.trace( "Get artifact store: {}", key.toString() );
 
-        DtxArtifactStore dtxArtifactStore =
-                storeQuery.getArtifactStore( key.getPackageType(), key.getType(), key.getName() );
+        if ( remote.equals( key.getType() ) && key.getName().startsWith( "koji-" ) )
+        {
+            ArtifactStore store = remoteKojiStores.get( key );
+            if ( store != null )
+            {
+                return store;
+            }
+        }
 
-        return toArtifactStore( dtxArtifactStore );
+        return computeIfAbsent( ARTIFACT_STORE, key, STORE_EXPIRATION_IN_MINS, Boolean.FALSE );
     }
 
     @Override
@@ -106,6 +132,7 @@ public class CassandraStoreDataManager
 
     @Override
     public void clear( ChangeSummary summary )
+            throws IndyDataException
     {
 
     }
@@ -204,7 +231,7 @@ public class CassandraStoreDataManager
         DtxArtifactStore dtxArtifactStore = toDtxArtifactStore( storeKey, store );
         storeQuery.createDtxArtifactStore( dtxArtifactStore );
 
-        return toArtifactStore( dtxArtifactStore );
+        return computeIfAbsent( ARTIFACT_STORE, storeKey, STORE_EXPIRATION_IN_MINS, Boolean.TRUE );
     }
 
     @Override
@@ -408,6 +435,7 @@ public class CassandraStoreDataManager
             store.setPathMaskPatterns( dtxArtifactStore.getPathMaskPatterns() );
             store.setDisableTimeout( dtxArtifactStore.getDisableTimeout() );
             store.setAuthoritativeIndex( dtxArtifactStore.getAuthoritativeIndex() );
+            store.setPathStyle( PathStyle.valueOf( dtxArtifactStore.getPathStyle() ) );
         }
         return store;
     }
@@ -442,7 +470,7 @@ public class CassandraStoreDataManager
                     ( (HostedRepository) store ).setAllowSnapshots( allowSnapshots );
                 }
             }
-            else if ( dtxArtifactStore.getStoreType().equals( StoreType.remote.name() ) )
+            else if ( dtxArtifactStore.getStoreType().equals( remote.name() ) )
             {
                 store = new RemoteRepository( dtxArtifactStore.getPackageType(), dtxArtifactStore.getName(),
                                               readStrValueFromExtra( CassandraStoreUtil.URL, extras ) );
@@ -583,6 +611,49 @@ public class CassandraStoreDataManager
             logger.warn( "Read value from extra error, key: {}.", key, e );
         }
         return null;
+    }
+
+    public void initRemoteStoresCache()
+    {
+        final Set<ArtifactStore> allStores = getAllArtifactStores();
+
+        // cache the remote koji repo
+        allStores.stream()
+                 .filter(
+                         s -> remote == s.getType() && ( "koji".equals( s.getMetadata( ArtifactStore.METADATA_ORIGIN ) )
+                                 || "koji-binary".equals( s.getMetadata( ArtifactStore.METADATA_ORIGIN ) ) ) )
+                 .forEach( s -> remoteKojiStores.put( s.getKey(), s ) );
+    }
+
+    private ArtifactStore computeIfAbsent( String name, StoreKey key, int expirationMins, boolean forceQuery )
+    {
+        logger.debug( "computeIfAbsent, cache: {}, key: {}", name, key );
+
+        CacheHandle<StoreKey, ArtifactStore> cache = cacheProducer.getCache( name );
+        ArtifactStore store = cache.get( key );
+        if ( store == null || forceQuery )
+        {
+            logger.trace( "Entry not found, run put, expirationMins: {}", expirationMins );
+
+            DtxArtifactStore dtxArtifactStore =
+                    storeQuery.getArtifactStore( key.getPackageType(), key.getType(), key.getName() );
+
+            store = toArtifactStore( dtxArtifactStore );
+            if ( store != null )
+            {
+                if ( expirationMins > 0 )
+                {
+                    cache.put( key, store, expirationMins, TimeUnit.MINUTES );
+                }
+                else
+                {
+                    cache.put( key, store );
+                }
+            }
+        }
+
+        logger.trace( "Return value, cache: {}, key: {}, ret: {}", name, key, store );
+        return store;
     }
 
 }

@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 @ApplicationScoped
 @MemStoreDataManager
+@Deprecated
 public class MemoryStoreDataManager
         extends AbstractStoreDataManager
 {
