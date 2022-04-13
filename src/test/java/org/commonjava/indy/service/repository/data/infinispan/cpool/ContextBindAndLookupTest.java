@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan.cpool;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.naming.InitialContext;
@@ -27,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ContextBindAndLookupTest
 {
-    @Test
+    @Test()
     public void bindAndLookup()
             throws NamingException
     {
@@ -35,6 +36,7 @@ public class ContextBindAndLookupTest
         String val = "BAR";
 
         Properties properties = System.getProperties();
+        properties.setProperty( "quarkus.naming.enable-jndi", "true" );
         properties.setProperty( INITIAL_CONTEXT_FACTORY, CPInitialContextFactory.class.getName() );
         System.setProperties( properties );
 

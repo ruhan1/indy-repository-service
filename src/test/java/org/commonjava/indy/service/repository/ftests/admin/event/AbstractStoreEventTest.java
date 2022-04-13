@@ -16,8 +16,8 @@
 package org.commonjava.indy.service.repository.ftests.admin.event;
 
 import io.quarkus.test.common.QuarkusTestResource;
-import io.smallrye.reactive.messaging.connectors.InMemoryConnector;
-import io.smallrye.reactive.messaging.connectors.InMemorySink;
+import io.smallrye.reactive.messaging.providers.connectors.InMemoryConnector;
+import io.smallrye.reactive.messaging.providers.connectors.InMemorySink;
 import org.commonjava.event.store.IndyStoreEvent;
 import org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
