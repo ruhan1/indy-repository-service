@@ -17,7 +17,7 @@ package org.commonjava.indy.service.repository.ftests.admin.event;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.smallrye.reactive.messaging.connectors.InMemorySink;
+import io.smallrye.reactive.messaging.providers.connectors.InMemorySink;
 import org.commonjava.event.store.IndyStoreEvent;
 import org.commonjava.event.store.StoreEventType;
 import org.commonjava.event.store.StorePostDeleteEvent;
