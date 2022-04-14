@@ -69,6 +69,7 @@ public class CacheProducer
     IndyRepositoryConfiguration repoConfig;
 
     @Inject
+    @Deprecated
     DefaultMetricsManager metricsManager;
 
     @Inject

@@ -18,7 +18,11 @@ package org.commonjava.indy.service.repository.data.metrics;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.function.Supplier;
 
+/**
+ * The new metric system will use quarkus otel plugin, so we will deprecate this.
+ */
 @ApplicationScoped
+@Deprecated
 public class DefaultMetricsManager
 {
     public static final String DEFAULT = "default";

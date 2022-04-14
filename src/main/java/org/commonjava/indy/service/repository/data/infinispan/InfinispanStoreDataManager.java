@@ -47,6 +47,9 @@ import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCa
 import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCacheProducer.STORE_DATA_CACHE;
 import static org.commonjava.indy.service.repository.model.StoreType.group;
 
+/**
+ * @deprecated infinispan data store is disabled in indy cluster mode. Will use {@link org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager} instead.
+ */
 @ApplicationScoped
 @StandaloneStoreDataManager
 @Deprecated
