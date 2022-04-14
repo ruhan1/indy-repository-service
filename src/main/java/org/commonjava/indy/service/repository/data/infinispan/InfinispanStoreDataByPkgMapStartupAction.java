@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 @Startup
+@Deprecated
 public class InfinispanStoreDataByPkgMapStartupAction
 {
 

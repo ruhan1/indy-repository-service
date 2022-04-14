@@ -26,6 +26,10 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @deprecated infinispan data store is disabled in indy cluster mode. Will use {@link org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager} instead.
+ */
+@Deprecated
 public class StoreDataCacheProducer
 {
     public static final String STORE_DATA_CACHE = "store-data-v2";
@@ -68,8 +72,7 @@ public class StoreDataCacheProducer
     @ApplicationScoped
     public CacheHandle<StoreKey, ArtifactStore> getRemoteKojiStoreDataCache()
     {
-        return cacheProducer.getCache(REMOTE_KOJI_STORE);
+        return cacheProducer.getCache( REMOTE_KOJI_STORE );
     }
-
 
 }

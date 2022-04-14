@@ -69,14 +69,14 @@ public class CassandraStoreDataManager
     ObjectMapper objectMapper;
 
     @Inject
-    private CacheProducer cacheProducer;
+    CacheProducer cacheProducer;
 
     @Inject
     StoreEventDispatcher eventDispatcher;
 
     @Inject
     @RemoteKojiStoreDataCache
-    private CacheHandle<StoreKey, ArtifactStore> remoteKojiStores;
+    CacheHandle<StoreKey, ArtifactStore> remoteKojiStores;
 
     private final String ARTIFACT_STORE = "artifact-store";
 

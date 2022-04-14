@@ -18,6 +18,10 @@ package org.commonjava.indy.service.repository.data.infinispan;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.infinispan.persistence.keymappers.TwoWayKey2StringMapper;
 
+/**
+ * @deprecated infinispan data store is disabled in indy cluster mode. Will use {@link org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager} instead.
+ */
+@Deprecated
 public class StoreKey2StringMapper
         implements TwoWayKey2StringMapper
 {

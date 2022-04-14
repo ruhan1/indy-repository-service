@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention( RetentionPolicy.RUNTIME)
 @Documented
+@Deprecated
 public @interface StoreDataCache
 {
 }
