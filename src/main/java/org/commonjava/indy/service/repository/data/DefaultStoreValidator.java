@@ -20,7 +20,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.exception.InvalidArtifactStoreException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
@@ -36,6 +36,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -53,13 +54,13 @@ public class DefaultStoreValidator
     private static final Logger LOGGER = LoggerFactory.getLogger( DefaultStoreValidator.class );
 
     // TODO: here will use weft thread pooling service, will consider later
-//    @Inject
-//    @WeftManaged
-//    @ExecutorConfig( named = "store-validation", threads = 2, priority = 6 )
+    //    @Inject
+    //    @WeftManaged
+    //    @ExecutorConfig( named = "store-validation", threads = 2, priority = 6 )
     private ExecutorService executorService = Executors.newFixedThreadPool( 2 );
 
     @Inject
-    SslValidationConfiguration configuration;
+    IndyRepositoryConfiguration configuration;
 
     @Override
     public ArtifactStoreValidateData validate( ArtifactStore artifactStore )
@@ -84,17 +85,20 @@ public class DefaultStoreValidator
                 }
 
                 //Validate URL from remote Repository URL , throw Mailformed URL Exception if URL is not valid
-                remoteUrl =  new URL( remoteRepository.getUrl() ) ;
+                remoteUrl = new URL( remoteRepository.getUrl() );
 
                 // Check if remote.ssl.required is set to true and that remote repository protocol is https = throw IndyArtifactStoreException
-                LOGGER.debug( "Is SSL required for remote repository URLs? {}", configuration.isSSLRequired() );
+                LOGGER.debug( "Is SSL required for remote repository URLs? {}", configuration.sslRequired() );
 
-                if ( configuration.isSSLRequired() && !remoteUrl.getProtocol()
-                                                                .equalsIgnoreCase( StoreValidationConstants.HTTPS ) )
+                if ( configuration.sslRequired() && !remoteUrl.getProtocol()
+                                                              .equalsIgnoreCase( StoreValidationConstants.HTTPS ) )
                 {
 
-                    LOGGER.warn( "\n\t\t\t=> Allowed Remote Repositories by Config File: "
-                                         + configuration.getRemoteNoSSLHosts() + "\n" );
+                    LOGGER.warn(
+                            "\n\t\t\t=> Allowed Remote Repositories by Config File: " + configuration.remoteNoSSLHosts()
+                                                                                                     .orElse(
+                                                                                                             Collections.emptyList() )
+                                    + "\n" );
                     ArtifactStoreValidateData allowedByRule =
                             compareRemoteHostToAllowedHostnames( remoteUrl, remoteRepository );
 
@@ -252,7 +256,7 @@ public class DefaultStoreValidator
                                                                            RemoteRepository remoteRepository )
     {
         //Check First if this remote repository is in allowed repositories from remote.nossl.hosts Config Variable
-        List<String> remoteNoSSLHosts = configuration.getRemoteNoSSLHosts();
+        List<String> remoteNoSSLHosts = configuration.remoteNoSSLHosts().orElse( Collections.emptyList() );
         String host = remoteUrl.getHost();
         HashMap<String, String> errors = new HashMap<>();
 

@@ -31,9 +31,4 @@ public class MemoryFunctionProfile
         return configs;
     }
 
-    @Override
-    public String getConfigProfile()
-    {
-        return "dev";
-    }
 }

@@ -6,7 +6,7 @@ quarkus:
       max-body-size: 500M
 
   package:
-    uber-jar: true
+    type: uber-jar
 
   naming:
     enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
@@ -50,17 +50,6 @@ quarkus:
   application:
     name: "indy-repository-service"
 
-  opentelemetry:
-    enabled: false
-    tracer:
-      exporter:
-        otlp:
-          endpoint: http://localhost:4317
-          headers: "header1=value1"
-
-kafka:
-  bootstrap:
-    servers: "localhost:9092"
 
 mp:
   messaging:
@@ -75,11 +64,10 @@ mp:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
 
 repository:
-  data-storage: infinispan
-
+  data-storage: mem
 
 cassandra:
   enabled: false
 
 ispn:
-  configDir: /tmp/infinispan.xml
+  configDir: /tmp

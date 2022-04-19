@@ -42,7 +42,8 @@ public class ConnectionPoolBooter
     public void init()
             throws IndyLifecycleException
     {
-        if ( IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repositoryConfiguration.getStorageType() ) )
+        if ( IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals(
+                repositoryConfiguration.storageType().orElse( "" ) ) )
         {
             logger.info( "\n\n\n\nStarting JNDI Connection Pools\n\n\n\n" );
             connectionPoolProvider.get().init();

@@ -18,7 +18,6 @@ package org.commonjava.indy.service.repository.jaxrs;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import org.commonjava.indy.service.repository.jaxrs.mock.MockAdminController;
 import org.commonjava.indy.service.repository.jaxrs.mock.MockSecurityManager;
-import org.commonjava.indy.service.repository.jaxrs.mock.MockStoreDataManager;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ public class MockTestProfile
     @Override
     public Set<Class<?>> getEnabledAlternatives()
     {
-        return Stream.of( MockAdminController.class, MockSecurityManager.class, MockStoreDataManager.class )
-                     .collect( Collectors.toSet() );
+        return Stream.of( MockAdminController.class, MockSecurityManager.class ).collect( Collectors.toSet() );
     }
+
 }

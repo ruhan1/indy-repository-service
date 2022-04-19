@@ -24,11 +24,13 @@ import java.lang.annotation.Target;
 
 /**
  * Qualifier used to supply the storeDataManager in standalone mode.
+ * @deprecated This is for infinispan, which will be removed later
  */
 @Qualifier
 @Target( { ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention( RetentionPolicy.RUNTIME)
 @Documented
+@Deprecated
 public @interface StandaloneStoreDataManager
 {
 }

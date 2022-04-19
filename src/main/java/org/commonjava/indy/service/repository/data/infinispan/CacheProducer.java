@@ -95,7 +95,7 @@ public class CacheProducer
 
     private EmbeddedCacheManager startCacheManager()
     {
-        if ( !IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repoConfig.getStorageType() ) )
+        if ( !IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repoConfig.storageType().orElse( "" ) ) )
         {
             logger.info( "Not an infinispan store data manager enabled, so will not init this cache producer" );
             return null;

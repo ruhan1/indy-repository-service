@@ -21,7 +21,6 @@ import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
-import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -35,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +56,7 @@ import static org.commonjava.indy.service.repository.data.StoreUpdateAction.STOR
 import static org.commonjava.indy.service.repository.model.StoreType.group;
 import static org.commonjava.indy.service.repository.model.StoreType.hosted;
 
+@SuppressWarnings( { "unused", "unchecked" } )
 public abstract class AbstractStoreDataManager
         implements StoreDataManager
 {
@@ -74,9 +73,6 @@ public abstract class AbstractStoreDataManager
 
     @Inject
     IndyRepositoryConfiguration repoConfig;
-
-    @Inject
-    SslValidationConfiguration validationConfig;
 
     protected AbstractStoreDataManager()
     {
@@ -393,7 +389,7 @@ public abstract class AbstractStoreDataManager
 
         logger.warn( "Storing {} using operation lock: {}", store, opLocks );
 
-        if ( validationConfig != null && validationConfig.getStoreValidationEnabled() && store.getType() != group )
+        if ( repoConfig != null && repoConfig.storeValidationEnabled() && store.getType() != group )
         {
             ArtifactStoreValidateData validateData = storeValidator.validate( store );
             if ( !validateData.isValid() )
@@ -614,7 +610,7 @@ public abstract class AbstractStoreDataManager
         {
             return affectedGroups;
         }
-        String excludeFilter = repoConfig.getAffectedGroupsExcludeFilter();
+        String excludeFilter = repoConfig.affectedGroupsExcludeFilter().orElse( "" );
         logger.debug( "Filter affected groups, exclude: {}", excludeFilter );
         if ( isBlank( excludeFilter ) )
         {
@@ -631,7 +627,7 @@ public abstract class AbstractStoreDataManager
         {
             return false;
         }
-        String filter = repoConfig.getAffectedGroupsExcludeFilter();
+        String filter = repoConfig.affectedGroupsExcludeFilter().orElse( "" );
         return isNotBlank( filter ) && group.getName().matches( filter );
     }
 }

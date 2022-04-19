@@ -175,7 +175,7 @@ public class AdminController
         // safe check
         if ( deleteContent )
         {
-            final String disposablePattern = indyConfiguration.getDisposableStorePattern();
+            final String disposablePattern = indyConfiguration.disposableStorePattern().orElse( "" );
             if ( StringUtils.isNotBlank( disposablePattern ) && !key.getName().matches( disposablePattern ) )
             {
                 throw new IndyWorkflowException( FORBIDDEN.getStatusCode(), "Content deletion not allowed" );

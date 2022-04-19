@@ -45,18 +45,19 @@ public class StoreDataManagerProducer
                                       @ClusterStoreDataManager CassandraStoreDataManager clusterStoreDataManager,
                                       @MemStoreDataManager MemoryStoreDataManager memoryStoreDataManager )
     {
-        if ( IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repoConfig.getStorageType() ) )
+        String storageType = repoConfig.storageType().orElse( "" );
+        if ( IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( storageType ) )
         {
             return ispnStoreDataManager;
         }
-        else if ( IndyRepositoryConfiguration.STORAGE_CASSANDRA.equals( repoConfig.getStorageType() ) )
+        else if ( IndyRepositoryConfiguration.STORAGE_CASSANDRA.equals( storageType ) )
         {
             return clusterStoreDataManager;
         }
         else
         {
             logger.warn( "No store manager for the configured property: {}, so use default memory one",
-                         repoConfig.getStorageType() );
+                         repoConfig.storageType().orElse( "" ) );
             return memoryStoreDataManager;
         }
     }
