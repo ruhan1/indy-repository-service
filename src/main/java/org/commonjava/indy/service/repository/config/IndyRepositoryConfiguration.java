@@ -16,61 +16,42 @@
 package org.commonjava.indy.service.repository.config;
 
 import io.quarkus.runtime.Startup;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
 
 @Startup
+@ConfigMapping( prefix = "repository" )
 @ApplicationScoped
-public class IndyRepositoryConfiguration
+public interface IndyRepositoryConfiguration
 {
-    public static final String STORAGE_INFINISPAN = "infinispan";
+    String STORAGE_INFINISPAN = "infinispan";
 
-    public static final String STORAGE_CASSANDRA = "cassandra";
+    String STORAGE_CASSANDRA = "cassandra";
 
-    @Inject
-    @ConfigProperty( name = "repository.affectedGroupsExclude" )
-    Optional<String> affectedGroupsExcludeFilter;
+    @WithName( "affectedGroupsExclude" )
+    Optional<String> affectedGroupsExcludeFilter();
 
-    @Inject
-    @ConfigProperty( name = "repository.disposableStorePattern" )
-    Optional<String> disposableStorePattern;
+    @WithName( "disposableStorePattern" )
+    Optional<String> disposableStorePattern();
 
-    @Inject
-    @ConfigProperty( name = "repository.data-storage" )
-    Optional<String> storageType;
+    @WithName( "data-storage" )
+    Optional<String> storageType();
 
+    @WithName( "storeValidationEnabled" )
+    @WithDefault( "false" )
+    Boolean storeValidationEnabled();
 
-    public String getAffectedGroupsExcludeFilter()
-    {
-        return affectedGroupsExcludeFilter.orElse( "" );
-    }
+    @WithName( "remote.sslRequired" )
+    @WithDefault( "false" )
+    Boolean sslRequired();
 
-    public void setAffectedGroupsExcludeFilter( String affectedGroupsExcludeFilter )
-    {
-        this.affectedGroupsExcludeFilter = Optional.of( affectedGroupsExcludeFilter );
-    }
-
-    public String getDisposableStorePattern()
-    {
-        return disposableStorePattern.orElse( "" );
-    }
-
-    public void setDisposableStorePattern( String disposableStorePattern )
-    {
-        this.disposableStorePattern = Optional.of( disposableStorePattern );
-    }
-
-
-    public String getStorageType()
-    {
-        return storageType.orElse( "" );
-    }
-
-    public void setStorageType( String storageType )
-    {
-        this.storageType = Optional.of( storageType );
-    }
+    @WithName( "remote.nosslHosts" )
+    Optional<List<String>> remoteNoSSLHosts();
 }

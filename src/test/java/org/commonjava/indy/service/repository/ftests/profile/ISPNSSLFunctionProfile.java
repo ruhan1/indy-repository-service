@@ -35,9 +35,4 @@ public class ISPNSSLFunctionProfile
         return configs;
     }
 
-    @Override
-    public String getConfigProfile()
-    {
-        return "dev";
-    }
 }

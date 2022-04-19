@@ -16,26 +16,19 @@
 package org.commonjava.indy.service.repository.config;
 
 import io.quarkus.runtime.Startup;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @Startup
+@ConfigMapping( prefix = "keycloak" )
 @ApplicationScoped
-public class KeycloakConfiguration
+public interface KeycloakConfiguration
 {
-    @Inject
-    @ConfigProperty( name = "keycloak.enabled", defaultValue = "false" )
-    Boolean enabled;
+    @WithName( "enabled" )
+    @WithDefault( "false" )
+    Boolean enabled();
 
-    public Boolean isEnabled()
-    {
-        return enabled;
-    }
-
-    public void setEnabled( Boolean enabled )
-    {
-        this.enabled = enabled;
-    }
 }

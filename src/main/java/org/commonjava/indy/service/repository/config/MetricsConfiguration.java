@@ -21,6 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 @Startup
 @ApplicationScoped
+@Deprecated
 public class MetricsConfiguration
 {
     //TODO: Note that this is just a mock, will implement later when metrics imported.

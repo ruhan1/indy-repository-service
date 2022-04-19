@@ -31,9 +31,4 @@ public class CassandraFunctionProfile
         return configs;
     }
 
-    @Override
-    public String getConfigProfile()
-    {
-        return "dev";
-    }
 }

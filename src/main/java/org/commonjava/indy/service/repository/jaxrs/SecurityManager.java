@@ -35,7 +35,7 @@ public class SecurityManager
 
     public String getUser( SecurityContext context, HttpRequest request )
     {
-        if ( !config.isEnabled() )
+        if ( !config.enabled() )
         {
             return request.getRemoteHost();
         }

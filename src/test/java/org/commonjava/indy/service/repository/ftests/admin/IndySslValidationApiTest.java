@@ -18,11 +18,11 @@ package org.commonjava.indy.service.repository.ftests.admin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import org.commonjava.indy.service.repository.config.SslValidationConfiguration;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
-import org.commonjava.indy.service.repository.ftests.matchers.RevalidateRepoMatcher;
 import org.commonjava.indy.service.repository.ftests.matchers.RevalidateAllMatcher;
+import org.commonjava.indy.service.repository.ftests.matchers.RevalidateRepoMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNSSLFunctionProfile;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.junit.jupiter.api.Tag;
@@ -47,7 +47,7 @@ public class IndySslValidationApiTest
     private static final Logger LOGGER = LoggerFactory.getLogger( IndySslValidationApiTest.class );
 
     @Inject
-    SslValidationConfiguration configuration;
+    IndyRepositoryConfiguration configuration;
 
     @Test
     public void run()
@@ -58,16 +58,6 @@ public class IndySslValidationApiTest
         given().post( revalidAllUrl ).then().body( new RevalidateAllMatcher( mapper ) );
 
         // REPO TESTING URL - http://repo.maven.apache.org/maven2 - NOT VALID NOT ALLOWED SSL REPO
-        // first there is need for config variables to be set to false (remote.ssl.required , _internal.store.validation.enabled )
-        if ( configuration.isSSLRequired() )
-        {
-            configuration.setSslRequired( false );
-        }
-        if ( configuration.getStoreValidationEnabled() )
-        {
-            configuration.setStoreValidationEnabled( false );
-        }
-
         RemoteRepository testRepo = new RemoteRepository( "maven", "test", "http://repo.maven.apache.org/maven2" );
         String json = mapper.writeValueAsString( testRepo );
         LOGGER.info( "=> Storing Remote RemoteRepository: " + testRepo.getUrl() );
@@ -77,15 +67,6 @@ public class IndySslValidationApiTest
                .then()
                .body( new RepoEqualMatcher<>( mapper, testRepo, RemoteRepository.class ) );
 
-        // now there is need for config varables to be set to true (remote.ssl.required , _internal.store.validation.enabled )
-        if ( !configuration.isSSLRequired() )
-        {
-            configuration.setSslRequired( true );
-        }
-        if ( !configuration.getStoreValidationEnabled() )
-        {
-            configuration.setStoreValidationEnabled( true );
-        }
 
         LOGGER.info( "=> Validating Remote RemoteRepository: " + testRepo.getUrl() );
         String revalidRepoUrl = getRepoUrl( testRepo.getKey() ) + "/revalidate";
@@ -132,15 +113,6 @@ public class IndySslValidationApiTest
             return String.valueOf( 200 ).equals( r.getErrors().get( "HTTP_GET_STATUS" ) );
         } ) );
 
-        // first there is need for config variables to be set to false (remote.ssl.required , _internal.store.validation.enabled )
-        if ( configuration.isSSLRequired() )
-        {
-            configuration.setSslRequired( false );
-        }
-        if ( configuration.getStoreValidationEnabled() )
-        {
-            configuration.setStoreValidationEnabled( false );
-        }
 
         // REPO TESTING URL - https://repo.maven.apache.org/maven2 - NOT VALID , ALLOWED , NOT AVAILABLE NON-SSL REPO
         RemoteRepository testRepoAllowed = new RemoteRepository( "maven", "test-ssl", "http://127.0.0.1/maven2" );
@@ -152,15 +124,6 @@ public class IndySslValidationApiTest
                .then()
                .body( new RepoEqualMatcher<>( mapper, testRepoAllowed, RemoteRepository.class ) );
 
-        // now there is need for config varables to be set to true (remote.ssl.required , _internal.store.validation.enabled )
-        if ( !configuration.isSSLRequired() )
-        {
-            configuration.setSslRequired( true );
-        }
-        if ( !configuration.getStoreValidationEnabled() )
-        {
-            configuration.setStoreValidationEnabled( true );
-        }
 
         LOGGER.info( "=> Validating Remote RemoteRepository: " + testRepoAllowed.getUrl() );
         revalidRepoUrl = getRepoUrl( testRepoAllowed.getKey() ) + "/revalidate";

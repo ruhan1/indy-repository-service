@@ -31,9 +31,4 @@ public class ISPNFunctionProfile
         return configs;
     }
 
-    @Override
-    public String getConfigProfile()
-    {
-        return "dev";
-    }
 }
