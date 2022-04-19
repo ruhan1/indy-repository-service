@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data;
 
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
@@ -87,14 +88,14 @@ public abstract class AbstractStoreDataManager
     protected abstract ArtifactStore getArtifactStoreInternal( final StoreKey key );
 
     @Override
-    //    @Measure
+    @WithSpan
     public ArtifactStore getArtifactStore( final StoreKey key )
     {
         return getArtifactStoreInternal( key );
     }
 
     @Override
-    //    @Measure
+    @WithSpan
     public boolean storeArtifactStore( final ArtifactStore store, final ChangeSummary summary,
                                        final boolean skipIfExists, final boolean fireEvents,
                                        final EventMetadata eventMetadata )
@@ -183,7 +184,7 @@ public abstract class AbstractStoreDataManager
         refreshAffectedBy( store, null, StoreUpdateAction.DELETE );
     }
 
-    //    @Measure
+    @WithSpan
     protected void refreshAffectedBy( final ArtifactStore store, final ArtifactStore original,
                                       StoreUpdateAction action )
     {
@@ -270,7 +271,7 @@ public abstract class AbstractStoreDataManager
     protected abstract ArtifactStore removeArtifactStoreInternal( StoreKey key );
 
     @Override
-    //    @Measure
+    @WithSpan
     public void deleteArtifactStore( final StoreKey key, final ChangeSummary summary,
                                      final EventMetadata eventMetadata )
             throws IndyDataException
@@ -343,12 +344,12 @@ public abstract class AbstractStoreDataManager
             throws IndyDataException;
 
     @Override
-    //    @Measure
+    @WithSpan
     public abstract Set<ArtifactStore> getAllArtifactStores()
             throws IndyDataException;
 
     @Override
-    //    @Measure
+    @WithSpan
     public Stream<ArtifactStore> streamArtifactStores()
             throws IndyDataException
     {
@@ -356,7 +357,7 @@ public abstract class AbstractStoreDataManager
     }
 
     @Override
-    //    @Measure
+    @WithSpan
     public abstract Map<StoreKey, ArtifactStore> getArtifactStoresByKey();
 
     @Override

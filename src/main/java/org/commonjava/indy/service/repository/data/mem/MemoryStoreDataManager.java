@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data.mem;
 
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.MemStoreDataManager;
@@ -36,6 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A in memory data store manager,
+ */
 @ApplicationScoped
 @MemStoreDataManager
 @Deprecated
@@ -111,12 +115,14 @@ public class MemoryStoreDataManager
     }
 
     @Override
+    @WithSpan
     public Set<ArtifactStore> getAllArtifactStores()
     {
         return new HashSet<>( stores.values() );
     }
 
     @Override
+    @WithSpan
     public Map<StoreKey, ArtifactStore> getArtifactStoresByKey()
     {
         return new HashMap<>( stores );

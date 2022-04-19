@@ -18,9 +18,7 @@ package org.commonjava.indy.service.repository.jaxrs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.output.CountingOutputStream;
-import org.commonjava.indy.service.repository.config.MetricsConfiguration;
-import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
-import org.commonjava.indy.service.repository.data.metrics.Meter;
+import org.commonjava.indy.service.repository.data.metrics.TraceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager.METER;
 import static org.commonjava.indy.service.repository.data.metrics.NameUtils.getDefaultName;
 import static org.commonjava.indy.service.repository.data.metrics.NameUtils.getName;
 
@@ -45,17 +42,13 @@ public class DTOStreamingOutput
 
     private final Object dto;
 
-    private final DefaultMetricsManager metricsManager;
+    private final TraceManager traceManager;
 
-    private final MetricsConfiguration metricsConfig;
-
-    public DTOStreamingOutput( final ObjectMapper mapper, final Object dto, final DefaultMetricsManager metricsManager,
-                               final MetricsConfiguration metricsConfig )
+    public DTOStreamingOutput( final ObjectMapper mapper, final Object dto, final TraceManager traceManager )
     {
         this.mapper = mapper;
         this.dto = dto;
-        this.metricsManager = metricsManager;
-        this.metricsConfig = metricsConfig;
+        this.traceManager = traceManager;
     }
 
     @Override
@@ -78,7 +71,7 @@ public class DTOStreamingOutput
             throws IOException, WebApplicationException
     {
         AtomicReference<IOException> ioe = new AtomicReference<>();
-        metricsManager.wrapWithStandardMetrics( () -> {
+        traceManager.wrapWithStandardMetrics( ( span ) -> {
             CountingOutputStream cout = new CountingOutputStream( outputStream );
             long start = System.nanoTime();
             try
@@ -94,19 +87,17 @@ public class DTOStreamingOutput
                 Logger logger = LoggerFactory.getLogger( getClass() );
                 logger.trace( "Wrote: {} bytes", cout.getByteCount() );
 
-                String name = getName( metricsConfig.getNodePrefix(), TRANSFER_METRIC_NAME,
-                                       getDefaultName( dto.getClass(), "write" ), METER );
+                String name = getName( TRANSFER_METRIC_NAME, getDefaultName( dto.getClass(), "write" ), "size" );
 
                 long end = System.nanoTime();
                 double elapsed = ( end - start ) / NANOS_PER_SEC;
 
-                Meter meter = metricsManager.getMeter( name );
-                meter.mark( Math.round( cout.getByteCount() / elapsed ) );
+                span.setAttribute( name, Math.round( cout.getByteCount() / elapsed ) );
             }
 
             return null;
 
-        }, () -> null );
+        }, () -> TRANSFER_METRIC_NAME );
 
         if ( ioe.get() != null )
         {

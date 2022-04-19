@@ -15,8 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
-import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
-import org.commonjava.indy.service.repository.data.metrics.NameUtils;
+import org.commonjava.indy.service.repository.data.metrics.TraceManager;
 import org.infinispan.commons.api.BasicCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class BasicCacheHandle<K, V>
 
     protected BasicCache<K, V> cache;
 
-    protected DefaultMetricsManager metricsManager;
+    protected TraceManager traceManager;
 
     private String metricPrefix;
 
@@ -53,12 +52,12 @@ public class BasicCacheHandle<K, V>
     {
     }
 
-    protected BasicCacheHandle( String named, BasicCache<K, V> cache, DefaultMetricsManager metricsManager,
+    protected BasicCacheHandle( String named, BasicCache<K, V> cache, TraceManager traceManager,
                                 String metricPrefix )
     {
         this.name = named;
         this.cache = cache;
-        this.metricsManager = metricsManager;
+        this.traceManager = traceManager;
         this.metricPrefix = metricPrefix;
     }
 
@@ -80,9 +79,9 @@ public class BasicCacheHandle<K, V>
     protected <R> R doExecute( String metricName, Function<BasicCache<K, V>, R> operation )
     {
         Supplier<R> execution = executionFor( operation );
-        if ( metricsManager != null )
+        if ( traceManager != null )
         {
-            return metricsManager.wrapWithStandardMetrics( execution, () -> getMetricName( metricName ) );
+            return traceManager.wrapWithStandardMetrics( execution, () -> getMetricName( metricName ) );
         }
 
         return execution.get();

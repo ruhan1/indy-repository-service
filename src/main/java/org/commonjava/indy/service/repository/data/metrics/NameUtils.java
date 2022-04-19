@@ -16,12 +16,10 @@
 package org.commonjava.indy.service.repository.data.metrics;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager.DEFAULT;
+import static org.commonjava.indy.service.repository.data.metrics.TraceManager.DEFAULT;
 
 public class NameUtils
 {
-    //TODO: This is copied from o11yphant lib, will be removed or delegated when o11yphant imported.
-
     public static String name( Class<?> klass, String... names )
     {
         return name( klass.getSimpleName(), names );
@@ -33,12 +31,8 @@ public class NameUtils
         append( builder, name );
         if ( names != null )
         {
-            String[] var3 = names;
-            int var4 = names.length;
-
-            for ( int var5 = 0; var5 < var4; ++var5 )
+            for ( String s : names )
             {
-                String s = var3[var5];
                 append( builder, s );
             }
         }

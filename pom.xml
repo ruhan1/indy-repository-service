@@ -39,6 +39,10 @@
     <infinispan.version>11.0.8.Final</infinispan.version>
     <agroal.version>1.9</agroal.version>
 
+    <!--
+    <honeycomb.otel.version>1.0.0</honeycomb.otel.version>
+    -->
+
     <byteman.version>4.0.14</byteman.version>
     <skipTests>false</skipTests>
     <plugin.jacoco.skip>false</plugin.jacoco.skip>
@@ -122,6 +126,36 @@
       <scope>test</scope>
     </dependency>
     <!-- quarkus deps end -->
+    <!-- quarkus otel deps -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-extension-trace-propagators</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-sdk-extension-resources</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-sdk-extension-jaeger-remote-sampler</artifactId>
+    </dependency>
+    <!-- for honeycomb otel usage, see: https://docs.honeycomb.io/getting-data-in/opentelemetry/java-distro/ -->
+    <!--
+    <dependency>
+      <groupId>io.honeycomb</groupId>
+      <artifactId>honeycomb-opentelemetry-sdk</artifactId>
+      <version>${honeycomb.otel.version}</version>
+    </dependency>
+    -->
+    <!-- quarkus otel deps end -->
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
