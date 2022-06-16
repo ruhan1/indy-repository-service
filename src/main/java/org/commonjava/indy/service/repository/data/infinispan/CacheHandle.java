@@ -16,7 +16,7 @@
 package org.commonjava.indy.service.repository.data.infinispan;
 
 import org.apache.commons.lang3.StringUtils;
-import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
+import org.commonjava.indy.service.repository.data.metrics.TraceManager;
 import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 /**
  * Holder class that helps manage the shutdown process for things that use Infinispan.
  */
+@SuppressWarnings( { "unchecked", "rawtypes" } )
 public class CacheHandle<K, V>
         extends BasicCacheHandle<K, V>
 {
@@ -34,9 +35,9 @@ public class CacheHandle<K, V>
     {
     }
 
-    public CacheHandle( String named, Cache<K, V> cache, DefaultMetricsManager metricsManager, String metricPrefix )
+    public CacheHandle( String named, Cache<K, V> cache, TraceManager traceManager, String metricPrefix )
     {
-        super( named, cache, metricsManager, metricPrefix );
+        super( named, cache, traceManager, metricPrefix );
     }
 
     public CacheHandle( String named, Cache<K, V> cache )
@@ -46,7 +47,7 @@ public class CacheHandle<K, V>
 
     /**
      * This is needed to pass the raw cache to lower level components, like Partyline.
-     * @return
+     * @return cache
      */
     public Cache<K, V> getCache()
     {

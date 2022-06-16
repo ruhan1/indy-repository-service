@@ -16,10 +16,8 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jnr.ffi.annotations.In;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.commonjava.indy.service.repository.config.MetricsConfiguration;
-import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
+import org.commonjava.indy.service.repository.data.metrics.TraceManager;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +46,7 @@ public class ResponseHelper
     ObjectMapper mapper;
 
     @Inject
-    DefaultMetricsManager metricsManager;
-
-    @Inject
-    MetricsConfiguration metricsConfig;
+    TraceManager metricsManager;
 
     public Response formatRedirect( final URI uri )
     {
@@ -76,7 +71,7 @@ public class ResponseHelper
         else
         {
             builder = Response.created( location )
-                              .entity( new DTOStreamingOutput( mapper, dto, metricsManager, metricsConfig ) )
+                              .entity( new DTOStreamingOutput( mapper, dto, metricsManager ) )
                               .type( APPLICATION_JSON );
         }
 
@@ -101,7 +96,7 @@ public class ResponseHelper
         }
 
         ResponseBuilder builder =
-                Response.ok( new DTOStreamingOutput( mapper, dto, metricsManager, metricsConfig ), APPLICATION_JSON );
+                Response.ok( new DTOStreamingOutput( mapper, dto, metricsManager ), APPLICATION_JSON );
 
         if ( builderModifier != null )
         {

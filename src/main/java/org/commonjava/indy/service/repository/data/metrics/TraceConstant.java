@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2022 Red Hat, Inc. (https://github.com/Commonjava/service-parent)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,21 @@
  */
 package org.commonjava.indy.service.repository.data.metrics;
 
-public interface Metered
+public class TraceConstant
 {
-    long getCount();
+    public static final String DEFAULT = "default";
 
-    double getFifteenMinuteRate();
+    public static final String EXCEPTION = "exception";
 
-    double getFiveMinuteRate();
+    public static final String SKIP_METRIC = "skip-this-metric";
 
-    double getMeanRate();
+    public static final String CUMULATIVE_TIMINGS = "cumulative-timings";
 
-    double getOneMinuteRate();
+    public static final String CUMULATIVE_COUNT = "cumulative-count";
+
+    public static final String AVERAGE_TIME_MS = "avg-time-ms";
+
+    public static final String MAX_TIME_MS = "max-time-ms";
+
+    public static final double NANOS_PER_MILLISECOND = 1E6;
 }

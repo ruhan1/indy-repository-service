@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
@@ -130,14 +131,14 @@ public class InfinispanStoreDataManager
     }
 
     @Override
-    //    @Measure
+    @WithSpan
     public Set<ArtifactStore> getAllArtifactStores()
     {
         return stores.executeCache( c -> new HashSet<>( c.values() ), "getAllStores" );
     }
 
     @Override
-    //    @Measure
+    @WithSpan
     public Map<StoreKey, ArtifactStore> getArtifactStoresByKey()
     {
         return stores.executeCache( c -> {
@@ -167,7 +168,7 @@ public class InfinispanStoreDataManager
     }
 
     @Override
-    //    @Measure
+    @WithSpan
     public Stream<StoreKey> streamArtifactStoreKeys()
     {
         return stores.executeCache( c -> c.keySet().stream() );

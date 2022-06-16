@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data;
 
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.lang3.StringUtils;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
@@ -144,7 +145,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<T> getAll()
             throws IndyDataException
     {
@@ -152,7 +153,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public Stream<T> stream()
             throws IndyDataException
     {
@@ -160,7 +161,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public Stream<T> stream( Predicate<ArtifactStore> filter )
             throws IndyDataException
     {
@@ -203,7 +204,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<T> getAll( Predicate<ArtifactStore> filter )
             throws IndyDataException
     {
@@ -211,7 +212,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<T> getAllByDefaultPackageTypes()
             throws IndyDataException
     {
@@ -226,7 +227,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public T getByName( String name )
             throws IndyDataException
     {
@@ -241,14 +242,14 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public Set<Group> getGroupsContaining( StoreKey storeKey )
     {
         return getGroupsContaining( storeKey, Boolean.TRUE );
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public Set<Group> getGroupsContaining( StoreKey storeKey, Boolean enabled )
     {
         return getAllGroups( storeKey.getPackageType(), enabled ).stream()
@@ -258,7 +259,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<RemoteRepository> getRemoteRepositoryByUrl( String packageType, String url )
             throws IndyDataException
     {
@@ -266,7 +267,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<RemoteRepository> getRemoteRepositoryByUrl( String packageType, String url, Boolean enabled )
     {
         /*
@@ -367,7 +368,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String packageType, final String groupName )
             throws IndyDataException
     {
@@ -375,7 +376,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String packageType, final String groupName,
                                                                 final Boolean enabled )
             throws IndyDataException
@@ -392,7 +393,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<ArtifactStore> getOrderedStoresInGroup( final String packageType, final String groupName )
             throws IndyDataException
     {
@@ -400,7 +401,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public List<ArtifactStore> getOrderedStoresInGroup( final String packageType, final String groupName,
                                                         final Boolean enabled )
             throws IndyDataException
@@ -409,7 +410,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public Set<Group> getGroupsAffectedBy( StoreKey... keys )
             throws IndyDataException
     {
@@ -417,7 +418,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-    //  @Measure
+    @WithSpan
     public Set<Group> getGroupsAffectedBy( Collection<StoreKey> keys )
             throws IndyDataException
     {

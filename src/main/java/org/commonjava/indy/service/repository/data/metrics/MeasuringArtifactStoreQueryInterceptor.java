@@ -34,14 +34,15 @@ public abstract class MeasuringArtifactStoreQueryInterceptor
     private StoreDataManager dataManager;
 
     @Inject
-    private DefaultMetricsManager metricsManager;
+    private TraceManager traceManager;
 
     @Override
+    @SuppressWarnings( {"rawtypes", "unchecked"} )
     public ArtifactStoreQuery<ArtifactStore> query()
     {
         Logger logger = LoggerFactory.getLogger( getClass() );
         logger.trace( "WRAP in metered ArtifactStoreQuery" );
         ArtifactStoreQuery<ArtifactStore> query = dataManager.query();
-        return new MeasuringStoreQuery( query, metricsManager );
+        return new MeasuringStoreQuery( query, traceManager );
     }
 }

@@ -6,7 +6,10 @@ quarkus:
       max-body-size: 500M
 
   package:
-    uber-jar: true
+    type: uber-jar
+
+  application:
+      name: "indy-repository-service"
 
   # Logging (disable console on prod)
   log:
@@ -44,6 +47,14 @@ quarkus:
 
   swagger-ui:
     always-include: true
+
+  opentelemetry:
+    enabled: true
+    tracer:
+      exporter:
+        otlp:
+          endpoint: http://localhost:4317
+          headers: "header1=value1"
 
 kafka:
   bootstrap:
@@ -93,6 +104,8 @@ cassandra:
    quarkus:
 #     kubernetes-config:
 #       enabled: false
+     naming:
+       enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
      log:
        level: TRACE
        min-level: TRACE
@@ -126,10 +139,10 @@ cassandra:
            max-file-size: 10M
 
    repository:
-     data-storage: infinispan
+     data-storage: mem
 
    ispn:
-     configDir: /tmp/infinispan.xml
+     configDir: /tmp
 #     repo-data-pool: |
 #       dataSource.providerClassName=org.postgresql.ds.PGSimpleDataSource,\
 #       dataSource.jdbcUrl=jdbc:postgresql://localhost:5432/test,\

@@ -21,8 +21,7 @@ import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.StringSearchInterpolator;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
-import org.commonjava.indy.service.repository.config.MetricsConfiguration;
-import org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager;
+import org.commonjava.indy.service.repository.data.metrics.TraceManager;
 import org.infinispan.Cache;
 import org.infinispan.commons.marshall.MarshallableTypeHints;
 import org.infinispan.configuration.ConfigurationManager;
@@ -47,13 +46,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.commonjava.indy.service.repository.data.metrics.DefaultMetricsManager.INDY_METRIC_ISPN;
 import static org.commonjava.indy.service.repository.data.metrics.NameUtils.getSupername;
+import static org.commonjava.indy.service.repository.data.metrics.TraceManager.INDY_METRIC_ISPN;
 
 /**
  * Created by jdcasey on 3/8/16.
  */
 @ApplicationScoped
+@SuppressWarnings( {"unchecked", "rawtypes"} )
 public class CacheProducer
 {
     Logger logger = LoggerFactory.getLogger( getClass() );
@@ -69,11 +69,9 @@ public class CacheProducer
     IndyRepositoryConfiguration repoConfig;
 
     @Inject
-    @Deprecated
-    DefaultMetricsManager metricsManager;
+    TraceManager traceManager;
 
     @Inject
-    MetricsConfiguration metricsConfig;
 
     private final Map<String, CacheHandle> caches = new ConcurrentHashMap<>(); // hold embedded and remote caches
 
@@ -175,13 +173,13 @@ public class CacheProducer
         logger.debug( "Get embedded cache, name: {}", named );
         return (CacheHandle) caches.computeIfAbsent( named, ( k ) -> {
             Cache<K, V> cache = cacheManager.getCache( k );
-            return new CacheHandle<>( k, cache, metricsManager, getCacheMetricPrefix( k ) );
+            return new CacheHandle<>( k, cache, traceManager, getCacheMetricPrefix( k ) );
         } );
     }
 
     private String getCacheMetricPrefix( String named )
     {
-        return metricsManager == null ? null : getSupername( metricsConfig.getNodePrefix(), INDY_METRIC_ISPN, named );
+        return traceManager == null ? null : getSupername( INDY_METRIC_ISPN, named );
     }
 
     @PreDestroy
