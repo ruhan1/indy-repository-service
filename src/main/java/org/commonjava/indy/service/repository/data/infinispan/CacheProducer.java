@@ -93,11 +93,11 @@ public class CacheProducer
 
     private EmbeddedCacheManager startCacheManager()
     {
-        if ( !IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repoConfig.storageType().orElse( "" ) ) )
-        {
-            logger.info( "Not an infinispan store data manager enabled, so will not init this cache producer" );
-            return null;
-        }
+//        if ( !IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( repoConfig.storageType().orElse( "" ) ) )
+//        {
+//            logger.info( "Not an infinispan store data manager enabled, so will not init this cache producer" );
+//            return null;
+//        }
 
         // FIXME This is just here to trigger shutdown hook init for embedded log4j in infinispan-embedded-query.
         // FIXES:

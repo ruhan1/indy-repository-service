@@ -162,6 +162,10 @@
     </dependency>
     <dependency>
       <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
       <artifactId>infinispan-cachestore-jdbc</artifactId>
       <exclusions>
         <exclusion>
