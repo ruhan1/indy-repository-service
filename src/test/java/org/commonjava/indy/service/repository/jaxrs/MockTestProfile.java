@@ -16,6 +16,7 @@
 package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTestProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.jaxrs.mock.MockAdminController;
 import org.commonjava.indy.service.repository.jaxrs.mock.MockSecurityManager;
 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MockTestProfile
-        implements QuarkusTestProfile
+        extends MemoryFunctionProfile
 {
     @Override
     public Set<Class<?>> getEnabledAlternatives()
