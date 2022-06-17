@@ -50,6 +50,11 @@
       </memory>
     </local-cache>
 
+    <local-cache name="artifact-store" configuration="local-template">
+      <memory max-count="999999" when-full="NONE">
+      </memory>
+    </local-cache>
+
     <!--
     <local-cache name="LuceneIndexesMetadata">
       <persistence passivation="false">

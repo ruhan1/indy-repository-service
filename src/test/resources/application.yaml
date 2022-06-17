@@ -64,7 +64,7 @@ mp:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
 
 repository:
-  data-storage: mem
+  data-storage: infinispan
 
 cassandra:
   enabled: false
