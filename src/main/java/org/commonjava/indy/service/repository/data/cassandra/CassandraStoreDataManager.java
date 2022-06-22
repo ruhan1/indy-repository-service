@@ -17,12 +17,10 @@ package org.commonjava.indy.service.repository.data.cassandra;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.opentelemetry.extension.annotations.WithSpan;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.ClusterStoreDataManager;
-import org.commonjava.indy.service.repository.data.infinispan.BasicCacheHandle;
 import org.commonjava.indy.service.repository.data.infinispan.CacheHandle;
 import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
@@ -139,7 +137,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    @WithSpan
+//    @WithSpan
     public Set<ArtifactStore> getAllArtifactStores()
     {
         Set<DtxArtifactStore> dtxArtifactStoreSet = storeQuery.getAllArtifactStores();
@@ -149,7 +147,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    @WithSpan
+//    @WithSpan
     public Map<StoreKey, ArtifactStore> getArtifactStoresByKey()
     {
         Map<StoreKey, ArtifactStore> ret = new HashMap<>();
@@ -159,7 +157,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    @WithSpan
+//    @WithSpan
     public Set<StoreKey> getStoreKeysByPkg( final String pkg )
     {
         Set<StoreKey> storeKeySet = new HashSet<>();
@@ -171,7 +169,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    @WithSpan
+//    @WithSpan
     public Set<StoreKey> getStoreKeysByPkgAndType( final String pkg, final StoreType type )
     {
 
@@ -236,7 +234,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    @WithSpan
+//    @WithSpan
     public Set<Group> affectedBy( Collection<StoreKey> keys )
     {
 
