@@ -37,17 +37,23 @@ import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
+import static org.commonjava.indy.service.repository.util.PathUtils.normalize;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
 public class RepositoryAdminResourcesTest
 {
+    private static final String BASE_STORE_PATH = "/api/admin/stores";
+
     @Test
     public void testExists()
     {
-        given().when().head( "/api/admin/stores/maven/remote/exists" ).then().statusCode( OK.getStatusCode() );
         given().when()
-               .head( "/api/admin/stores/maven/remote/nonexists" )
+               .head( normalize( BASE_STORE_PATH, "maven/remote/exists" ) )
+               .then()
+               .statusCode( OK.getStatusCode() );
+        given().when()
+               .head( normalize( BASE_STORE_PATH, "maven/remote/nonexists" ) )
                .then()
                .statusCode( NOT_FOUND.getStatusCode() );
     }
@@ -56,7 +62,7 @@ public class RepositoryAdminResourcesTest
     public void testGetAllWithTwoValues()
     {
         given().when()
-               .get( "/api/admin/stores/maven/remote" )
+               .get( normalize( BASE_STORE_PATH, "maven/remote" ) )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
@@ -68,7 +74,7 @@ public class RepositoryAdminResourcesTest
     public void testGetAllWithEmpty()
     {
         given().when()
-               .get( "/api/admin/stores/maven/hosted" )
+               .get( normalize( BASE_STORE_PATH, "maven/hosted" ) )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
@@ -79,15 +85,18 @@ public class RepositoryAdminResourcesTest
     @Test
     public void testGetAllNotFound()
     {
-        given().when().get( "/api/admin/stores/maven/group" ).then().statusCode( NOT_FOUND.getStatusCode() );
-        given().when().get( "/api/admin/stores/npm/remote" ).then().statusCode( NOT_FOUND.getStatusCode() );
+        given().when()
+               .get( normalize( BASE_STORE_PATH, "maven/group" ) )
+               .then()
+               .statusCode( NOT_FOUND.getStatusCode() );
+        given().when().get( normalize( BASE_STORE_PATH, "npm/remote" ) ).then().statusCode( NOT_FOUND.getStatusCode() );
     }
 
     @Test
     public void testGetByNameExists()
     {
         given().when()
-               .get( "/api/admin/stores/maven/remote/exists" )
+               .get( normalize( BASE_STORE_PATH, "maven/remote/exists" ) )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
@@ -99,14 +108,17 @@ public class RepositoryAdminResourcesTest
     @Test
     public void testGetByNameNonExists()
     {
-        given().when().get( "/api/admin/stores/maven/remote/nonexists" ).then().statusCode( NOT_FOUND.getStatusCode() );
+        given().when()
+               .get( normalize( BASE_STORE_PATH, "maven/remote/nonexists" ) )
+               .then()
+               .statusCode( NOT_FOUND.getStatusCode() );
     }
 
     @Test
     public void testGetByUrlWithTwoValues()
     {
         given().when()
-               .get( "/api/admin/stores/maven/remote/query/byUrl?url=http://repo.test" )
+               .get( BASE_STORE_PATH + "/maven/remote/query/byUrl?url=http://repo.test" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
@@ -118,13 +130,13 @@ public class RepositoryAdminResourcesTest
     public void testGetByUrlBadReq()
     {
         given().when()
-               .get( "/api/admin/stores/maven/hosted/query/byUrl?url=http://repo.test" )
+               .get( BASE_STORE_PATH + "/maven/hosted/query/byUrl?url=http://repo.test" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() )
                .body( "error", is( "Not supporte repository type of hosted" ) );
 
         given().when()
-               .get( "/api/admin/stores/maven/group/query/byUrl?url=http://repo.test" )
+               .get( normalize( BASE_STORE_PATH, "maven/group/query/byUrl?url=http://repo.test" ) )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() )
                .body( "error", is( "Not supporte repository type of group" ) );
@@ -134,7 +146,7 @@ public class RepositoryAdminResourcesTest
     public void testGetByUrlNotFound()
     {
         given().when()
-               .get( "/api/admin/stores/npm/remote/query/byUrl?url=http://repo.test" )
+               .get( BASE_STORE_PATH + "npm/remote/query/byUrl?url=http://repo.test" )
                .then()
                .statusCode( NOT_FOUND.getStatusCode() );
 
@@ -144,7 +156,7 @@ public class RepositoryAdminResourcesTest
     public void testGetByUrlWithError()
     {
         given().when()
-               .get( "/api/admin/stores/generic-http/remote/query/byUrl?url=http://repo.test" )
+               .get( BASE_STORE_PATH + "/generic-http/remote/query/byUrl?url=http://repo.test" )
                .then()
                .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
     }
@@ -162,7 +174,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .post( "/api/admin/stores/maven/remote" )
+               .post( normalize( BASE_STORE_PATH, "maven/remote" ) )
                .then()
                .statusCode( CREATED.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
@@ -183,7 +195,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .post( "/api/admin/stores/maven/remote" )
+               .post( normalize( BASE_STORE_PATH, "maven/remote" ) )
                .then()
                .statusCode( CONFLICT.getStatusCode() );
     }
@@ -200,7 +212,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .post( "/api/admin/stores/maven/remote" )
+               .post( normalize( BASE_STORE_PATH, "maven/remote" ) )
                .then()
                .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
     }
@@ -218,7 +230,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .put( "/api/admin/stores/maven/remote/success" )
+               .put( normalize( BASE_STORE_PATH, "maven/remote/success" ) )
                .then()
                .statusCode( OK.getStatusCode() );
     }
@@ -235,7 +247,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .put( "/api/admin/stores/maven/remote/nonsuccess" )
+               .put( normalize( BASE_STORE_PATH, "maven/remote/nonsuccess" ) )
                .then()
                .statusCode( NOT_MODIFIED.getStatusCode() );
     }
@@ -253,7 +265,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .put( "/api/admin/stores/maven/remote/error" )
+               .put( normalize( BASE_STORE_PATH, "maven/remote/error" ) )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() )
                .contentType( APPLICATION_OCTET_STREAM )
@@ -272,7 +284,7 @@ public class RepositoryAdminResourcesTest
         given().when()
                .body( repoToCreate )
                .contentType( APPLICATION_JSON )
-               .put( "/api/admin/stores/maven/remote/error" )
+               .put( normalize( BASE_STORE_PATH, "maven/remote/error" ) )
                .then()
                .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
     }
@@ -282,7 +294,7 @@ public class RepositoryAdminResourcesTest
     {
         given().when()
                .contentType( APPLICATION_JSON )
-               .delete( "/api/admin/stores/maven/remote/success" )
+               .delete( normalize( BASE_STORE_PATH, "maven/remote/success" ) )
                .then()
                .statusCode( NO_CONTENT.getStatusCode() );
     }
@@ -292,7 +304,7 @@ public class RepositoryAdminResourcesTest
     {
         given().when()
                .contentType( APPLICATION_JSON )
-               .delete( "/api/admin/stores/maven/remote/error" )
+               .delete( normalize( BASE_STORE_PATH, "maven/remote/error" ) )
                .then()
                .statusCode( INTERNAL_SERVER_ERROR.getStatusCode() );
     }
@@ -301,7 +313,7 @@ public class RepositoryAdminResourcesTest
     public void testGetAllInValid()
     {
         given().when()
-               .get( "/api/admin/stores/maven/remote/invalid/all" )
+               .get( normalize( BASE_STORE_PATH, "maven/remote/invalid/all" ) )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
@@ -312,7 +324,7 @@ public class RepositoryAdminResourcesTest
     public void testGetAllInValidErrorType()
     {
         given().when()
-               .get( "/api/admin/stores/maven/hosted/invalid/all" )
+               .get( normalize( BASE_STORE_PATH, "maven/hosted/invalid/all" ) )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() )
                .contentType( MediaType.APPLICATION_JSON )
