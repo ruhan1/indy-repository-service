@@ -17,11 +17,15 @@ package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.commonjava.indy.service.repository.util.PathUtils;
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.Paths;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
+import static org.commonjava.indy.service.repository.util.PathUtils.normalize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 
@@ -29,11 +33,13 @@ import static org.hamcrest.Matchers.greaterThan;
 @TestProfile( MockTestProfile.class )
 public class RepositoryQueryResourcesTest
 {
+    private final static String BASE_QUERY_PATH = "/api/admin/stores/query";
+
     @Test
     public void testGetAll()
     {
         given().when()
-               .get( "/api/stores/query/all" )
+               .get( normalize( BASE_QUERY_PATH, "all" ) )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -45,7 +51,7 @@ public class RepositoryQueryResourcesTest
     public void testGetAllByDefaultPackageTypes()
     {
         given().when()
-               .get( "/api/stores/query/byDefaultPkgTypes" )
+               .get( normalize( BASE_QUERY_PATH, "byDefaultPkgTypes" ) )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

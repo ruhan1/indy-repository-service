@@ -33,8 +33,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -43,7 +45,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 public abstract class AbstractQueryFuncTest
         extends AbstractStoreManagementTest
 {
-    protected static final String QUERY_BASE = "/api/stores/query";
+    protected static final String QUERY_BASE = "/api/admin/stores/query";
 
     @BeforeEach
     public void prepare()
@@ -66,40 +68,43 @@ public abstract class AbstractQueryFuncTest
             throws IOException
     {
         URL url = Thread.currentThread().getContextClassLoader().getResource( "query-setup" );
-        final Set<Path> paths = Files.list( Paths.get( url.getPath() ) )
-                                     .filter( s -> s.getFileName().toString().startsWith( type ) )
-                                     .collect( Collectors.toSet() );
-        final ObjectMapper mapper = TestUtil.prepareCustomizedMapper();
-        for ( Path path : paths )
+        try (Stream<Path> pathStream = Files.list( Paths.get( Objects.requireNonNull( url ).getPath() ) )
+                                            .filter( s -> s.getFileName().toString().startsWith( type ) ))
         {
-            StoreType s = StoreType.get( type );
-
-            Class<? extends ArtifactStore> storeClass = null;
-            switch ( s )
+            final Set<Path> paths = pathStream.collect( Collectors.toSet() );
+            final ObjectMapper mapper = TestUtil.prepareCustomizedMapper();
+            for ( Path path : paths )
             {
-                case group:
-                    storeClass = Group.class;
-                    break;
-                case remote:
-                    storeClass = RemoteRepository.class;
-                    break;
-                case hosted:
-                    storeClass = HostedRepository.class;
-                    break;
-            }
+                StoreType s = StoreType.get( type );
 
-            if ( storeClass != null )
-            {
-                ArtifactStore store = mapper.readValue( path.toFile(), storeClass );
-                final String json = mapper.writeValueAsString( store );
-                given().body( json )
-                       .contentType( APPLICATION_JSON )
-                       .post( getRepoTypeUrl( store.getKey() ) )
-                       .then()
-                       .body( new RepoEqualMatcher<>( mapper, store, storeClass ) );
-            }
+                Class<? extends ArtifactStore> storeClass = null;
+                switch ( s )
+                {
+                    case group:
+                        storeClass = Group.class;
+                        break;
+                    case remote:
+                        storeClass = RemoteRepository.class;
+                        break;
+                    case hosted:
+                        storeClass = HostedRepository.class;
+                        break;
+                }
 
+                if ( storeClass != null )
+                {
+                    ArtifactStore store = mapper.readValue( path.toFile(), storeClass );
+                    final String json = mapper.writeValueAsString( store );
+                    given().body( json )
+                           .contentType( APPLICATION_JSON )
+                           .post( getRepoTypeUrl( store.getKey() ) )
+                           .then()
+                           .body( new RepoEqualMatcher<>( mapper, store, storeClass ) );
+                }
+
+            }
         }
+
     }
 
     private void deleteAllRepos()

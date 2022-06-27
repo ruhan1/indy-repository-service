@@ -32,6 +32,8 @@ public abstract class AbstractStoreManagementTest
 
     private static final String NAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
 
+    protected static final String ADMIN_REPO_BASE = "/api/admin/stores";
+
     protected static final String ADMIN_REPO_TYPE_BASE = "/api/admin/stores/%s/%s";
 
     protected static final String ADMIN_REPO_NAME_BASE = "/api/admin/stores/%s/%s/%s";
