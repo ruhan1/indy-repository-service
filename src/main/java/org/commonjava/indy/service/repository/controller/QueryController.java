@@ -77,12 +77,18 @@ public class QueryController
         }, "Failed to get store for name {}", name );
     }
 
-    public List<Group> getEnabledGroupsContaining( final String storeKey )
+    public List<Group> getGroupsContaining( final String storeKey, final String enabled )
             throws IndyWorkflowException
     {
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
+            if ( enabled != null )
+            {
+                return new ArrayList<>(
+                        storeManager.query().getGroupsContaining( key, Boolean.parseBoolean( enabled ) ) );
+            }
             return new ArrayList<>( storeManager.query().getGroupsContaining( key ) );
+
         }, "Failed to get groups containing {}", storeKey );
     }
 
@@ -153,7 +159,15 @@ public class QueryController
                 storeKeys.add( storeKey );
             }
             return new ArrayList<>( storeManager.query().getGroupsAffectedBy( storeKeys ) );
-        }, "Failed to get groups affected by keys: {}", keys );
+        }, "Failed to get groups affected by keys: {}", (Object[]) keys );
+    }
+
+    public List<RemoteRepository> queryRemotesByPackageTypeAndUrl( final String packageType, final String url )
+            throws IndyWorkflowException
+    {
+        return generateQueryResult( () -> storeManager.query().getRemoteRepositoryByUrl( packageType, url ),
+                                    "Failed to get remote repositories for packageType {} with remote url {}",
+                                    packageType, url );
     }
 
     private StoreKey validateStoreKey( final String storeKey )
