@@ -82,11 +82,11 @@ public class RepositoryQueryResources
                   description = "The store definitions" )
     @APIResponse( responseCode = "404", description = "The store doesn't exist" )
     @GET
-    @Path( "/allRemotes" )
+    @Path( "/remotes/all" )
     @Produces( APPLICATION_JSON )
-    public Response getAllRemoteRepositories( @Parameter( description = "package type for the remotes", required = true,
-                                                          example = "maven" )
-                                              @QueryParam( "packageType" ) final String packageType )
+    public Response getAllRemoteRepositories(
+            @Parameter( description = "package type for the remotes", required = true, example = "maven" )
+            @QueryParam( "packageType" ) final String packageType )
     {
         return generateStoreListingResponse( () -> queryController.getAllRemoteRepositories( packageType ) );
     }
@@ -97,7 +97,7 @@ public class RepositoryQueryResources
                   description = "The store definitions" )
     @APIResponse( responseCode = "404", description = "The store doesn't exist" )
     @GET
-    @Path( "/allHosteds" )
+    @Path( "/hosteds/all" )
     @Produces( APPLICATION_JSON )
     public Response getAllHostedRepositories(
             @Parameter( description = "package type for the hosted repos", required = true, example = "maven|npm" )
@@ -112,7 +112,7 @@ public class RepositoryQueryResources
                   description = "The store definitions" )
     @APIResponse( responseCode = "404", description = "The store doesn't exist" )
     @GET
-    @Path( "/allGroups" )
+    @Path( "/groups/all" )
     @Produces( APPLICATION_JSON )
     public Response getAllGroups(
             @Parameter( description = "package type for the groups", required = true, example = "maven|npm" )
@@ -163,11 +163,12 @@ public class RepositoryQueryResources
     @GET
     @Path( "/groups/contains" )
     @Produces( APPLICATION_JSON )
-    public Response getEnabledGroupsContaining(
+    public Response getGroupsContaining(
             @Parameter( description = "Key of the repository contained in the groups", required = true,
-                        example = "maven:remote:central" ) @QueryParam( "storeKey" ) final String storeKey )
+                        example = "maven:remote:central" ) @QueryParam( "storeKey" ) final String storeKey,
+            @Parameter( description = "If the groups are enabled" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getEnabledGroupsContaining( storeKey ) );
+        return generateStoreListingResponse( () -> queryController.getGroupsContaining( storeKey, enabled ) );
     }
 
     @Operation( description = "Retrieve the enabled concrete stores which are constituents of the specified group" )
@@ -225,6 +226,15 @@ public class RepositoryQueryResources
             }
             return queryController.getGroupsAffectedBy( keysArr );
         } );
+    }
+
+    @GET
+    @Path( "/remotes" )
+    public Response getRemoteRepositoryByUrl( @QueryParam( "packageType" ) final String packageType,
+                                              @QueryParam( "byUrl" ) final String url )
+    {
+        return generateStoreListingResponse(
+                () -> queryController.queryRemotesByPackageTypeAndUrl( packageType, url ) );
     }
 
     //    @GET
