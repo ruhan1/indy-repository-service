@@ -15,11 +15,14 @@
  */
 package org.commonjava.indy.service.repository.jaxrs;
 
+import org.apache.commons.lang3.StringUtils;
 import org.commonjava.atlas.maven.ident.util.JoinString;
 import org.commonjava.indy.service.repository.controller.QueryController;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.dto.SimpleBooleanResultDTO;
 import org.commonjava.indy.service.repository.model.dto.StoreListingDTO;
+import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -43,6 +46,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
+import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.isValidPackageType;
 
 @Tag( name = "Store Querying APIs", description = "Resource for querying artifact store definitions" )
 @Path( "/admin/stores/query" )
@@ -66,14 +70,16 @@ public class RepositoryQueryResources
     @Operation( description = "Retrieve all repository definitions" )
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
-                  description = "The store definition" )
+                  description = "The store definitions" )
     @APIResponse( responseCode = "404", description = "The store doesn't exist" )
     @Path( "/all" )
     @GET
     @Produces( APPLICATION_JSON )
-    public Response getAll()
+    public Response getAll( @QueryParam( "packageType" ) final String packageType,
+                            @QueryParam( "type" ) final String repoType, @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getAllArtifactStores() );
+        return generateStoreListingResponse(
+                () -> queryController.getAllArtifactStores( packageType, repoType, enabled ) );
     }
 
     @Operation( description = "Retrieve all remote repository definitions by specified package type" )
@@ -228,6 +234,11 @@ public class RepositoryQueryResources
         } );
     }
 
+    @Operation( description = "Retrieve the remote repositories by package type and urls." )
+    @APIResponse( responseCode = "200",
+                  content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
+                  description = "The remote repository definitions" )
+    @APIResponse( responseCode = "404", description = "The remote repositories don't exist" )
     @GET
     @Path( "/remotes" )
     public Response getRemoteRepositoryByUrl( @QueryParam( "packageType" ) final String packageType,
@@ -235,6 +246,21 @@ public class RepositoryQueryResources
     {
         return generateStoreListingResponse(
                 () -> queryController.queryRemotesByPackageTypeAndUrl( packageType, url ) );
+    }
+
+    @Operation( description = "Check if there are no repository definitions." )
+    @APIResponse( responseCode = "200",
+                  content = @Content( schema = @Schema( implementation = SimpleBooleanResultDTO.class ) ),
+                  description = "If there are repository definitions or not." )
+    @GET
+    @Path( "/isEmpty" )
+    public Response getStoreEmpty()
+    {
+        Boolean result = queryController.isStoreDataEmpty();
+        SimpleBooleanResultDTO dto = new SimpleBooleanResultDTO();
+        dto.setDescription( "Check if there are no repository definitions." );
+        dto.setResult( result );
+        return responseHelper.formatOkResponseWithJsonEntity( dto );
     }
 
     //    @GET

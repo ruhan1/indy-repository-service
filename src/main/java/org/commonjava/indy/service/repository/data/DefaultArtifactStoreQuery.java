@@ -26,6 +26,7 @@ import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
 import org.commonjava.indy.service.repository.model.UrlInfo;
 import org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor;
+import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +126,16 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
+    public DefaultArtifactStoreQuery<T> packageType( final String packageType )
+    {
+        if ( PackageTypeConstants.isValidPackageType( packageType ) )
+        {
+            this.packageType = packageType;
+        }
+        return this;
+    }
+
+    @Override
     public ArtifactStoreQuery<T> concreteStores()
     {
         return storeTypes( StoreType.remote, StoreType.hosted );
@@ -144,7 +155,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<T> getAll()
             throws IndyDataException
     {
@@ -152,7 +163,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Stream<T> stream()
             throws IndyDataException
     {
@@ -160,50 +171,52 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Stream<T> stream( Predicate<ArtifactStore> filter )
             throws IndyDataException
     {
         /* @formatter:off */
-        return dataManager.streamArtifactStores().filter( ( store ) ->
-                                                          {
-                                                              logger.debug( "Checking whether {} is included in stream...", store.getKey() );
+        return dataManager.
+                  streamArtifactStores()
+                      .filter( ( store ) ->
+                      {
+                          logger.debug( "Checking whether {} is included in stream...", store.getKey() );
 
-                                                              // Tricky condition here: The flag in the store we're checking is true when DISABLED, while the
-                                                              // condition we're checking against in this query is true when it's ENABLED. If the two flags equal on another
-                                                              // that actually means they DISAGREE about the state vs. desired state of the store.
-                                                              if ( enabled != null && enabled == store.isDisabled() )
-                                                              {
-                                                                  logger.debug( "Rejected. Store is {}, and we're only looking for enabled state of: {}", store.isDisabled(), enabled );
-                                                                  return false;
-                                                              }
+                          // Tricky condition here: The flag in the store we're checking is true when DISABLED, while the
+                          // condition we're checking against in this query is true when it's ENABLED. If the two flags equal on another
+                          // that actually means they DISAGREE about the state vs. desired state of the store.
+                          if ( enabled != null && enabled == store.isDisabled() )
+                          {
+                              logger.debug( "Rejected. Store is {}, and we're only looking for enabled state of: {}", store.isDisabled(), enabled );
+                              return false;
+                          }
 
-                                                              if ( packageType != null && !packageType.equals( store.getPackageType() ) )
-                                                              {
-                                                                  logger.debug( "Rejected. Store package type is: {}, and we're only looking for package type of: {}", store.getPackageType(), packageType );
-                                                                  return false;
-                                                              }
+                          if ( packageType != null && !packageType.equals( store.getPackageType() ) )
+                          {
+                              logger.debug( "Rejected. Store package type is: {}, and we're only looking for package type of: {}", store.getPackageType(), packageType );
+                              return false;
+                          }
 
-                                                              if ( types != null && !types.contains( store.getType() ) )
-                                                              {
-                                                                  logger.debug( "Rejected. Store is of type: {}, and we're only looking for: {}", store.getType(), types );
-                                                                  return false;
-                                                              }
+                          if ( types != null && !types.contains( store.getType() ) )
+                          {
+                              logger.debug( "Rejected. Store is of type: {}, and we're only looking for: {}", store.getType(), types );
+                              return false;
+                          }
 
-                                                              if ( filter != null && !filter.test( store ))
-                                                              {
-                                                                  logger.debug( "Rejected. Additional filtering failed for store: {}", store.getKey() );
-                                                                  return false;
-                                                              }
+                          if ( filter != null && !filter.test( store ))
+                          {
+                              logger.debug( "Rejected. Additional filtering failed for store: {}", store.getKey() );
+                              return false;
+                          }
 
-                                                              logger.debug( "Store accepted for stream: {}", store.getKey() );
-                                                              return true;
-                                                          } ).map( store -> (T) store );
+                          logger.debug( "Store accepted for stream: {}", store.getKey() );
+                          return true;
+                      } ).map( store -> (T) store );
         /* @formatter:on */
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<T> getAll( Predicate<ArtifactStore> filter )
             throws IndyDataException
     {
@@ -211,22 +224,22 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<T> getAllByDefaultPackageTypes()
             throws IndyDataException
     {
-        List<T> result = new ArrayList<>();
+        Set<T> result = new HashSet<>();
         Set<String> defaults = PackageTypes.getPackageTypes();
         for ( String packageType : defaults )
         {
             this.packageType = packageType;
             result.addAll( stream().collect( Collectors.toList() ) );
         }
-        return result;
+        return new ArrayList<>(result);
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public T getByName( String name )
             throws IndyDataException
     {
@@ -241,14 +254,14 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<Group> getGroupsContaining( StoreKey storeKey )
     {
         return getGroupsContaining( storeKey, Boolean.TRUE );
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<Group> getGroupsContaining( StoreKey storeKey, Boolean enabled )
     {
         return getAllGroups( storeKey.getPackageType(), enabled ).stream()
@@ -258,7 +271,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<RemoteRepository> getRemoteRepositoryByUrl( String packageType, String url )
             throws IndyDataException
     {
@@ -266,7 +279,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<RemoteRepository> getRemoteRepositoryByUrl( String packageType, String url, Boolean enabled )
     {
         /*
@@ -367,7 +380,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String packageType, final String groupName )
             throws IndyDataException
     {
@@ -375,7 +388,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String packageType, final String groupName,
                                                                 final Boolean enabled )
             throws IndyDataException
@@ -392,7 +405,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<ArtifactStore> getOrderedStoresInGroup( final String packageType, final String groupName )
             throws IndyDataException
     {
@@ -400,7 +413,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public List<ArtifactStore> getOrderedStoresInGroup( final String packageType, final String groupName,
                                                         final Boolean enabled )
             throws IndyDataException
@@ -409,7 +422,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<Group> getGroupsAffectedBy( StoreKey... keys )
             throws IndyDataException
     {
@@ -417,7 +430,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<Group> getGroupsAffectedBy( Collection<StoreKey> keys )
             throws IndyDataException
     {

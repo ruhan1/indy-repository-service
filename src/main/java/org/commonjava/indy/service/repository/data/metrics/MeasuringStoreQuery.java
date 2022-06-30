@@ -44,8 +44,7 @@ public class MeasuringStoreQuery<T extends ArtifactStore>
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    public MeasuringStoreQuery( final ArtifactStoreQuery<ArtifactStore> query,
-                                final TraceManager traceManager )
+    public MeasuringStoreQuery( final ArtifactStoreQuery<ArtifactStore> query, final TraceManager traceManager )
     {
         this.query = query;
         this.traceManager = traceManager;
@@ -68,6 +67,13 @@ public class MeasuringStoreQuery<T extends ArtifactStore>
     public ArtifactStoreQuery<T> storeTypes( final StoreType... types )
     {
         query.storeTypes( types );
+        return this;
+    }
+
+    @Override
+    public ArtifactStoreQuery<T> packageType( String packageType )
+    {
+        query.packageType( packageType );
         return this;
     }
 
