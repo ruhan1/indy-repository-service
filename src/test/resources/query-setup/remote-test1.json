@@ -3,5 +3,6 @@
   "packageType": "maven",
   "name": "test1",
   "type": "remote",
-  "url": "https://test.com/test1/"
+  "url": "https://test.com/test1/",
+  "disabled": "true"
 }

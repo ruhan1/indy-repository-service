@@ -48,6 +48,8 @@ public interface ArtifactStoreQuery<T extends ArtifactStore>
 
     <C extends ArtifactStore> ArtifactStoreQuery<C> storeType( Class<C> storeCls );
 
+    ArtifactStoreQuery<T> packageType(final String packageType);
+
     ArtifactStoreQuery<T> storeTypes( StoreType... types );
 
     ArtifactStoreQuery<T> concreteStores();

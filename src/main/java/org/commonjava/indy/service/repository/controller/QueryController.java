@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.controller;
 
+import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
@@ -24,19 +25,24 @@ import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
+import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.commonjava.indy.service.repository.model.StoreKey.fromString;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.isValidPackageType;
 
 @ApplicationScoped
 public class QueryController
@@ -50,11 +56,47 @@ public class QueryController
         this.storeManager = storeManager;
     }
 
-    public List<ArtifactStore> getAllArtifactStores()
+    public List<ArtifactStore> getAllArtifactStores( final String packageType, final String type, final String enabled )
             throws IndyWorkflowException
     {
-        return generateQueryResult( () -> new ArrayList<>( storeManager.getAllArtifactStores() ),
-                                    "Failed to get all stores" );
+
+        return generateQueryResult( () -> {
+            Set<ArtifactStore> stores = Collections.emptySet();
+            if ( isValidPackageType( packageType ) && StoreType.get( type ) != null )
+            {
+                stores = storeManager.getArtifactStoresByPkgAndType( packageType, StoreType.valueOf( type ) );
+            }
+            else if ( !isValidPackageType( packageType ) && StoreType.get( type ) == null )
+            {
+                stores = storeManager.getAllArtifactStores();
+            }
+            if ( !stores.isEmpty() )
+            {
+                Stream<ArtifactStore> storeStream = stores.stream();
+                boolean isEnabled = Boolean.parseBoolean( enabled );
+                if ( isEnabled )
+                {
+                    storeStream = storeStream.filter( store -> !store.isDisabled() );
+                }
+                return storeStream.collect( Collectors.toList() );
+            }
+            ArtifactStoreQuery<ArtifactStore> query = storeManager.query();
+            if ( isValidPackageType( packageType ) )
+            {
+                query.packageType( packageType );
+            }
+            if ( StoreType.get( type ) != null )
+            {
+                query.storeTypes( StoreType.valueOf( type ) );
+            }
+            Boolean isEnabled = Boolean.parseBoolean( enabled );
+            if ( isEnabled )
+            {
+                query.enabledState( isEnabled );
+            }
+            return query.getAll();
+
+        }, "Failed to get all stores" );
     }
 
     public List<ArtifactStore> getAllByDefaultPackageTypes()
@@ -168,6 +210,11 @@ public class QueryController
         return generateQueryResult( () -> storeManager.query().getRemoteRepositoryByUrl( packageType, url ),
                                     "Failed to get remote repositories for packageType {} with remote url {}",
                                     packageType, url );
+    }
+
+    public Boolean isStoreDataEmpty()
+    {
+        return storeManager.isEmpty();
     }
 
     private StoreKey validateStoreKey( final String storeKey )

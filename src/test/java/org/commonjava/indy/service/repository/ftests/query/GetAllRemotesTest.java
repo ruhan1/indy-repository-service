@@ -59,6 +59,6 @@ public class GetAllRemotesTest
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
                .body( "size()", is( 1 ) )
-               .body( "items.size()", is( 3 ) );
+               .body( "items.size()", is( 2 ) );
     }
 }

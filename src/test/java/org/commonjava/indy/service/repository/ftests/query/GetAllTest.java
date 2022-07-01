@@ -17,9 +17,16 @@ package org.commonjava.indy.service.repository.ftests.query;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import org.apache.commons.io.IOUtils;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.model.HostedRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -60,5 +67,30 @@ public class GetAllTest
                .contentType( APPLICATION_JSON )
                .body( "size()", is( 1 ) )
                .body( "items.size()", is( 9 ) );
+
+        given().when()
+               .get( QUERY_BASE + "/all?type=remote" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", is( 3 ) );
+
+        given().when()
+               .get( QUERY_BASE + "/all?enabled=true" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", is( 8 ) );
+
+        given().when()
+               .get( QUERY_BASE + "/all?type=remote&enabled=true" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", is( 2 ) );
+
     }
 }
