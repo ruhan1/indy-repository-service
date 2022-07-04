@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
@@ -25,11 +26,11 @@ import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
-import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -56,17 +57,28 @@ public class QueryController
         this.storeManager = storeManager;
     }
 
-    public List<ArtifactStore> getAllArtifactStores( final String packageType, final String type, final String enabled )
+    public List<ArtifactStore> getAllArtifactStores( final String packageType, final String types,
+                                                     final String enabled )
             throws IndyWorkflowException
     {
-
+        List<StoreType> typesLs = new ArrayList<>();
+        if ( StringUtils.isNotBlank( types ) )
+        {
+            typesLs = Arrays.stream( types.split( "," ) )
+                            .map( String::trim )
+                            .filter( t -> StoreType.get( t ) != null )
+                            .map( StoreType::get )
+                            .collect( Collectors.toList() );
+        }
+        final List<StoreType> typeList = typesLs;
         return generateQueryResult( () -> {
             Set<ArtifactStore> stores = Collections.emptySet();
-            if ( isValidPackageType( packageType ) && StoreType.get( type ) != null )
+            if ( isValidPackageType( packageType ) && typeList.size() == 1 )
             {
-                stores = storeManager.getArtifactStoresByPkgAndType( packageType, StoreType.valueOf( type ) );
+                // when packageType and type are all unique value, use storeManager.getArtifactStoresByPkgAndType to improve performance
+                stores = storeManager.getArtifactStoresByPkgAndType( packageType, typeList.get( 0 ) );
             }
-            else if ( !isValidPackageType( packageType ) && StoreType.get( type ) == null )
+            else if ( !isValidPackageType( packageType ) && typeList.size() == 0 )
             {
                 stores = storeManager.getAllArtifactStores();
             }
@@ -80,14 +92,14 @@ public class QueryController
                 }
                 return storeStream.collect( Collectors.toList() );
             }
-            ArtifactStoreQuery<ArtifactStore> query = storeManager.query();
+            ArtifactStoreQuery<ArtifactStore> query = storeManager.query().noPackageType();
             if ( isValidPackageType( packageType ) )
             {
                 query.packageType( packageType );
             }
-            if ( StoreType.get( type ) != null )
+            if ( !typeList.isEmpty() )
             {
-                query.storeTypes( StoreType.valueOf( type ) );
+                query.storeTypes( typeList.toArray( new StoreType[] {} ) );
             }
             Boolean isEnabled = Boolean.parseBoolean( enabled );
             if ( isEnabled )
