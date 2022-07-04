@@ -15,14 +15,12 @@
  */
 package org.commonjava.indy.service.repository.jaxrs;
 
-import org.apache.commons.lang3.StringUtils;
 import org.commonjava.atlas.maven.ident.util.JoinString;
 import org.commonjava.indy.service.repository.controller.QueryController;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.dto.SimpleBooleanResultDTO;
 import org.commonjava.indy.service.repository.model.dto.StoreListingDTO;
-import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -46,7 +44,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
-import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.isValidPackageType;
 
 @Tag( name = "Store Querying APIs", description = "Resource for querying artifact store definitions" )
 @Path( "/admin/stores/query" )
@@ -76,10 +73,11 @@ public class RepositoryQueryResources
     @GET
     @Produces( APPLICATION_JSON )
     public Response getAll( @QueryParam( "packageType" ) final String packageType,
-                            @QueryParam( "type" ) final String repoType, @QueryParam( "enabled" ) final String enabled )
+                            @QueryParam( "types" ) final String repoTypes,
+                            @QueryParam( "enabled" ) final String enabled )
     {
         return generateStoreListingResponse(
-                () -> queryController.getAllArtifactStores( packageType, repoType, enabled ) );
+                () -> queryController.getAllArtifactStores( packageType, repoTypes, enabled ) );
     }
 
     @Operation( description = "Retrieve all remote repository definitions by specified package type" )

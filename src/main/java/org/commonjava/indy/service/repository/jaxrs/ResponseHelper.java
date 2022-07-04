@@ -135,6 +135,11 @@ public class ResponseHelper
         return formatBadRequestResponse( error, null );
     }
 
+    public Response formatResponse( final Status status, final String message )
+    {
+        return formulateResponse( status.getStatusCode(), null, message, false, null );
+    }
+
     public Response formatResponse( final Throwable error )
     {
         return formulateResponse( 0, error, null, false, null );
