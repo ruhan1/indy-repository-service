@@ -61,10 +61,10 @@ public class GetEnabledGroupsContainingTest
     @Test
     public void runWithBadRequest()
     {
-        given().when().get( QUERY_BASE + "/groups/contains" ).then().statusCode( BAD_REQUEST.getStatusCode() );
+        given().when().get( QUERY_BASE + "/groups/contains/" ).then().statusCode( BAD_REQUEST.getStatusCode() );
 
         given().when()
-               .get( QUERY_BASE + "/groups/contains?storeKey=nopkg:remote:test2" )
+               .get( QUERY_BASE + "/groups/contains/?storeKey=nopkg:remote:test2" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() );
 
@@ -87,7 +87,7 @@ public class GetEnabledGroupsContainingTest
     public void runWithContent()
     {
         given().when()
-               .get( QUERY_BASE + "/groups/contains?storeKey=maven:remote:test1" )
+               .get( QUERY_BASE + "/groups/contains/?storeKey=maven:remote:test1" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -95,7 +95,7 @@ public class GetEnabledGroupsContainingTest
                .body( "items.size()", is( 2 ) );
 
         given().when()
-               .get( QUERY_BASE + "/groups/contains?storeKey=maven:remote:test2" )
+               .get( QUERY_BASE + "/groups/contains/?storeKey=maven:remote:test2" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -103,7 +103,7 @@ public class GetEnabledGroupsContainingTest
                .body( "items.size()", is( 2 ) );
 
         given().when()
-               .get( QUERY_BASE + "/groups/contains?storeKey=maven:remote:test3" )
+               .get( QUERY_BASE + "/groups/contains/?storeKey=maven:remote:test3" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

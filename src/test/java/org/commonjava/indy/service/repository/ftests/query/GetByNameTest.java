@@ -72,7 +72,7 @@ public class GetByNameTest
     @Test
     public void runWithNoNotFound()
     {
-        given().when().get( QUERY_BASE + "/byName/nosuchrepo" ).then().statusCode( NOT_FOUND.getStatusCode() );
+        given().when().get( QUERY_BASE + "/byName/nosuchrepo/" ).then().statusCode( NOT_FOUND.getStatusCode() );
     }
 
     /**
@@ -93,7 +93,7 @@ public class GetByNameTest
     public void runWithContent()
     {
         given().when()
-               .get( QUERY_BASE + "/byName/test1" )
+               .get( QUERY_BASE + "/byName/test1/" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

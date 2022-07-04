@@ -65,10 +65,10 @@ public class GetGroupsAffectedByTest
     @Test
     public void runWithBadRequest()
     {
-        given().when().get( QUERY_BASE + "/affectedBy" ).then().statusCode( BAD_REQUEST.getStatusCode() );
+        given().when().get( QUERY_BASE + "/affectedBy/" ).then().statusCode( BAD_REQUEST.getStatusCode() );
 
         given().when()
-               .get( QUERY_BASE + "/affectedBy?keys=nopkg:remote:test1,maven:hosted:test1" )
+               .get( QUERY_BASE + "/affectedBy/?keys=nopkg:remote:test1,maven:hosted:test1" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() );
 
@@ -102,7 +102,7 @@ public class GetGroupsAffectedByTest
                     return true;
                 } );
         given().when()
-               .get( QUERY_BASE + "/affectedBy?keys=maven:remote:test1" )
+               .get( QUERY_BASE + "/affectedBy/?keys=maven:remote:test1" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -111,7 +111,7 @@ public class GetGroupsAffectedByTest
                .body( groupRepoMatcher );
 
         given().when()
-               .get( QUERY_BASE + "/affectedBy?keys=maven:remote:test2" )
+               .get( QUERY_BASE + "/affectedBy/?keys=maven:remote:test2" )
                .then()
                .statusCode( OK.getStatusCode() )
                .body( "size()", is( 1 ) )

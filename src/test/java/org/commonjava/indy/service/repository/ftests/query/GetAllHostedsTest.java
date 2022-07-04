@@ -54,7 +54,7 @@ public class GetAllHostedsTest
     public void run()
     {
         given().when()
-               .get( QUERY_BASE + "/hosteds/all" )
+               .get( QUERY_BASE + "/hosteds/all/" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

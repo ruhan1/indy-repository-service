@@ -57,7 +57,7 @@ public class GetByDefaultPkgsTest
     public void run()
     {
         given().when()
-               .get( QUERY_BASE + "/byDefaultPkgTypes" )
+               .get( QUERY_BASE + "/byDefaultPkgTypes/" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

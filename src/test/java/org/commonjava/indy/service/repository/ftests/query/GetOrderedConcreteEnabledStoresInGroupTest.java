@@ -67,15 +67,15 @@ public class GetOrderedConcreteEnabledStoresInGroupTest
     @Test
     public void runWithBadReq()
     {
-        given().when().get( QUERY_BASE + "/concretes/inGroup" ).then().statusCode( BAD_REQUEST.getStatusCode() );
+        given().when().get( QUERY_BASE + "/concretes/inGroup/" ).then().statusCode( BAD_REQUEST.getStatusCode() );
 
         given().when()
-               .get( QUERY_BASE + "/concretes/inGroup?storeKey=maven:remote:test1" )
+               .get( QUERY_BASE + "/concretes/inGroup/?storeKey=maven:remote:test1" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() );
 
         given().when()
-               .get( QUERY_BASE + "/concretes/inGroup?storeKey=nopkg:group:test1" )
+               .get( QUERY_BASE + "/concretes/inGroup/?storeKey=nopkg:group:test1" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() );
     }
@@ -109,7 +109,7 @@ public class GetOrderedConcreteEnabledStoresInGroupTest
                     return true;
                 } );
         given().when()
-               .get( QUERY_BASE + "/concretes/inGroup?storeKey=maven:group:test1" )
+               .get( QUERY_BASE + "/concretes/inGroup/?storeKey=maven:group:test1" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -119,7 +119,7 @@ public class GetOrderedConcreteEnabledStoresInGroupTest
                .body( concreteRepoMatcher );
 
         given().when()
-               .get( QUERY_BASE + "/concretes/inGroup?storeKey=maven:group:test3" )
+               .get( QUERY_BASE + "/concretes/inGroup/?storeKey=maven:group:test3" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
