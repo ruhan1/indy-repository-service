@@ -54,7 +54,7 @@ public class GetAllTest
     public void run()
     {
         given().when()
-               .get( QUERY_BASE + "/all" )
+               .get( QUERY_BASE + "/all/" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -62,7 +62,7 @@ public class GetAllTest
                .body( "items.size()", is( 9 ) );
 
         given().when()
-               .get( QUERY_BASE + "/all?types=remote" )
+               .get( QUERY_BASE + "/all/?types=remote" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -70,7 +70,7 @@ public class GetAllTest
                .body( "items.size()", is( 3 ) );
 
         given().when()
-               .get( QUERY_BASE + "/all?types=remote,notvalid" )
+               .get( QUERY_BASE + "/all/?types=remote,notvalid" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -78,7 +78,7 @@ public class GetAllTest
                .body( "items.size()", is( 3 ) );
 
         given().when()
-               .get( QUERY_BASE + "/all?types=remote,hosted" )
+               .get( QUERY_BASE + "/all/?types=remote,hosted" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -86,7 +86,7 @@ public class GetAllTest
                .body( "items.size()", is( 6 ) );
 
         given().when()
-               .get( QUERY_BASE + "/all?types=remote,hosted,group" )
+               .get( QUERY_BASE + "/all/?types=remote,hosted,group" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -94,7 +94,7 @@ public class GetAllTest
                .body( "items.size()", is( 9 ) );
 
         given().when()
-               .get( QUERY_BASE + "/all?enabled=true" )
+               .get( QUERY_BASE + "/all/?enabled=true" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -102,7 +102,7 @@ public class GetAllTest
                .body( "items.size()", is( 8 ) );
 
         given().when()
-               .get( QUERY_BASE + "/all?types=remote&enabled=true" )
+               .get( QUERY_BASE + "/all/?types=remote&enabled=true" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

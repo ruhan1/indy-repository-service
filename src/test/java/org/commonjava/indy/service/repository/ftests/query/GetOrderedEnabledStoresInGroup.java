@@ -62,15 +62,15 @@ public class GetOrderedEnabledStoresInGroup
     @Test
     public void runWithBadReq()
     {
-        given().when().get( QUERY_BASE + "/inGroup" ).then().statusCode( BAD_REQUEST.getStatusCode() );
+        given().when().get( QUERY_BASE + "/inGroup/" ).then().statusCode( BAD_REQUEST.getStatusCode() );
 
         given().when()
-               .get( QUERY_BASE + "/inGroup?storeKey=maven:remote:test1" )
+               .get( QUERY_BASE + "/inGroup/?storeKey=maven:remote:test1" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() );
 
         given().when()
-               .get( QUERY_BASE + "/inGroup?storeKey=nopkg:group:test1" )
+               .get( QUERY_BASE + "/inGroup/?storeKey=nopkg:group:test1" )
                .then()
                .statusCode( BAD_REQUEST.getStatusCode() );
     }
@@ -94,7 +94,7 @@ public class GetOrderedEnabledStoresInGroup
     public void runWithContent()
     {
         given().when()
-               .get( QUERY_BASE + "/inGroup?storeKey=maven:group:test1" )
+               .get( QUERY_BASE + "/inGroup/?storeKey=maven:group:test1" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
@@ -103,7 +103,7 @@ public class GetOrderedEnabledStoresInGroup
                .body( "items[0].key", is( "maven:group:test1" ) );
 
         given().when()
-               .get( QUERY_BASE + "/inGroup?storeKey=maven:group:test3" )
+               .get( QUERY_BASE + "/inGroup/?storeKey=maven:group:test3" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

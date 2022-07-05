@@ -54,7 +54,7 @@ public class GetAllRemotesTest
     public void run()
     {
         given().when()
-               .get( QUERY_BASE + "/remotes/all" )
+               .get( QUERY_BASE + "/remotes/all/" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )

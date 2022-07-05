@@ -54,7 +54,7 @@ public class GetAllGroupsTest
     public void run()
     {
         given().when()
-               .get( QUERY_BASE + "/groups/all" )
+               .get( QUERY_BASE + "/groups/all/" )
                .then()
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
