@@ -146,9 +146,11 @@ public class QueryController
         }, "Failed to get groups containing {}", storeKey );
     }
 
-    public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String storeKey )
+    public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String storeKey, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
             if ( key.getType() != StoreType.group )
@@ -156,14 +158,17 @@ public class QueryController
                 throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKey {}: not a group",
                                                  storeKey );
             }
-            return new ArrayList<>(
-                    storeManager.query().getOrderedConcreteStoresInGroup( key.getPackageType(), key.getName() ) );
+            return new ArrayList<>( storeManager.query()
+                                                .getOrderedConcreteStoresInGroup( key.getPackageType(), key.getName(),
+                                                                                  isEnabled ) );
         }, "Failed to get stores in group {}", storeKey );
     }
 
-    public List<ArtifactStore> getOrderedStoresInGroup( final String storeKey )
+    public List<ArtifactStore> getOrderedStoresInGroup( final String storeKey, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
             if ( key.getType() != StoreType.group )
@@ -172,7 +177,7 @@ public class QueryController
                                                  storeKey );
             }
             return new ArrayList<>(
-                    storeManager.query().getOrderedStoresInGroup( key.getPackageType(), key.getName() ) );
+                    storeManager.query().getOrderedStoresInGroup( key.getPackageType(), key.getName(), isEnabled ) );
         }, "Failed to get stores in group {}", storeKey );
     }
 
