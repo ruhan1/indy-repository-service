@@ -240,10 +240,11 @@ public class RepositoryQueryResources
     @GET
     @Path( "/remotes" )
     public Response getRemoteRepositoryByUrl( @QueryParam( "packageType" ) final String packageType,
-                                              @QueryParam( "byUrl" ) final String url )
+                                              @QueryParam( "byUrl" ) final String url,
+                                              @QueryParam( "enabled" ) final String enabled)
     {
         return generateStoreListingResponse(
-                () -> queryController.queryRemotesByPackageTypeAndUrl( packageType, url ) );
+                () -> queryController.queryRemotesByPackageTypeAndUrl( packageType, url, enabled ) );
     }
 
     @Operation( description = "Check if there are no repository definitions." )

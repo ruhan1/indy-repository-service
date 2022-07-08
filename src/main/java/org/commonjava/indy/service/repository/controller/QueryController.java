@@ -216,10 +216,13 @@ public class QueryController
         }, "Failed to get groups affected by keys: {}", (Object[]) keys );
     }
 
-    public List<RemoteRepository> queryRemotesByPackageTypeAndUrl( final String packageType, final String url )
+    public List<RemoteRepository> queryRemotesByPackageTypeAndUrl( final String packageType, final String url,
+                                                                   final String enabled )
             throws IndyWorkflowException
     {
-        return generateQueryResult( () -> storeManager.query().getRemoteRepositoryByUrl( packageType, url ),
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
+        return generateQueryResult( () -> storeManager.query().getRemoteRepositoryByUrl( packageType, url, isEnabled ),
                                     "Failed to get remote repositories for packageType {} with remote url {}",
                                     packageType, url );
     }
