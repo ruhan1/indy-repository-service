@@ -134,12 +134,13 @@ public class QueryController
     public List<Group> getGroupsContaining( final String storeKey, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
             if ( enabled != null )
             {
-                return new ArrayList<>(
-                        storeManager.query().getGroupsContaining( key, Boolean.parseBoolean( enabled ) ) );
+                return new ArrayList<>( storeManager.query().getGroupsContaining( key, isEnabled ) );
             }
             return new ArrayList<>( storeManager.query().getGroupsContaining( key ) );
 
@@ -181,29 +182,37 @@ public class QueryController
         }, "Failed to get stores in group {}", storeKey );
     }
 
-    public List<RemoteRepository> getAllRemoteRepositories( final String packageType )
+    public List<RemoteRepository> getAllRemoteRepositories( final String packageType, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> storeManager.query()
                                                       .getAllRemoteRepositories(
-                                                              packageType == null ? MAVEN_PKG_KEY : packageType ),
+                                                              packageType == null ? MAVEN_PKG_KEY : packageType,
+                                                              isEnabled ),
                                     "Failed to get all remote repos for package type {}", packageType );
     }
 
-    public List<HostedRepository> getAllHostedRepositories( final String packageType )
+    public List<HostedRepository> getAllHostedRepositories( final String packageType, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> storeManager.query()
                                                       .getAllHostedRepositories(
-                                                              packageType == null ? MAVEN_PKG_KEY : packageType ),
+                                                              packageType == null ? MAVEN_PKG_KEY : packageType,
+                                                              isEnabled ),
                                     "Failed to get all hosted repos for package type {}", packageType );
     }
 
-    public List<Group> getAllGroups( final String packageType )
+    public List<Group> getAllGroups( final String packageType, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult(
-                () -> storeManager.query().getAllGroups( packageType == null ? MAVEN_PKG_KEY : packageType ),
+                () -> storeManager.query().getAllGroups( packageType == null ? MAVEN_PKG_KEY : packageType, isEnabled ),
                 "Failed to get all groups for package type {}", packageType );
     }
 
