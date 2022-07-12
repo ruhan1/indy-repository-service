@@ -134,21 +134,42 @@ public class QueryController
     public List<Group> getGroupsContaining( final String storeKey, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
             if ( enabled != null )
             {
-                return new ArrayList<>(
-                        storeManager.query().getGroupsContaining( key, Boolean.parseBoolean( enabled ) ) );
+                return new ArrayList<>( storeManager.query().getGroupsContaining( key, isEnabled ) );
             }
             return new ArrayList<>( storeManager.query().getGroupsContaining( key ) );
 
         }, "Failed to get groups containing {}", storeKey );
     }
 
-    public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String storeKey )
+    public List<ArtifactStore> getOrderedConcreteStoresInGroup( final String storeKey, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
+        return generateQueryResult( () -> {
+            final StoreKey key = validateStoreKey( storeKey );
+            if ( key.getType() != StoreType.group )
+            {
+                throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKey {}: not a group",
+                                                 storeKey );
+            }
+            return new ArrayList<>( storeManager.query()
+                                                .getOrderedConcreteStoresInGroup( key.getPackageType(), key.getName(),
+                                                                                  isEnabled ) );
+        }, "Failed to get stores in group {}", storeKey );
+    }
+
+    public List<ArtifactStore> getOrderedStoresInGroup( final String storeKey, final String enabled )
+            throws IndyWorkflowException
+    {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
             if ( key.getType() != StoreType.group )
@@ -157,48 +178,41 @@ public class QueryController
                                                  storeKey );
             }
             return new ArrayList<>(
-                    storeManager.query().getOrderedConcreteStoresInGroup( key.getPackageType(), key.getName() ) );
+                    storeManager.query().getOrderedStoresInGroup( key.getPackageType(), key.getName(), isEnabled ) );
         }, "Failed to get stores in group {}", storeKey );
     }
 
-    public List<ArtifactStore> getOrderedStoresInGroup( final String storeKey )
+    public List<RemoteRepository> getAllRemoteRepositories( final String packageType, final String enabled )
             throws IndyWorkflowException
     {
-        return generateQueryResult( () -> {
-            final StoreKey key = validateStoreKey( storeKey );
-            if ( key.getType() != StoreType.group )
-            {
-                throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKey {}: not a group",
-                                                 storeKey );
-            }
-            return new ArrayList<>(
-                    storeManager.query().getOrderedStoresInGroup( key.getPackageType(), key.getName() ) );
-        }, "Failed to get stores in group {}", storeKey );
-    }
-
-    public List<RemoteRepository> getAllRemoteRepositories( final String packageType )
-            throws IndyWorkflowException
-    {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> storeManager.query()
                                                       .getAllRemoteRepositories(
-                                                              packageType == null ? MAVEN_PKG_KEY : packageType ),
+                                                              packageType == null ? MAVEN_PKG_KEY : packageType,
+                                                              isEnabled ),
                                     "Failed to get all remote repos for package type {}", packageType );
     }
 
-    public List<HostedRepository> getAllHostedRepositories( final String packageType )
+    public List<HostedRepository> getAllHostedRepositories( final String packageType, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult( () -> storeManager.query()
                                                       .getAllHostedRepositories(
-                                                              packageType == null ? MAVEN_PKG_KEY : packageType ),
+                                                              packageType == null ? MAVEN_PKG_KEY : packageType,
+                                                              isEnabled ),
                                     "Failed to get all hosted repos for package type {}", packageType );
     }
 
-    public List<Group> getAllGroups( final String packageType )
+    public List<Group> getAllGroups( final String packageType, final String enabled )
             throws IndyWorkflowException
     {
+        final boolean isEnabled =
+                enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
         return generateQueryResult(
-                () -> storeManager.query().getAllGroups( packageType == null ? MAVEN_PKG_KEY : packageType ),
+                () -> storeManager.query().getAllGroups( packageType == null ? MAVEN_PKG_KEY : packageType, isEnabled ),
                 "Failed to get all groups for package type {}", packageType );
     }
 

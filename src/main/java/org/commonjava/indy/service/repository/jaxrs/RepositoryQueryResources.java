@@ -89,10 +89,12 @@ public class RepositoryQueryResources
     @Path( "/remotes/all" )
     @Produces( APPLICATION_JSON )
     public Response getAllRemoteRepositories(
-            @Parameter( description = "package type for the remotes", required = true, example = "maven" )
-            @QueryParam( "packageType" ) final String packageType )
+            @Parameter( description = "package type for the remotes, default is maven if not specified",
+                        example = "maven|npm" ) @QueryParam( "packageType" ) final String packageType,
+            @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
+                        example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getAllRemoteRepositories( packageType ) );
+        return generateStoreListingResponse( () -> queryController.getAllRemoteRepositories( packageType, enabled ) );
     }
 
     @Operation( description = "Retrieve all hosted repository definitions by specified package type" )
@@ -104,10 +106,12 @@ public class RepositoryQueryResources
     @Path( "/hosteds/all" )
     @Produces( APPLICATION_JSON )
     public Response getAllHostedRepositories(
-            @Parameter( description = "package type for the hosted repos", required = true, example = "maven|npm" )
-            @QueryParam( "packageType" ) final String packageType )
+            @Parameter( description = "package type for the hosted repos, default is maven if not specified",
+                        example = "maven|npm" ) @QueryParam( "packageType" ) final String packageType,
+            @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
+                        example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getAllHostedRepositories( packageType ) );
+        return generateStoreListingResponse( () -> queryController.getAllHostedRepositories( packageType, enabled ) );
     }
 
     @Operation( description = "Retrieve all group definitions by specified package type" )
@@ -119,10 +123,12 @@ public class RepositoryQueryResources
     @Path( "/groups/all" )
     @Produces( APPLICATION_JSON )
     public Response getAllGroups(
-            @Parameter( description = "package type for the groups", required = true, example = "maven|npm" )
-            @QueryParam( "packageType" ) final String packageType )
+            @Parameter( description = "package type for the groups,  default is maven if not specified",
+                        example = "maven|npm" ) @QueryParam( "packageType" ) final String packageType,
+            @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
+                        example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getAllGroups( packageType ) );
+        return generateStoreListingResponse( () -> queryController.getAllGroups( packageType, enabled ) );
     }
 
     @Operation( description = "Retrieve all default package types" )
@@ -170,12 +176,13 @@ public class RepositoryQueryResources
     public Response getGroupsContaining(
             @Parameter( description = "Key of the repository contained in the groups", required = true,
                         example = "maven:remote:central" ) @QueryParam( "storeKey" ) final String storeKey,
-            @Parameter( description = "If the groups are enabled" ) @QueryParam( "enabled" ) final String enabled )
+            @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
+                        example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
         return generateStoreListingResponse( () -> queryController.getGroupsContaining( storeKey, enabled ) );
     }
 
-    @Operation( description = "Retrieve the enabled concrete stores which are constituents of the specified group" )
+    @Operation( description = "Retrieve the concrete stores which are constituents of the specified group" )
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
@@ -183,14 +190,17 @@ public class RepositoryQueryResources
     @GET
     @Path( "/concretes/inGroup" )
     @Produces( APPLICATION_JSON )
-    public Response getOrderedConcreteEnabledStoresInGroup(
+    public Response getOrderedConcreteStoresInGroup(
             @Parameter( description = "Key of the group whom the repositories are contained in", required = true,
-                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey )
+                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey,
+            @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
+                        example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getOrderedConcreteStoresInGroup( storeKey ) );
+        return generateStoreListingResponse(
+                () -> queryController.getOrderedConcreteStoresInGroup( storeKey, enabled ) );
     }
 
-    @Operation( description = "Retrieve the enabled stores which are constituents of the specified group" )
+    @Operation( description = "Retrieve the stores which are constituents of the specified group" )
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The stores definitions, include the master group itself" )
@@ -198,11 +208,13 @@ public class RepositoryQueryResources
     @GET
     @Path( "/inGroup" )
     @Produces( APPLICATION_JSON )
-    public Response getOrderedEnabledStoresInGroup(
+    public Response getOrderedStoresInGroup(
             @Parameter( description = "Key of the group whom the repositories are contained in", required = true,
-                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey )
+                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey,
+            @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
+                        example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getOrderedStoresInGroup( storeKey ) );
+        return generateStoreListingResponse( () -> queryController.getOrderedStoresInGroup( storeKey, enabled ) );
     }
 
     @Operation( description = "Retrieve the groups which are affected by the specified store keys" )
@@ -241,7 +253,7 @@ public class RepositoryQueryResources
     @Path( "/remotes" )
     public Response getRemoteRepositoryByUrl( @QueryParam( "packageType" ) final String packageType,
                                               @QueryParam( "byUrl" ) final String url,
-                                              @QueryParam( "enabled" ) final String enabled)
+                                              @QueryParam( "enabled" ) final String enabled )
     {
         return generateStoreListingResponse(
                 () -> queryController.queryRemotesByPackageTypeAndUrl( packageType, url, enabled ) );
