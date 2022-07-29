@@ -288,7 +288,7 @@ public class RepositoryQueryResources
         try
         {
             final List<? extends ArtifactStore> stores = supplier.get();
-            logger.info( "Returning listing containing stores:\n\t{}", new JoinString( "\n\t", stores ) );
+            logger.debug( "Returning listing containing stores:\n\t{}", new JoinString( "\n\t", stores ) );
             if ( stores == null || stores.isEmpty() )
             {
                 return Response.status( NOT_FOUND ).build();
