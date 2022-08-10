@@ -101,80 +101,74 @@ cassandra:
 
 
 "%dev":
-   quarkus:
-#     kubernetes-config:
-#       enabled: false
-     naming:
-       enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
-     log:
-       level: TRACE
-       min-level: TRACE
-       category:
-         "org.jboss":
-           level: INFO
-         "org.apache.kafka":
-           level: ERROR
-         "io.quarkus":
-           level: INFO
-         "io.smallrye":
-           level: INFO
-         "org.eclipse":
-           level: INFO
-         "io.netty":
-           level: INFO
-         "org.infinispan":
-           level: INFO
-         "io.agroal":
-           level: INFO
-         "org.commonjava.indy.service":
-           level: TRACE
-       console:
-         enable: true
-       file:
-         enable: true
-         path: "/tmp/indy-repository-service.log"
-         format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
-         rotation:
-           max-backup-index: 5
-           max-file-size: 10M
+  quarkus:
+#    kubernetes-config:
+#      enabled: false
+    naming:
+      enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
+    log:
+      level: TRACE
+      min-level: TRACE
+      category:
+        "org.jboss":
+          level: INFO
+        "org.apache.kafka":
+          level: ERROR
+        "io.quarkus":
+          level: INFO
+        "io.smallrye":
+          level: INFO
+        "org.eclipse":
+          level: INFO
+        "io.netty":
+          level: INFO
+        "org.infinispan":
+          level: INFO
+        "io.agroal":
+          level: INFO
+        "org.commonjava.indy.service":
+          level: TRACE
+      console:
+        enable: true
+      file:
+        enable: true
+        path: "/tmp/indy-repository-service.log"
+        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+        rotation:
+          max-backup-index: 5
+          max-file-size: 10M
 
-   repository:
-     data-storage: mem
+  repository:
+    data-storage: mem
 
-   ispn:
-     configDir: /tmp
-#     repo-data-pool: |
-#       dataSource.providerClassName=org.postgresql.ds.PGSimpleDataSource,\
-#       dataSource.jdbcUrl=jdbc:postgresql://localhost:5432/test,\
-#       dataSource.principal=db_user,\
-#       dataSource.credential=mySpecialPassword,\
-#       dataSource.minSize=10,\
-#       dataSource.initialSize=10,\
-#       dataSource.maxSize=100,\
-#       dataSource.reapTimeout_m=10,\
-#       dataSource.maxLifetime_m=28,\
-#       dataSource.leakTimeout_s=5,\
-#       metrics=true,\
-#       healthChecks=true
+  ispn:
+    configDir: /tmp
+#    repo-data-pool: |
+#      dataSource.providerClassName=org.postgresql.ds.PGSimpleDataSource,\
+#      dataSource.jdbcUrl=jdbc:postgresql://localhost:5432/test,\
+#      dataSource.principal=db_user,\
+#      dataSource.credential=mySpecialPassword,\
+#      dataSource.minSize=10,\
+#      dataSource.initialSize=10,\
+#      dataSource.maxSize=100,\
+#      dataSource.reapTimeout_m=10,\
+#      dataSource.maxLifetime_m=28,\
+#      dataSource.leakTimeout_s=5,\
+#      metrics=true,\
+#      healthChecks=true
 
-   cassandra:
-     enabled: false
-     host: localhost
-     port: 9042
-     user: user
-     pass: pass
-#    keyspace:
-#    replicaFactor:
-#    keyspaceReplicas:
-#    timeoutMillis:
-#        connect: 60000
-#        read: 60000
-#    retries:
-#        read: 3
-#        write: 3
-
-
-
-
-
-
+  cassandra:
+    enabled: false
+    host: localhost
+    port: 9042
+    user: user
+    pass: pass
+#   keyspace:
+#   replicaFactor:
+#   keyspaceReplicas:
+#   timeoutMillis:
+#       connect: 60000
+#       read: 60000
+#   retries:
+#       read: 3
+#       write: 3
