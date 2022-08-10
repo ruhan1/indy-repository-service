@@ -1,0 +1,91 @@
+quarkus:
+  http:
+    port: 8080
+    read-timeout: 30m
+    limits:
+      max-body-size:  500m
+  keycloak:
+    policy-enforcer:
+      enable: false
+  oidc:
+    enabled: true
+    auth-server-url: "https://localhost:8543/realms/indyreposervice"
+    client-id: indy
+    credentials:
+      secret: secret
+    tls:
+      verification: none
+    token:
+      issuer: any
+
+  # Logging (disable console on prod)
+  log:
+    level: INFO
+    min-level: INFO
+    category:
+      "org.jboss":
+        level: WARN
+      "org.apache.kafka":
+        level: WARN
+      "io.quarkus":
+        level: WARN
+#        min-level: DEBUG
+      "io.smallrye":
+        level: WARN
+      "org.eclipse":
+        level: WARN
+      "io.netty":
+        level: WARN
+      "org.infinispan":
+        level: WARN
+      "io.agroal":
+        level: WARN
+      "org.commonjava.indy.service":
+        level: DEBUG
+        min-level: DEBUG
+    console:
+      enable: true
+      level: INFO
+    file:
+      enable: true
+      level: INFO
+      path: "log/indy-repository-service.log"
+      format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+      rotation:
+        max-backup-index: 5
+        max-file-size: 10M
+
+  swagger-ui:
+    always-include: true
+
+keycloak:
+  enabled: True
+  security_bindings_yaml: config/security-bindings.yaml
+
+repository:
+  data-storage: cassandra
+
+kafka:
+  bootstrap:
+    servers: "localhost:9092"
+
+mp:
+  messaging:
+    emitter:
+      # the default buffer size for emitter's OnOverflow buffer strategy of back-pressure control
+      default-buffer-size: 1024
+    outgoing:
+      store-event:
+        connector: "smallrye-kafka"
+        topics: "store-event"
+        value:
+          serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
+
+cassandra:
+  enabled: true
+  host: localhost
+  port: 9042
+  user: cassandra
+  pass: cassandra
+  keyspace: indyreposervice
+  keyspaceReplicas: 1

@@ -4,17 +4,20 @@ quarkus:
     read-timeout: 30m
     limits:
       max-body-size: 500M
-
   package:
     type: uber-jar
-
   application:
-      name: "indy-repository-service"
-
+    name: "indy-repository-service"
   naming:
     enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
-
-  # Logging (disable console on prod)
+  keycloak:
+    devservices:
+      enabled: false
+  oidc:
+    enabled: false
+  security:
+    auth:
+      enabled-in-dev-mode: false
   log:
     level: INFO
     min-level: TRACE
@@ -47,10 +50,8 @@ quarkus:
       rotation:
         max-backup-index: 5
         max-file-size: 10M
-
   swagger-ui:
     always-include: true
-
   opentelemetry:
     enabled: true
     tracer:
@@ -77,28 +78,9 @@ mp:
 
 repository:
   data-storage: cassandra
-#  affectedGroupsExclude: ^build-\d+
-#  disposableStorePattern:
-  # ssl validation configuration for remote
-#  remote:
-#    sslRequired: false
-#    nosslHosts: localhost,localhost1,localhost2
-
-
-#keycloak:
-#  enabled: false
-
 
 cassandra:
-  enabled: true
-  host: localhost
-  port: 9042
-  user: cassandra
-  pass: cassandra
-  keyspace: indyreposervice
-  keyspaceReplicas: 1
-
-#store:
+  enabled: false
 
 
 
@@ -141,19 +123,6 @@ cassandra:
 
   ispn:
     configDir: /tmp
-#    repo-data-pool: |
-#      dataSource.providerClassName=org.postgresql.ds.PGSimpleDataSource,\
-#      dataSource.jdbcUrl=jdbc:postgresql://localhost:5432/test,\
-#      dataSource.principal=db_user,\
-#      dataSource.credential=mySpecialPassword,\
-#      dataSource.minSize=10,\
-#      dataSource.initialSize=10,\
-#      dataSource.maxSize=100,\
-#      dataSource.reapTimeout_m=10,\
-#      dataSource.maxLifetime_m=28,\
-#      dataSource.leakTimeout_s=5,\
-#      metrics=true,\
-#      healthChecks=true
 
   cassandra:
     enabled: false

@@ -21,6 +21,7 @@ import org.commonjava.indy.service.repository.model.StoreType;
 import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Disabled( "Cassandra dbunit always has problems to clean up resources when running test suite in maven")
 public class CassandraStoreTest
 {
 

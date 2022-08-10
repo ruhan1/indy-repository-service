@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ISPNSSLFunctionProfile
-        implements QuarkusTestProfile
+        extends BaseIndyTestProfile
 {
     @Override
-    public Map<String, String> getConfigOverrides()
+    public Map<String, String> getExtraConfigOverrides()
     {
         Map<String, String> configs = new HashMap<>();
         configs.put( "repository.data-storage", "infinispan" );

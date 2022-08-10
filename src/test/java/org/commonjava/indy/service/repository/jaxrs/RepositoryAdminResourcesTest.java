@@ -17,6 +17,7 @@ package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,7 @@ import static org.commonjava.indy.service.repository.util.PathUtils.normalize;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
+@TestSecurity( authorizationEnabled = true, roles = {"power-user"}, user = "pouser")
 public class RepositoryAdminResourcesTest
 {
     private static final String BASE_STORE_PATH = "/api/admin/stores";

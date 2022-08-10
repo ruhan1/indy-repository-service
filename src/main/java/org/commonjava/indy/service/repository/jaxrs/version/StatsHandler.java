@@ -53,7 +53,7 @@ import static org.commonjava.indy.service.repository.util.Constants.API_PREFIX;
 
 @Tag( name = "Generic Infrastructure Queries (UI Support)",
       description = "Various read-only operations for retrieving information about the system." )
-@Path( "/stats" )
+@Path( "/api/stats" )
 public class StatsHandler
 {
     private final Logger logger = LoggerFactory.getLogger( this.getClass() );

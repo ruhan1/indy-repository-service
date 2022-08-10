@@ -17,18 +17,17 @@ package org.commonjava.indy.service.repository.ftests.profile;
 
 import io.quarkus.test.junit.QuarkusTestProfile;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CassandraFunctionProfile
-        implements QuarkusTestProfile
+        extends BaseIndyTestProfile
 {
     @Override
-    public Map<String, String> getConfigOverrides()
+    Map<String, String> getExtraConfigOverrides()
     {
-        Map<String, String> configs = new HashMap<>();
-        configs.put( "repository.data-storage", "cassandra" );
-        return configs;
+        return Collections.singletonMap( "repository.data-storage", "cassandra" );
     }
 
 }
