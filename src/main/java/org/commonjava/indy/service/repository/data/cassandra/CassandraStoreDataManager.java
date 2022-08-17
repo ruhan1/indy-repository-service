@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -101,7 +102,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-    protected ArtifactStore getArtifactStoreInternal( StoreKey key )
+    protected Optional<ArtifactStore> getArtifactStoreInternal( StoreKey key )
     {
 
         logger.trace( "Get artifact store: {}", key.toString() );
@@ -111,11 +112,11 @@ public class CassandraStoreDataManager
             ArtifactStore store = remoteKojiStores.get( key );
             if ( store != null )
             {
-                return store;
+                return Optional.of(store);
             }
         }
 
-        return computeIfAbsent( ARTIFACT_STORE, key, STORE_EXPIRATION_IN_MINS, Boolean.FALSE );
+        return Optional.ofNullable( computeIfAbsent( ARTIFACT_STORE, key, STORE_EXPIRATION_IN_MINS, Boolean.FALSE ) );
     }
 
     @Override
@@ -197,8 +198,7 @@ public class CassandraStoreDataManager
     @Override
     public boolean hasArtifactStore( StoreKey key )
     {
-        ArtifactStore artifactStore = getArtifactStoreInternal( key );
-        return artifactStore != null;
+        return getArtifactStoreInternal( key ).isPresent();
     }
 
     @Override
@@ -270,18 +270,28 @@ public class CassandraStoreDataManager
                         // avoid loading the ArtifactStore instance again and again
                         if ( !processed.contains( gKey ) && !toProcess.contains( gKey ) )
                         {
-                            ArtifactStore store = getArtifactStoreInternal( gKey );
+                            final Optional<ArtifactStore> storeOpt = getArtifactStoreInternal( gKey );
 
                             // if this group is disabled, we don't want to keep loading it again and again.
-                            if ( store.isDisabled() )
+                            if ( storeOpt.isPresent() )
                             {
-                                processed.add( gKey );
+                                final ArtifactStore store = storeOpt.get();
+                                if ( store.isDisabled() )
+                                {
+                                    processed.add( gKey );
+                                }
+                                else
+                                {
+                                    // add the group to the toProcess list so we can find any result that might include it in their own membership
+                                    toProcess.addLast( gKey );
+                                    result.add( (Group) store );
+                                }
                             }
                             else
                             {
-                                // add the group to the toProcess list so we can find any result that might include it in their own membership
-                                toProcess.addLast( gKey );
-                                result.add( (Group) store );
+                                logger.warn( "Error: the group {} does not exist as affected by for store {}", gKey,
+                                              key );
+                                processed.add( gKey );
                             }
                         }
                     }

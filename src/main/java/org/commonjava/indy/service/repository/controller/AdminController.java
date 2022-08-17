@@ -145,7 +145,7 @@ public class AdminController
     {
         try
         {
-            return storeManager.getArtifactStore( key );
+            return storeManager.getArtifactStore( key ).orElse( null );
         }
         catch ( final IndyDataException e )
         {
@@ -184,7 +184,7 @@ public class AdminController
 
         try
         {
-            ArtifactStore store = storeManager.getArtifactStore( key );
+            ArtifactStore store = storeManager.getArtifactStore( key ).orElse( null );
             if ( store != null && deleteContent )
             {
                 logger.info( "Delete content of {}", key );

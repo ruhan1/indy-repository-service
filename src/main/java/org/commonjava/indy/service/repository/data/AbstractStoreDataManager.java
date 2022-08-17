@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
@@ -84,11 +85,11 @@ public abstract class AbstractStoreDataManager
         return new DefaultArtifactStoreQuery<>( this );
     }
 
-    protected abstract ArtifactStore getArtifactStoreInternal( final StoreKey key );
+    protected abstract Optional<ArtifactStore> getArtifactStoreInternal( final StoreKey key );
 
     @Override
 //    @WithSpan
-    public ArtifactStore getArtifactStore( final StoreKey key )
+    public Optional<ArtifactStore> getArtifactStore( final StoreKey key )
     {
         return getArtifactStoreInternal( key );
     }
@@ -279,13 +280,14 @@ public abstract class AbstractStoreDataManager
         opLocks.lockAnd( key, LOCK_TIMEOUT_SECONDS, k -> {
             try
             {
-                final ArtifactStore store = getArtifactStoreInternal( k );
-                if ( store == null )
+                final Optional<ArtifactStore> storeOpt = getArtifactStoreInternal( k );
+                if ( storeOpt.isEmpty() )
                 {
                     logger.warn( "No store found for: {}", k );
                     return null;
                 }
 
+                final ArtifactStore store = storeOpt.get();
                 if ( isReadonly( store ) )
                 {
                     throw new IndyDataException( METHOD_NOT_ALLOWED.getStatusCode(),
@@ -436,7 +438,7 @@ public abstract class AbstractStoreDataManager
                              AtomicReference<IndyDataException> error, boolean skipIfExists, boolean fireEvents,
                              EventMetadata eventMetadata )
     {
-        ArtifactStore original = getArtifactStoreInternal( k );
+        ArtifactStore original = getArtifactStoreInternal( k ).orElse( null );
         if ( original == store )
         {
             // if they're the same instance, preUpdate events may not work correctly!
@@ -561,7 +563,7 @@ public abstract class AbstractStoreDataManager
 
         Set<ArtifactStore> all = this.getStoreKeysByPkgAndType( packageType, group )
                                      .stream()
-                                     .map( this::getArtifactStoreInternal )
+                                     .map( k -> this.getArtifactStoreInternal(k).orElse( null ) )
                                      .filter( Objects::nonNull )
                                      .collect( Collectors.toSet() );
 

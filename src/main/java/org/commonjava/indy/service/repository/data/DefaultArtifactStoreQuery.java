@@ -467,21 +467,21 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     public RemoteRepository getRemoteRepository( final String packageType, final String name )
             throws IndyDataException
     {
-        return (RemoteRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.remote, name ) );
+        return (RemoteRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.remote, name ) ).orElse( null );
     }
 
     @Override
     public HostedRepository getHostedRepository( final String packageType, final String name )
             throws IndyDataException
     {
-        return (HostedRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.hosted, name ) );
+        return (HostedRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.hosted, name ) ).orElse( null );
     }
 
     @Override
     public Group getGroup( final String packageType, final String name )
             throws IndyDataException
     {
-        return (Group) dataManager.getArtifactStore( new StoreKey( packageType, group, name ) );
+        return (Group) dataManager.getArtifactStore( new StoreKey( packageType, group, name ) ).orElse( null );
     }
 
     @Override
@@ -549,7 +549,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             throw new IndyDataException( "packageType must be set on the query before calling this method!" );
         }
 
-        final Group master = (Group) dataManager.getArtifactStore( new StoreKey( packageType, group, groupName ) );
+        final Group master = (Group) dataManager.getArtifactStore( new StoreKey( packageType, group, groupName ) ).orElse( null );;
         if ( master == null )
         {
             return emptyList();
@@ -591,12 +591,12 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                     if ( recurseGroups && type == group )
                     {
                         // if we're here, we're definitely recursing groups...
-                        Group group = (Group) dataManager.getArtifactStore( key );
+                        Group group = (Group) dataManager.getArtifactStore( key ).orElse( null );;
                         getMembersOrdering( group, result, includeGroups, recurseGroups );
                     }
                     else
                     {
-                        final ArtifactStore store = dataManager.getArtifactStore( key );
+                        final ArtifactStore store = dataManager.getArtifactStore( key ).orElse( null );;
                         if ( store != null && !( store.isDisabled() && Boolean.TRUE.equals( this.enabled ) ) )
                         {
                             result.add( store );

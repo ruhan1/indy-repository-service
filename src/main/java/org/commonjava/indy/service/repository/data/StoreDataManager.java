@@ -26,6 +26,7 @@ import org.commonjava.indy.service.repository.exception.IndyDataException;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -71,7 +72,7 @@ public interface StoreDataManager
      * Return the {@link ArtifactStore} instance corresponding to the given key, where key is a composite of {@link StoreType}
      * (hosted, remote, or group) and name.
      */
-    ArtifactStore getArtifactStore( StoreKey key )
+    Optional<ArtifactStore> getArtifactStore( StoreKey key )
             throws IndyDataException;
 
     /**
