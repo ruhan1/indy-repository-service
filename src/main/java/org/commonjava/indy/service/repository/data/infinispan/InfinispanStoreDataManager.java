@@ -37,10 +37,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.commonjava.indy.service.repository.data.StoreUpdateAction.STORE;
 import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCacheProducer.AFFECTED_BY_STORE_CACHE;
 import static org.commonjava.indy.service.repository.data.infinispan.StoreDataCacheProducer.STORE_BY_PKG_CACHE;
@@ -98,9 +100,9 @@ public class InfinispanStoreDataManager
     }
 
     @Override
-    protected ArtifactStore getArtifactStoreInternal( StoreKey key )
+    protected Optional<ArtifactStore> getArtifactStoreInternal( StoreKey key )
     {
-        return stores.get( key );
+        return ofNullable( stores.get( key ) );
     }
 
     @Override
@@ -248,18 +250,28 @@ public class InfinispanStoreDataManager
                         // avoid loading the ArtifactStore instance again and again
                         if ( !processed.contains( gKey ) && !toProcess.contains( gKey ) )
                         {
-                            ArtifactStore store = getArtifactStoreInternal( gKey );
+                            final Optional<ArtifactStore> storeOpt = getArtifactStoreInternal( gKey );
 
                             // if this group is disabled, we don't want to keep loading it again and again.
-                            if ( store.isDisabled() )
+                            if ( storeOpt.isPresent() )
                             {
-                                processed.add( gKey );
+                                final ArtifactStore store = storeOpt.get();
+                                if ( store.isDisabled() )
+                                {
+                                    processed.add( gKey );
+                                }
+                                else
+                                {
+                                    // add the group to the toProcess list so we can find any result that might include it in their own membership
+                                    toProcess.addLast( gKey );
+                                    result.add( (Group) store );
+                                }
                             }
                             else
                             {
-                                // add the group to the toProcess list so we can find any result that might include it in their own membership
-                                toProcess.addLast( gKey );
-                                result.add( (Group) store );
+                                logger.warn( "Error: the group {} does not exist as affected by for store {}", gKey,
+                                              key );
+                                processed.add( gKey );
                             }
                         }
                     }
