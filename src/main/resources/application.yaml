@@ -11,6 +11,9 @@ quarkus:
   application:
       name: "indy-repository-service"
 
+  naming:
+    enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
+
   # Logging (disable console on prod)
   log:
     level: INFO
@@ -102,10 +105,6 @@ cassandra:
 
 "%dev":
   quarkus:
-#    kubernetes-config:
-#      enabled: false
-    naming:
-      enable-jndi: true # quarkus disabled jndi by default. We need to enable it for some testing.
     log:
       level: TRACE
       min-level: TRACE
