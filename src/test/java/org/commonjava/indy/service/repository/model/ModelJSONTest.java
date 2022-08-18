@@ -16,7 +16,6 @@
 package org.commonjava.indy.service.repository.model;
 
 import org.apache.commons.io.IOUtils;
-import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
