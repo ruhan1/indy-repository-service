@@ -96,8 +96,7 @@ cassandra:
   user: cassandra
   pass: cassandra
   keyspace: indyreposervice
-  keyspaceReplicas: 3
-  replicaFactor: 3
+  keyspaceReplicas: 1
 
 #store:
 
@@ -158,16 +157,3 @@ cassandra:
 
   cassandra:
     enabled: false
-    host: localhost
-    port: 9042
-    user: user
-    pass: pass
-#   keyspace:
-#   replicaFactor:
-#   keyspaceReplicas:
-#   timeoutMillis:
-#       connect: 60000
-#       read: 60000
-#   retries:
-#       read: 3
-#       write: 3

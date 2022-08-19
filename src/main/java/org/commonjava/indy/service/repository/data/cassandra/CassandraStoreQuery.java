@@ -90,7 +90,7 @@ public class CassandraStoreQuery
         String keySpace = config.getKeyspace();
 
         session = client.getSession( keySpace );
-
+        logger.info("Cassandra keyspace replicas configured: {}", config.getKeyspaceReplicas());
         session.execute( SchemaUtils.getSchemaCreateKeyspace( keySpace, config.getKeyspaceReplicas() ) );
         session.execute( CassandraStoreUtil.getSchemaCreateTableStore( keySpace ) );
         session.execute( CassandraStoreUtil.getSchemaCreateIndex4Store( keySpace ) );

@@ -47,7 +47,6 @@ public class CassandraStoreTest
         config.setCassandraPort( 9142 );
         config.setKeyspaceReplicas( 1 );
         config.setKeyspace( "noncontent" );
-        config.setReplicationFactor( 1 );
         config.setCassandraUser( "user" );
         config.setCassandraPass( "pass" );
 
