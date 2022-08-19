@@ -71,10 +71,6 @@ public class CassandraConfiguration
     Optional<String> keyspace;
 
     @Inject
-    @ConfigProperty( name = "cassandra.replicaFactor", defaultValue = "0" )
-    int replicationFactor;
-
-    @Inject
     @ConfigProperty( name = "cassandra.keyspaceReplicas", defaultValue = "0" )
     int keyspaceReplicas;
 
@@ -180,16 +176,6 @@ public class CassandraConfiguration
     public void setKeyspace( String keyspace )
     {
         this.keyspace = of( keyspace );
-    }
-
-    public int getReplicationFactor()
-    {
-        return replicationFactor;
-    }
-
-    public void setReplicationFactor( int replicationFactor )
-    {
-        this.replicationFactor = replicationFactor;
     }
 
     public int getKeyspaceReplicas()
