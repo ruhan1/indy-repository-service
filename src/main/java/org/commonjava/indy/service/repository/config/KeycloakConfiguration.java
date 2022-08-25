@@ -21,6 +21,7 @@ import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Optional;
 
 @Startup
 @ConfigMapping( prefix = "keycloak" )
@@ -31,4 +32,6 @@ public interface KeycloakConfiguration
     @WithDefault( "false" )
     Boolean enabled();
 
+    @WithName( "security_bindings_yaml" )
+    Optional<String> securityBindingsYaml();
 }

@@ -22,6 +22,7 @@ import org.commonjava.indy.service.repository.controller.AdminController;
 import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
+import org.commonjava.indy.service.repository.jaxrs.security.SecurityManager;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
@@ -54,7 +55,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -75,7 +75,7 @@ import static org.commonjava.indy.service.repository.model.ArtifactStore.METADAT
 import static org.eclipse.microprofile.openapi.annotations.enums.ParameterIn.PATH;
 
 @Tag( name = "Store Administration", description = "Resource for accessing and managing artifact store definitions" )
-@Path( "/admin/stores/{packageType}/{type: (hosted|group|remote)}" )
+@Path( "/api/admin/stores/{packageType}/{type: (hosted|group|remote)}" )
 @ApplicationScoped
 public class RepositoryAdminResources
 {
@@ -148,8 +148,7 @@ public class RepositoryAdminResources
                                                                                                                     "group",
                                                                                                                     "remote" } ),
                                                                                                     required = true )
-    @PathParam( "type" ) String type, final @Context UriInfo uriInfo, final @Context HttpRequest request,
-                            final @Context SecurityContext securityContext )
+    @PathParam( "type" ) String type, final @Context UriInfo uriInfo, final @Context HttpRequest request )
     {
         final StoreType st = StoreType.get( type );
 
@@ -190,7 +189,7 @@ public class RepositoryAdminResources
 
         try
         {
-            String user = securityManager.getUser( securityContext, request );
+            String user = securityManager.getUser( request );
 
             if ( adminController.store( store, user, false ) )
             {
@@ -235,7 +234,7 @@ public class RepositoryAdminResources
                                                                                                                    "remote" } ),
                                                                                                    required = true )
     @PathParam( "type" ) String type, final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name,
-                           final @Context HttpRequest request, final @Context SecurityContext securityContext )
+                           final @Context HttpRequest request )
     {
         final StoreType st = StoreType.get( type );
 
@@ -285,7 +284,7 @@ public class RepositoryAdminResources
 
         try
         {
-            final String user = securityManager.getUser( securityContext, request );
+            final String user = securityManager.getUser( request );
 
             logger.info( "Storing: {}", store );
             if ( adminController.store( store, user, false ) )
@@ -400,7 +399,7 @@ public class RepositoryAdminResources
                                                                                                     required = true )
     @PathParam( "type" ) String type, final @Parameter( in = PATH, required = true ) @PathParam( "name" ) String name,
                             final @QueryParam( "deleteContent" ) boolean deleteContent,
-                            @Context final HttpRequest request, final @Context SecurityContext securityContext )
+                            @Context final HttpRequest request )
     {
         final StoreType st = StoreType.get( type );
         final StoreKey key = new StoreKey( packageType, st, name );
@@ -431,7 +430,7 @@ public class RepositoryAdminResources
             }
             summary += ( ", deleteContent:" + deleteContent );
 
-            String user = securityManager.getUser( securityContext, request );
+            String user = securityManager.getUser( request );
 
             adminController.delete( key, user, summary, deleteContent );
 
@@ -455,8 +454,7 @@ public class RepositoryAdminResources
     public Response getRemoteByUrl( final @PathParam( "packageType" ) String packageType,
                                     final @Parameter( in = PATH, schema = @Schema( enumeration = { "remote" } ),
                                                       required = true ) @PathParam( "type" ) String type,
-                                    final @QueryParam( "url" ) String url, @Context final HttpRequest request,
-                                    final @Context SecurityContext securityContext )
+                                    final @QueryParam( "url" ) String url, @Context final HttpRequest request )
     {
         if ( !"remote".equals( type ) )
         {
@@ -550,8 +548,8 @@ public class RepositoryAdminResources
                                              final @Parameter( in = PATH, schema = @Schema(
                                                      enumeration = { "hosted", "group", "remote" } ), required = true )
                                              @PathParam( "type" ) String type,
-                                             final @Parameter( in = PATH, required = true ) @PathParam( "name" )
-                                                     String name )
+                                             final @Parameter( in = PATH, required = true )
+                                             @PathParam( "name" ) String name )
     {
 
         ArtifactStoreValidateData result;

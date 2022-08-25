@@ -15,19 +15,25 @@
  */
 package org.commonjava.indy.service.repository.jaxrs.mock;
 
-import org.commonjava.indy.service.repository.jaxrs.SecurityManager;
+import org.commonjava.indy.service.repository.jaxrs.security.SecurityManager;
 import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
-import javax.ws.rs.core.SecurityContext;
 
 @ApplicationScoped
 @Alternative
 public class MockSecurityManager
         extends SecurityManager
 {
-    public String getUser( SecurityContext context, HttpRequest request )
+//    @Override
+//    public boolean authorized( final String path, final String httpMethod )
+//    {
+//        return true;
+//    }
+
+    @Override
+    public String getUser( HttpRequest request )
     {
         return "systemUser";
     }

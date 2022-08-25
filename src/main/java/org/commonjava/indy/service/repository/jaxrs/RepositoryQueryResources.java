@@ -46,7 +46,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
 
 @Tag( name = "Store Querying APIs", description = "Resource for querying artifact store definitions" )
-@Path( "/admin/stores/query" )
+@Path( "/api/admin/stores/query" )
 @ApplicationScoped
 public class RepositoryQueryResources
 {

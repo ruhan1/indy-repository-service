@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2022 Red Hat, Inc. (https://github.com/Commonjava/service-parent)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.commonjava.indy.service.repository.ftests.profile;
+package org.commonjava.indy.service.repository.jaxrs.security.keycloak;
 
-import io.quarkus.test.junit.QuarkusTestProfile;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Named;
+import java.util.List;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-public class MemoryFunctionProfile
-        extends BaseIndyTestProfile
+@Alternative
+@Named
+public class KeycloakSecurityBindings
 {
-    @Override
-    Map<String, String> getExtraConfigOverrides()
+
+    private List<KeycloakSecurityConstraint> constraints;
+
+    public List<KeycloakSecurityConstraint> getConstraints()
     {
-        return Collections.singletonMap( "repository.data-storage", "mem" );
+        return constraints;
+    }
+
+    public void setConstraints( final List<KeycloakSecurityConstraint> securityContraints )
+    {
+        this.constraints = securityContraints;
     }
 
 }
+

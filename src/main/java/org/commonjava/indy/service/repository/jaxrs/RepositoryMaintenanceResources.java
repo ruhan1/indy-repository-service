@@ -44,7 +44,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.ok;
 
 @Tag( name = "Store Maintenance APIs", description = "Resource for maintain artifact repositories" )
-@Path( "/admin/stores/maint" )
+@Path( "/api/admin/stores/maint" )
 @ApplicationScoped
 public class RepositoryMaintenanceResources
 {

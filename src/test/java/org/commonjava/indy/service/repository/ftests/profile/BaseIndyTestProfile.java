@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011-2022 Red Hat, Inc. (https://github.com/Commonjava/service-parent)
+ * Copyright (C) 2020 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,23 @@ package org.commonjava.indy.service.repository.ftests.profile;
 
 import io.quarkus.test.junit.QuarkusTestProfile;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryFunctionProfile
-        extends BaseIndyTestProfile
+public abstract class BaseIndyTestProfile
+        implements QuarkusTestProfile
 {
     @Override
-    Map<String, String> getExtraConfigOverrides()
+    public Map<String, String> getConfigOverrides()
     {
-        return Collections.singletonMap( "repository.data-storage", "mem" );
+        Map<String, String> configs = new HashMap<>();
+        configs.put( "quarkus.security.auth.enabled-in-dev-mode", "false" );
+        configs.put( "quarkus.keycloak.devservices.enabled", "false" );
+        configs.put( "quarkus.oidc.enabled", "false" );
+        configs.putAll( getExtraConfigOverrides() );
+        return configs;
     }
+
+    abstract Map<String, String> getExtraConfigOverrides();
 
 }
