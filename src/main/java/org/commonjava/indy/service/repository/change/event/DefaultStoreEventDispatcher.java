@@ -182,10 +182,11 @@ public class DefaultStoreEventDispatcher
     {
         if ( kafkaEvent != null )
         {
-            final EventStoreKey[] eventStoreKeys =
-                    (EventStoreKey[]) stream( stores ).map( StoreKey::toEventStoreKey ).toArray();
+            final List<EventStoreKey> eventStoreKeys =
+                    stream( stores ).map( StoreKey::toEventStoreKey ).collect( Collectors.toList() );
+            final EventStoreKey[] eventStoreKeyArrs = eventStoreKeys.toArray( new EventStoreKey[] {} );
             final StoreEnablementEvent event =
-                    new StoreEnablementEvent( eventMetadata, preprocess, disabling, eventStoreKeys );
+                    new StoreEnablementEvent( eventMetadata, preprocess, disabling, eventStoreKeyArrs );
 
             if ( preprocess )
             {
