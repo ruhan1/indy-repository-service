@@ -78,6 +78,9 @@ public class InfinispanStoreDataManager
     @Inject
     IndyRepositoryConfiguration indyConfiguration;
 
+    @Inject
+    CacheProducer producer;
+
     @Override
     protected StoreEventDispatcher getStoreEventDispatcher()
     {
@@ -270,7 +273,7 @@ public class InfinispanStoreDataManager
                             else
                             {
                                 logger.warn( "Error: the group {} does not exist as affected by for store {}", gKey,
-                                              key );
+                                             key );
                                 processed.add( gKey );
                             }
                         }
@@ -350,5 +353,11 @@ public class InfinispanStoreDataManager
             final Set<StoreKey> keys = typedKeys.computeIfAbsent( store.getKey().getType(), k -> new HashSet<>() );
             keys.add( store.getKey() );
         }
+    }
+
+    @Override
+    protected CacheProducer getCacheProducer()
+    {
+        return producer;
     }
 }

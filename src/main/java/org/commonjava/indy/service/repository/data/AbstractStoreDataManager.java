@@ -21,6 +21,7 @@ import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.concurrent.Locker;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
+import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -82,7 +83,7 @@ public abstract class AbstractStoreDataManager
     @Override
     public ArtifactStoreQuery<ArtifactStore> query()
     {
-        return new DefaultArtifactStoreQuery<>( this );
+        return new DefaultArtifactStoreQuery<>( this, getCacheProducer() );
     }
 
     protected abstract Optional<ArtifactStore> getArtifactStoreInternal( final StoreKey key );
@@ -631,5 +632,9 @@ public abstract class AbstractStoreDataManager
         }
         String filter = repoConfig.affectedGroupsExcludeFilter().orElse( "" );
         return isNotBlank( filter ) && group.getName().matches( filter );
+    }
+
+    protected CacheProducer getCacheProducer(){
+        return null;
     }
 }

@@ -112,7 +112,7 @@ public class CassandraStoreDataManager
             ArtifactStore store = remoteKojiStores.get( key );
             if ( store != null )
             {
-                return Optional.of(store);
+                return Optional.of( store );
             }
         }
 
@@ -138,7 +138,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<ArtifactStore> getAllArtifactStores()
     {
         Set<DtxArtifactStore> dtxArtifactStoreSet = storeQuery.getAllArtifactStores();
@@ -148,7 +148,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Map<StoreKey, ArtifactStore> getArtifactStoresByKey()
     {
         Map<StoreKey, ArtifactStore> ret = new HashMap<>();
@@ -158,7 +158,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<StoreKey> getStoreKeysByPkg( final String pkg )
     {
         Set<StoreKey> storeKeySet = new HashSet<>();
@@ -170,7 +170,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<StoreKey> getStoreKeysByPkgAndType( final String pkg, final StoreType type )
     {
 
@@ -234,7 +234,7 @@ public class CassandraStoreDataManager
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Set<Group> affectedBy( Collection<StoreKey> keys )
     {
 
@@ -290,7 +290,7 @@ public class CassandraStoreDataManager
                             else
                             {
                                 logger.warn( "Error: the group {} does not exist as affected by for store {}", gKey,
-                                              key );
+                                             key );
                                 processed.add( gKey );
                             }
                         }
@@ -663,6 +663,12 @@ public class CassandraStoreDataManager
 
         logger.trace( "Return value, cache: {}, key: {}, ret: {}", name, key, store );
         return store;
+    }
+
+    @Override
+    protected CacheProducer getCacheProducer()
+    {
+        return cacheProducer;
     }
 
 }

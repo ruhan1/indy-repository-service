@@ -16,6 +16,8 @@
 package org.commonjava.indy.service.repository.data;
 
 import org.apache.commons.lang3.StringUtils;
+import org.commonjava.indy.service.repository.data.infinispan.BasicCacheHandle;
+import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -38,8 +40,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,9 +64,11 @@ import static org.commonjava.indy.service.repository.model.StoreType.group;
  * Created by jdcasey on 5/10/17.
  */
 // TODO: Eventually, it should probably be an error if packageType isn't set explicitly
+@SuppressWarnings( "unchecked" )
 public class DefaultArtifactStoreQuery<T extends ArtifactStore>
         implements ArtifactStoreQuery<T>
 {
+    private final Integer STORE_QUERY_EXPIRATION_IN_MINS = 15;
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
@@ -74,21 +80,13 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
 
     private Boolean enabled;
 
-    public DefaultArtifactStoreQuery( StoreDataManager dataManager )
+    private final CacheProducer cacheProducer;
+
+    public DefaultArtifactStoreQuery( StoreDataManager dataManager, CacheProducer cacheProducer )
     {
         logger.debug( "CREATE new default store query with data manager only" );
         this.dataManager = dataManager;
-    }
-
-    private DefaultArtifactStoreQuery( final StoreDataManager dataManager, final String packageType,
-                                       final Boolean enabled, final Class<T> storeCls )
-    {
-        logger.debug( "CREATE new default store query with params (internal?)" );
-
-        this.dataManager = dataManager;
-        this.packageType = packageType;
-        this.enabled = enabled;
-        storeType( storeCls );
+        this.cacheProducer = cacheProducer;
     }
 
     @Override
@@ -235,7 +233,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             this.packageType = packageType;
             result.addAll( stream().collect( Collectors.toList() ) );
         }
-        return new ArrayList<>(result);
+        return new ArrayList<>( result );
     }
 
     @Override
@@ -273,7 +271,6 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     @Override
     //    @WithSpan
     public List<RemoteRepository> getRemoteRepositoryByUrl( String packageType, String url )
-            throws IndyDataException
     {
         return getRemoteRepositoryByUrl( packageType, url, Boolean.TRUE );
     }
@@ -393,15 +390,41 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                                                                 final Boolean enabled )
             throws IndyDataException
     {
-        logger.trace( "START: default store-query ordered-concrete-stores-in-group" );
+        AtomicReference<IndyDataException> holder = new AtomicReference<>();
+        Supplier<Collection<? extends ArtifactStore>> storeProvider = () -> {
+            logger.trace( "START: default store-query ordered-concrete-stores-in-group" );
+            try
+            {
+                return getGroupOrdering( packageType, groupName, false, true );
+            }
+            catch ( IndyDataException e )
+            {
+                holder.set( e );
+            }
+            finally
+            {
+                logger.trace( "END: default store-query ordered-concrete-stores-in-group" );
+            }
+            return null;
+        };
+        final String queryKey =
+                String.format( "%s:%s:%s:%s", packageType, groupName, enabled, "orderedConcreteStoresInGroup" );
+        Collection<? extends ArtifactStore> stores;
         try
         {
-            return getGroupOrdering( packageType, groupName, enabled, false, true );
+            stores = computeIfAbsent( queryKey, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS, Boolean.FALSE );
         }
-        finally
+        catch ( IllegalStateException e )
         {
-            logger.trace( "END: default store-query ordered-concrete-stores-in-group" );
+            stores = storeProvider.get();
         }
+        if ( holder.get() != null )
+        {
+            logger.error( holder.get().getMessage() );
+            throw holder.get();
+        }
+        return new ArrayList<>( stores );
+
     }
 
     @Override
@@ -418,7 +441,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                                                         final Boolean enabled )
             throws IndyDataException
     {
-        return getGroupOrdering( packageType, groupName, enabled, true, false );
+        return getGroupOrdering( packageType, groupName, true, false );
     }
 
     @Override
@@ -434,7 +457,34 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     public Set<Group> getGroupsAffectedBy( Collection<StoreKey> keys )
             throws IndyDataException
     {
-        return dataManager.affectedBy( keys );
+        final AtomicReference<IndyDataException> eHolder = new AtomicReference<>();
+        Supplier<Collection<? extends ArtifactStore>> storeProvider = () -> {
+            try
+            {
+                return dataManager.affectedBy( keys );
+            }
+            catch ( IndyDataException e )
+            {
+                eHolder.set( e );
+            }
+            return null;
+        };
+        final Set<StoreKey> queryKeys = new HashSet<>( keys );
+        Collection<? extends ArtifactStore> stores;
+        try
+        {
+            stores = computeIfAbsent( queryKeys, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS, Boolean.FALSE );
+        }
+        catch ( IllegalStateException e )
+        {
+            stores = storeProvider.get();
+        }
+        if ( eHolder.get() != null )
+        {
+            logger.error( eHolder.get().getMessage() );
+            throw eHolder.get();
+        }
+        return stores.stream().map( g -> (Group) g ).collect( Collectors.toSet() );
     }
 
     public Stream<StoreKey> keyStream()
@@ -467,14 +517,16 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     public RemoteRepository getRemoteRepository( final String packageType, final String name )
             throws IndyDataException
     {
-        return (RemoteRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.remote, name ) ).orElse( null );
+        return (RemoteRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.remote, name ) )
+                                             .orElse( null );
     }
 
     @Override
     public HostedRepository getHostedRepository( final String packageType, final String name )
             throws IndyDataException
     {
-        return (HostedRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.hosted, name ) ).orElse( null );
+        return (HostedRepository) dataManager.getArtifactStore( new StoreKey( packageType, StoreType.hosted, name ) )
+                                             .orElse( null );
     }
 
     @Override
@@ -540,8 +592,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     private List<ArtifactStore> getGroupOrdering( final String packageType, final String groupName,
-                                                  final Boolean enabled, final boolean includeGroups,
-                                                  final boolean recurseGroups )
+                                                  final boolean includeGroups, final boolean recurseGroups )
             throws IndyDataException
     {
         if ( packageType == null )
@@ -549,7 +600,8 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             throw new IndyDataException( "packageType must be set on the query before calling this method!" );
         }
 
-        final Group master = (Group) dataManager.getArtifactStore( new StoreKey( packageType, group, groupName ) ).orElse( null );;
+        final Group master =
+                (Group) dataManager.getArtifactStore( new StoreKey( packageType, group, groupName ) ).orElse( null );
         if ( master == null )
         {
             return emptyList();
@@ -591,12 +643,14 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                     if ( recurseGroups && type == group )
                     {
                         // if we're here, we're definitely recursing groups...
-                        Group group = (Group) dataManager.getArtifactStore( key ).orElse( null );;
+                        Group group = (Group) dataManager.getArtifactStore( key ).orElse( null );
+                        ;
                         getMembersOrdering( group, result, includeGroups, recurseGroups );
                     }
                     else
                     {
-                        final ArtifactStore store = dataManager.getArtifactStore( key ).orElse( null );;
+                        final ArtifactStore store = dataManager.getArtifactStore( key ).orElse( null );
+                        ;
                         if ( store != null && !( store.isDisabled() && Boolean.TRUE.equals( this.enabled ) ) )
                         {
                             result.add( store );
@@ -619,4 +673,41 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
         return result;
     }
 
+    //TODO: As here introduced a new cache, we need to think about update this cache when store event happen.
+    private Collection<? extends ArtifactStore> computeIfAbsent( Object key,
+                                                                 Supplier<Collection<? extends ArtifactStore>> storeProvider,
+                                                                 int expirationMins, boolean forceQuery )
+    {
+        if ( cacheProducer == null )
+        {
+            throw new IllegalStateException( "No cache producer, so need to bypass caching" );
+        }
+        final String ARTIFACT_STORE_QUERY = "artifact-store-query";
+        logger.debug( "computeIfAbsent, cache: {}, key: {}", ARTIFACT_STORE_QUERY, key );
+
+        BasicCacheHandle<Object, Collection<? extends ArtifactStore>> cache =
+                cacheProducer.getCache( ARTIFACT_STORE_QUERY );
+        Collection<? extends ArtifactStore> stores = cache.get( key );
+        if ( stores == null || forceQuery )
+        {
+            logger.trace( "Entry not found, run put, expirationMins: {}", expirationMins );
+
+            stores = storeProvider.get();
+
+            if ( stores != null )
+            {
+                if ( expirationMins > 0 )
+                {
+                    cache.put( key, stores, expirationMins, TimeUnit.MINUTES );
+                }
+                else
+                {
+                    cache.put( key, stores );
+                }
+            }
+        }
+
+        logger.trace( "Return value, cache: {}, key: {}, ret: {}", ARTIFACT_STORE_QUERY, key, stores );
+        return stores;
+    }
 }
