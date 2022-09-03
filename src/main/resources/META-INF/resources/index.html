@@ -8,25 +8,15 @@
     <script src="js/keycloak.js"></script>
     <script type="text/javascript">
       <!--
-      var app = angular.module("IndyRepo", []);
-
-      app.controller("IndyRepoController", function ($scope, $http) {
-        //Initialize page with default data
-        $scope.stats = {};
-
-        //Now load the data from server
-        _refreshPageData();
-
-        function _refreshPageData() {
-          $http({
-            method: 'GET',
-            url: '/api/stats/version-info'
-          }).then(function successCallback(response) {
-            $scope.stats = response.data;
-          }, function errorCallback(response) {
-            console.log(response.statusText);
-          });
-        }
+      axios.get('/api/stats/version-info').then(resp => {
+        stats = resp.data;
+        stats_version=document.getElementById("stats-ver");
+        stats_version.innerHTML=stats.version;
+        stats_cid=document.getElementById("stats-cid");
+        stats_cid.setAttribute("href", `http://github.com/commonjava/indy-repository-service/commit/${stats['commit-id']}`);
+        stats_cid.innerHTML=stats['commit-id'];
+        stats_author=document.getElementById("stats-author");
+        stats_author.innerHTML=`on ${stats['timestamp']} by ${stats["builder"]}`;
       });
       -->
     </script>
@@ -45,17 +35,17 @@
 
         <div class="card">
             <h5 class="card-header">About APIs</h5>
-            <p class="card-body">Check <a href="/swagger-ui">swagger-ui</a> for APIs of the service</p>
+            <p class="card-body">Check <a href="/q/swagger-ui">swagger-ui</a> for APIs of the service</p>
         </div>
 
 
     </div>
 
-    <div style="position: fixed; bottom: 5%; text-align: center;">
-        <a target="_new" href="https://github.com/Commonjava/indy-reposiroty-service">Github Project</a> |
-        Version: {{ stats.version }} |
-        Commit ID: <a target="_new" href="http://github.com/Commonjava/indy-reposiroty-service/commit/{{stats['commit-id']}}">{{ stats["commit-id"] }}</a> |
-        Built on {{ stats["timestamp"] }} by {{ stats["builder"] }}
+    <div id="prj-stats" style="position: fixed; bottom: 5%; text-align: center;">
+        <span><a target="_new" class="fa fa-btn" href="http://github.com/commonjava/indy-repository-service/issues">Issues</a></span>
+        | <span>Version:</span> <span id="stats-ver"></span>
+        | <span>Commit ID:</span> <span><a id="stats-cid" target="_new" class="fa fa-btn" href="">{{stats["commit-id"]}}</a></span>
+        | <span>Built</span> <span id="stats-author">on {{stats["timestamp"]}} by </span>
     </div>
 
 </div>
