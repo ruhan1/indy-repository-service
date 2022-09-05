@@ -86,7 +86,8 @@ repository:
 cassandra:
   enabled: false
 
-
+indy_security:
+  enabled: True
 
 "%dev":
   quarkus:

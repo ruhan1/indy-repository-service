@@ -62,7 +62,7 @@ quarkus:
   swagger-ui:
     always-include: true
 
-keycloak:
+indy_security:
   enabled: True
   security_bindings_yaml: config/security-bindings.yaml
 
