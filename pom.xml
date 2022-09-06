@@ -34,6 +34,7 @@
 
     <atlas.version>1.1.1</atlas.version>
     <eventmodel.version>1.0-SNAPSHOT</eventmodel.version>
+    <indysecurity.verison>1.0-SNAPSHOT</indysecurity.verison>
 
     <cassandra.version>3.11.2</cassandra.version>
     <infinispan.version>11.0.8.Final</infinispan.version>
@@ -66,6 +67,11 @@
       <groupId>org.commonjava.indy.service</groupId>
       <artifactId>indy-event-model</artifactId>
       <version>${eventmodel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.commonjava.indy.service</groupId>
+      <artifactId>indy-security</artifactId>
+      <version>${indysecurity.verison}</version>
     </dependency>
     <!-- quarkus deps start -->
     <dependency>

@@ -15,7 +15,7 @@
  */
 package org.commonjava.indy.service.repository.jaxrs.mock;
 
-import org.commonjava.indy.service.repository.jaxrs.security.SecurityManager;
+import org.commonjava.indy.service.security.common.SecurityManager;
 import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.enterprise.context.ApplicationScoped;

@@ -56,7 +56,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
   keycloak:
-    image: quay.io/keycloak/keycloak:17.0.0
+    image: quay.io/keycloak/keycloak:18.0.2
     command: [
       "start --hostname-strict=false --https-key-store-file=/etc/keycloak-keystore.jks"
     ]
