@@ -57,12 +57,7 @@ quarkus:
   swagger-ui:
     always-include: true
   opentelemetry:
-    enabled: true
-    tracer:
-      exporter:
-        otlp:
-          endpoint: http://localhost:4317
-          headers: "header1=value1"
+    enabled: false
 
 kafka:
   bootstrap:

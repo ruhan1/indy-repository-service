@@ -7,9 +7,7 @@
 
   <cache-container default-cache="local" name="IndyCacheManager" shutdown-hook="DEFAULT" statistics="true">
     <local-cache-configuration name="local-template" statistics="true">
-      <memory>
-        <object size="20000" strategy="REMOVE" />
-      </memory>
+      <memory max-count="20000" when-full="REMOVE"/>
     </local-cache-configuration>
 
     <local-cache name="local" configuration="local-template"/>
@@ -31,27 +29,19 @@
     </local-cache>
 
     <local-cache name="store-data-v2" configuration="local-template">
-      <memory>
-        <object size="70000" strategy="REMOVE" />
-      </memory>
+      <memory max-count="70000" when-full="REMOVE"/>
     </local-cache>
 
     <local-cache name="affected-by-stores" configuration="local-template">
-      <memory>
-        <object size="999999999" strategy="NONE" />
-      </memory>
+      <memory max-count="999999999" when-full="NONE"/>
     </local-cache>
 
     <local-cache name="artifact-store-query" configuration="local-template">
-      <memory>
-        <object size="999999999" strategy="NONE" />
-      </memory>
+      <memory max-count="999999999" when-full="NONE"/>
     </local-cache>
 
     <local-cache name="remote-koji-stores" configuration="local-template">
-      <memory>
-        <object size="999999999" strategy="NONE" />
-      </memory>
+      <memory max-count="999999999" when-full="NONE"/>
     </local-cache>
 
   </cache-container>
