@@ -21,6 +21,18 @@ quarkus:
       verification: none
     token:
       issuer: any
+  opentelemetry:
+    enabled: true
+    tracer:
+      sampler:
+        ratio: 10
+      exporter:
+        otlp:
+          endpoint: http://localhost:4317
+          headers:
+            - "header1=value1"
+      "resource-attributes":
+        - "service.name=indy-repository-service"
 
   # Logging (disable console on prod)
   log:
