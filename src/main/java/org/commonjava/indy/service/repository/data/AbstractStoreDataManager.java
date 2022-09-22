@@ -83,7 +83,7 @@ public abstract class AbstractStoreDataManager
     @Override
     public ArtifactStoreQuery<ArtifactStore> query()
     {
-        return new DefaultArtifactStoreQuery<>( this, getCacheProducer() );
+        return new DefaultArtifactStoreQuery<>( this );
     }
 
     protected abstract Optional<ArtifactStore> getArtifactStoreInternal( final StoreKey key );
