@@ -16,6 +16,8 @@
 package org.commonjava.indy.service.repository.data;
 
 import org.apache.commons.lang3.StringUtils;
+import org.commonjava.indy.service.repository.data.infinispan.BasicCacheHandle;
+import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -38,6 +40,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -45,6 +48,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static org.commonjava.indy.service.repository.data.DefaultArtifactStoreQuery.QueryCacheWrapper.STORE_QUERY_EXPIRATION_IN_MINS;
 import static org.commonjava.indy.service.repository.model.StoreType.group;
 
 /**
@@ -65,7 +69,7 @@ import static org.commonjava.indy.service.repository.model.StoreType.group;
 public class DefaultArtifactStoreQuery<T extends ArtifactStore>
         implements ArtifactStoreQuery<T>
 {
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
+    private static final Logger logger = LoggerFactory.getLogger( DefaultArtifactStoreQuery.class );
 
     private StoreDataManager dataManager;
 
@@ -75,20 +79,13 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
 
     private Boolean enabled;
 
-//    private final Integer STORE_QUERY_EXPIRATION_IN_MINS = 15;
-//    private final CacheProducer cacheProducer;
+    private final QueryCacheWrapper cacheWrapper;
 
-//    public DefaultArtifactStoreQuery( StoreDataManager dataManager, CacheProducer cacheProducer )
-//    {
-//        logger.debug( "CREATE new default store query with data manager only" );
-//        this.dataManager = dataManager;
-//        this.cacheProducer = cacheProducer;
-//    }
-
-    public DefaultArtifactStoreQuery( StoreDataManager dataManager )
+    public DefaultArtifactStoreQuery( StoreDataManager dataManager, QueryCacheWrapper cacheWrapper )
     {
         logger.debug( "CREATE new default store query with data manager only" );
         this.dataManager = dataManager;
+        this.cacheWrapper = cacheWrapper;
     }
 
     @Override
@@ -410,17 +407,18 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             return null;
         };
 
-        Collection<? extends ArtifactStore> stores = storeProvider.get();
-//        final String queryKey =
-//                String.format( "%s:%s:%s:%s", packageType, groupName, enabled, "orderedConcreteStoresInGroup" );
-//        try
-//        {
-//            stores = computeIfAbsent( queryKey, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS, Boolean.FALSE );
-//        }
-//        catch ( IllegalStateException e )
-//        {
-//            stores = storeProvider.get();
-//        }
+        Collection<? extends ArtifactStore> stores;
+        final String queryKey =
+                String.format( "%s:%s:%s:%s", packageType, groupName, enabled, "orderedConcreteStoresInGroup" );
+        try
+        {
+            stores = cacheWrapper.computeIfAbsent( queryKey, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS,
+                                                   Boolean.FALSE );
+        }
+        catch ( IllegalStateException e )
+        {
+            stores = storeProvider.get();
+        }
         if ( holder.get() != null )
         {
             logger.error( holder.get().getMessage() );
@@ -473,16 +471,16 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             return null;
         };
 
-        Collection<? extends ArtifactStore> stores = storeProvider.get();
-//        final Set<StoreKey> queryKeys = new HashSet<>( keys );
-//        try
-//        {
-//            stores = computeIfAbsent( queryKeys, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS, Boolean.FALSE );
-//        }
-//        catch ( IllegalStateException e )
-//        {
-//            stores = storeProvider.get();
-//        }
+        Collection<? extends ArtifactStore> stores;
+        final Set<StoreKey> queryKeys = new HashSet<>( keys );
+        try
+        {
+            stores = cacheWrapper.computeIfAbsent( queryKeys, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS, Boolean.FALSE );
+        }
+        catch ( IllegalStateException e )
+        {
+            stores = storeProvider.get();
+        }
         if ( eHolder.get() != null )
         {
             logger.error( eHolder.get().getMessage() );
@@ -648,7 +646,6 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                     {
                         // if we're here, we're definitely recursing groups...
                         Group group = (Group) dataManager.getArtifactStore( key ).orElse( null );
-                        ;
                         getMembersOrdering( group, result, includeGroups, recurseGroups );
                     }
                     else
@@ -677,41 +674,66 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
         return result;
     }
 
-    //TODO: As here introduced a new cache, we need to think about update this cache when store event happen.
-//    private Collection<? extends ArtifactStore> computeIfAbsent( Object key,
-//                                                                 Supplier<Collection<? extends ArtifactStore>> storeProvider,
-//                                                                 int expirationMins, boolean forceQuery )
-//    {
-//        if ( cacheProducer == null )
-//        {
-//            throw new IllegalStateException( "No cache producer, so need to bypass caching" );
-//        }
-//        final String ARTIFACT_STORE_QUERY = "artifact-store-query";
-//        logger.debug( "computeIfAbsent, cache: {}, key: {}", ARTIFACT_STORE_QUERY, key );
-//
-//        BasicCacheHandle<Object, Collection<? extends ArtifactStore>> cache =
-//                cacheProducer.getCache( ARTIFACT_STORE_QUERY );
-//        Collection<? extends ArtifactStore> stores = cache.get( key );
-//        if ( stores == null || forceQuery )
-//        {
-//            logger.trace( "Entry not found, run put, expirationMins: {}", expirationMins );
-//
-//            stores = storeProvider.get();
-//
-//            if ( stores != null )
-//            {
-//                if ( expirationMins > 0 )
-//                {
-//                    cache.put( key, stores, expirationMins, TimeUnit.MINUTES );
-//                }
-//                else
-//                {
-//                    cache.put( key, stores );
-//                }
-//            }
-//        }
-//
-//        logger.trace( "Return value, cache: {}, key: {}, ret: {}", ARTIFACT_STORE_QUERY, key, stores );
-//        return stores;
-//    }
+    static class QueryCacheWrapper
+    {
+        final static Integer STORE_QUERY_EXPIRATION_IN_MINS = 15;
+        private final boolean cacheEnabled;
+
+        private final CacheProducer cacheProducer;
+
+        QueryCacheWrapper( final boolean cacheEnabled, final CacheProducer cacheProducer )
+        {
+            this.cacheEnabled = cacheEnabled;
+            this.cacheProducer = cacheProducer;
+        }
+
+        boolean isCacheEnabled()
+        {
+            return cacheEnabled;
+        }
+
+        Collection<? extends ArtifactStore> computeIfAbsent( Object key,
+                                                             Supplier<Collection<? extends ArtifactStore>> storeProvider,
+                                                             int expirationMins, boolean forceQuery )
+        {
+            if ( !isCacheEnabled() )
+            {
+                logger.trace( "Store query cache is not enabled." );
+                return storeProvider.get();
+            }
+            //            TODO: As here introduced a the query cache, we need to think about update this cache when store event happen.
+            if ( cacheProducer == null )
+            {
+                throw new IllegalStateException( "No cache producer, so need to bypass caching" );
+            }
+            final String ARTIFACT_STORE_QUERY = "artifact-store-query";
+
+            logger.debug( "computeIfAbsent, cache: {}, key: {}", ARTIFACT_STORE_QUERY, key );
+
+            BasicCacheHandle<Object, Collection<? extends ArtifactStore>> cache =
+                    cacheProducer.getCache( ARTIFACT_STORE_QUERY );
+            Collection<? extends ArtifactStore> stores = cache.get( key );
+            if ( stores == null || forceQuery )
+            {
+                logger.trace( "Entry not found, run put, expirationMins: {}", expirationMins );
+
+                stores = storeProvider.get();
+
+                if ( stores != null )
+                {
+                    if ( expirationMins > 0 )
+                    {
+                        cache.put( key, stores, expirationMins, TimeUnit.MINUTES );
+                    }
+                    else
+                    {
+                        cache.put( key, stores );
+                    }
+                }
+            }
+
+            logger.trace( "Return value, cache: {}, key: {}, ret: {}", ARTIFACT_STORE_QUERY, key, stores );
+            return stores;
+        }
+    }
 }
