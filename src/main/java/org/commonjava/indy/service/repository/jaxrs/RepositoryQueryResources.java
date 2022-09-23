@@ -68,7 +68,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @Path( "/all" )
     @GET
     @Produces( APPLICATION_JSON )
@@ -84,7 +84,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/remotes/all" )
     @Produces( APPLICATION_JSON )
@@ -101,7 +101,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/hosteds/all" )
     @Produces( APPLICATION_JSON )
@@ -118,7 +118,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/groups/all" )
     @Produces( APPLICATION_JSON )
@@ -135,7 +135,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/byDefaultPkgTypes" )
     @Produces( APPLICATION_JSON )
@@ -147,7 +147,7 @@ public class RepositoryQueryResources
     @Operation( description = "Retrieve the first matched store with the given store name" )
     @APIResponse( responseCode = "200", content = @Content( schema = @Schema( implementation = ArtifactStore.class ) ),
                   description = "The store definition" )
-    @APIResponse( responseCode = "404", description = "The store not found" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/byName/{name}" )
     @Produces( APPLICATION_JSON )
@@ -169,7 +169,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/groups/contains" )
     @Produces( APPLICATION_JSON )
@@ -186,7 +186,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/concretes/inGroup" )
     @Produces( APPLICATION_JSON )
@@ -204,7 +204,7 @@ public class RepositoryQueryResources
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The stores definitions, include the master group itself" )
-    @APIResponse( responseCode = "404", description = "The store doesn't exist" )
+    @APIResponse( responseCode = "404", description = "The stores are not found" )
     @GET
     @Path( "/inGroup" )
     @Produces( APPLICATION_JSON )
@@ -273,15 +273,6 @@ public class RepositoryQueryResources
         dto.setResult( result );
         return responseHelper.formatOkResponseWithJsonEntity( dto );
     }
-
-    //    @GET
-    //    @Produces( APPLICATION_JSON )
-    //    public Response fitlerByKey()
-    //    {
-    //        TODO:
-    //                queryController.getAll(filter);
-    //        return null;
-    //    }
 
     private Response generateStoreListingResponse( ArtifactStoreListSupplier supplier )
     {

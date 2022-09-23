@@ -44,6 +44,10 @@ public interface IndyRepositoryConfiguration
     @WithName( "data-storage" )
     Optional<String> storageType();
 
+    @WithName( "query.cache.enabled" )
+    @WithDefault( "false" )
+    Boolean queryCacheEnabled();
+
     @WithName( "storeValidationEnabled" )
     @WithDefault( "false" )
     Boolean storeValidationEnabled();

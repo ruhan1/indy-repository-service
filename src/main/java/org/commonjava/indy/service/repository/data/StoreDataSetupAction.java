@@ -18,6 +18,7 @@ package org.commonjava.indy.service.repository.data;
 import io.quarkus.runtime.Startup;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyLifecycleException;
@@ -46,11 +47,25 @@ public class StoreDataSetupAction
     @Inject
     StoreDataManager storeManager;
 
+    @Inject
+    IndyRepositoryConfiguration repoConfig;
+
     @PostConstruct
     public void start()
             throws IndyLifecycleException
     {
         final ChangeSummary summary = new ChangeSummary( ChangeSummary.SYSTEM_USER, "Initializing default data." );
+
+        if ( !repoConfig.queryCacheEnabled() )
+        {
+            logger.info(
+                    "The query cache is not enabled, all query result will be directly retrieved from underlying data store." );
+        }
+        else
+        {
+            logger.info(
+                    "The query cache is enabled, some query results will be cached for performance consideration." );
+        }
 
         try
         {

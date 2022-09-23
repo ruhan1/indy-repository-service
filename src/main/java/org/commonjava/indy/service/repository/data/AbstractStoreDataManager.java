@@ -83,20 +83,23 @@ public abstract class AbstractStoreDataManager
     @Override
     public ArtifactStoreQuery<ArtifactStore> query()
     {
-        return new DefaultArtifactStoreQuery<>( this );
+        boolean queryCacheEnabled = repoConfig != null && repoConfig.queryCacheEnabled();
+        return new DefaultArtifactStoreQuery<>( this,
+                                                new DefaultArtifactStoreQuery.QueryCacheWrapper( queryCacheEnabled,
+                                                                                                 getCacheProducer() ) );
     }
 
     protected abstract Optional<ArtifactStore> getArtifactStoreInternal( final StoreKey key );
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Optional<ArtifactStore> getArtifactStore( final StoreKey key )
     {
         return getArtifactStoreInternal( key );
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public boolean storeArtifactStore( final ArtifactStore store, final ChangeSummary summary,
                                        final boolean skipIfExists, final boolean fireEvents,
                                        final EventMetadata eventMetadata )
@@ -185,7 +188,7 @@ public abstract class AbstractStoreDataManager
         refreshAffectedBy( store, null, StoreUpdateAction.DELETE );
     }
 
-//    @WithSpan
+    //    @WithSpan
     protected void refreshAffectedBy( final ArtifactStore store, final ArtifactStore original,
                                       StoreUpdateAction action )
     {
@@ -272,7 +275,7 @@ public abstract class AbstractStoreDataManager
     protected abstract ArtifactStore removeArtifactStoreInternal( StoreKey key );
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public void deleteArtifactStore( final StoreKey key, final ChangeSummary summary,
                                      final EventMetadata eventMetadata )
             throws IndyDataException
@@ -346,12 +349,12 @@ public abstract class AbstractStoreDataManager
             throws IndyDataException;
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public abstract Set<ArtifactStore> getAllArtifactStores()
             throws IndyDataException;
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public Stream<ArtifactStore> streamArtifactStores()
             throws IndyDataException
     {
@@ -359,7 +362,7 @@ public abstract class AbstractStoreDataManager
     }
 
     @Override
-//    @WithSpan
+    //    @WithSpan
     public abstract Map<StoreKey, ArtifactStore> getArtifactStoresByKey();
 
     @Override
@@ -564,7 +567,7 @@ public abstract class AbstractStoreDataManager
 
         Set<ArtifactStore> all = this.getStoreKeysByPkgAndType( packageType, group )
                                      .stream()
-                                     .map( k -> this.getArtifactStoreInternal(k).orElse( null ) )
+                                     .map( k -> this.getArtifactStoreInternal( k ).orElse( null ) )
                                      .filter( Objects::nonNull )
                                      .collect( Collectors.toSet() );
 
@@ -634,7 +637,8 @@ public abstract class AbstractStoreDataManager
         return isNotBlank( filter ) && group.getName().matches( filter );
     }
 
-    protected CacheProducer getCacheProducer(){
+    protected CacheProducer getCacheProducer()
+    {
         return null;
     }
 }
