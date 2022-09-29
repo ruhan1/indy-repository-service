@@ -32,6 +32,7 @@ import org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -394,7 +395,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             logger.trace( "START: default store-query ordered-concrete-stores-in-group" );
             try
             {
-                return getGroupOrdering( packageType, groupName, false, true );
+                return getGroupOrdering( packageType, groupName, enabled, false, true );
             }
             catch ( IndyDataException e )
             {
@@ -442,7 +443,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                                                         final Boolean enabled )
             throws IndyDataException
     {
-        return getGroupOrdering( packageType, groupName, true, false );
+        return getGroupOrdering( packageType, groupName, enabled, true, false );
     }
 
     @Override
@@ -475,7 +476,8 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
         final Set<StoreKey> queryKeys = new HashSet<>( keys );
         try
         {
-            stores = cacheWrapper.computeIfAbsent( queryKeys, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS, Boolean.FALSE );
+            stores = cacheWrapper.computeIfAbsent( queryKeys, storeProvider, STORE_QUERY_EXPIRATION_IN_MINS,
+                                                   Boolean.FALSE );
         }
         catch ( IllegalStateException e )
         {
@@ -594,7 +596,8 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     }
 
     private List<ArtifactStore> getGroupOrdering( final String packageType, final String groupName,
-                                                  final boolean includeGroups, final boolean recurseGroups )
+                                                  final Boolean enabled, final boolean includeGroups,
+                                                  final boolean recurseGroups )
             throws IndyDataException
     {
         if ( packageType == null )
@@ -611,22 +614,24 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
 
         final List<ArtifactStore> result = new ArrayList<>();
 
-        return getMembersOrdering( master, result, includeGroups, recurseGroups );
+        return getMembersOrdering( master, enabled, result, includeGroups, recurseGroups );
     }
 
-    private List<ArtifactStore> getMembersOrdering( final Group groupRepo, final List<ArtifactStore> result,
+    private List<ArtifactStore> getMembersOrdering( final Group groupRepo, final Boolean enabled,
+                                                    @Nonnull final List<ArtifactStore> result,
                                                     final boolean includeGroups, final boolean recurseGroups )
             throws IndyDataException
     {
 
-        if ( groupRepo == null || groupRepo.isDisabled() && Boolean.TRUE.equals( this.enabled ) )
+        if ( groupRepo == null || groupRepo.isDisabled() && enabled )
         {
             return result;
         }
 
-        Set<StoreKey> seen = result != null ?
-                result.stream().map( ArtifactStore::getKey ).collect( Collectors.toSet() ) :
-                new HashSet<>();
+        Set<StoreKey> seen = result.isEmpty() ?
+                new HashSet<>() :
+                result.stream().map( ArtifactStore::getKey ).collect( Collectors.toSet() );
+
         AtomicReference<IndyDataException> errorRef = new AtomicReference<>();
 
         List<StoreKey> members = new ArrayList<>( groupRepo.getConstituents() );
@@ -646,13 +651,12 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                     {
                         // if we're here, we're definitely recursing groups...
                         Group group = (Group) dataManager.getArtifactStore( key ).orElse( null );
-                        getMembersOrdering( group, result, includeGroups, recurseGroups );
+                        getMembersOrdering( group, enabled, result, includeGroups, recurseGroups );
                     }
                     else
                     {
                         final ArtifactStore store = dataManager.getArtifactStore( key ).orElse( null );
-                        ;
-                        if ( store != null && !( store.isDisabled() && Boolean.TRUE.equals( this.enabled ) ) )
+                        if ( store != null && ( store.isDisabled() != enabled ) )
                         {
                             result.add( store );
                         }
@@ -677,6 +681,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
     static class QueryCacheWrapper
     {
         final static Integer STORE_QUERY_EXPIRATION_IN_MINS = 15;
+
         private final boolean cacheEnabled;
 
         private final CacheProducer cacheProducer;
@@ -692,6 +697,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
             return cacheEnabled;
         }
 
+        @SuppressWarnings( "SameParameterValue" )
         Collection<? extends ArtifactStore> computeIfAbsent( Object key,
                                                              Supplier<Collection<? extends ArtifactStore>> storeProvider,
                                                              int expirationMins, boolean forceQuery )

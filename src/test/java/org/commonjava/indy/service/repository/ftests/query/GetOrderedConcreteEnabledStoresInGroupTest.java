@@ -114,8 +114,8 @@ public class GetOrderedConcreteEnabledStoresInGroupTest
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
                .body( "size()", is( 1 ) )
-               .body( "items.size()", is( 4 ) )
-               .body( "items[0].key", is( "maven:remote:test1" ) )
+               .body( "items.size()", is( 3 ) )
+               .body( "items[0].key", is( "maven:remote:test2" ) )
                .body( concreteRepoMatcher );
 
         given().when()
@@ -124,7 +124,43 @@ public class GetOrderedConcreteEnabledStoresInGroupTest
                .statusCode( OK.getStatusCode() )
                .contentType( APPLICATION_JSON )
                .body( "size()", is( 1 ) )
-               .body( "items.size()", is( 6 ) )
+               .body( "items.size()", is( 5 ) )
+               .body( "items[0].key", is( "maven:hosted:test1" ) )
+               .body( concreteRepoMatcher );
+
+    }
+
+    @Test
+    public void runForDisabled()
+    {
+        final StoreListingCheckMatcher concreteRepoMatcher =
+                new StoreListingCheckMatcher( prepareCustomizedMapper(), ( listing ) -> {
+                    for ( ArtifactStore store : listing.getItems() )
+                    {
+                        if ( store.getType() == StoreType.group )
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                } );
+        given().when()
+               .get( QUERY_BASE + "/concretes/inGroup/?storeKey=maven:group:test1&enabled=false" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", is( 1 ) )
+               .body( "items[0].key", is( "maven:remote:test1" ) )
+               .body( concreteRepoMatcher );
+
+        given().when()
+               .get( QUERY_BASE + "/concretes/inGroup/?storeKey=maven:group:test3&enabled=false" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .contentType( APPLICATION_JSON )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", is( 1 ) )
                .body( "items[0].key", is( "maven:remote:test1" ) )
                .body( concreteRepoMatcher );
 
