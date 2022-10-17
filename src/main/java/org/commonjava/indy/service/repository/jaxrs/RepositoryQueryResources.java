@@ -21,6 +21,7 @@ import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.dto.SimpleBooleanResultDTO;
 import org.commonjava.indy.service.repository.model.dto.StoreListingDTO;
+import org.commonjava.indy.service.repository.util.UrlUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,6 +42,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -175,11 +178,12 @@ public class RepositoryQueryResources
     @Produces( APPLICATION_JSON )
     public Response getGroupsContaining(
             @Parameter( description = "Key of the repository contained in the groups", required = true,
-                        example = "maven:remote:central" ) @QueryParam( "storeKey" ) final String storeKey,
+                        example = "maven:remote:central" ) @QueryParam( "storeKey" ) @Encoded final String storeKey,
             @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getGroupsContaining( storeKey, enabled ) );
+        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey, defaultCharset() );
+        return generateStoreListingResponse( () -> queryController.getGroupsContaining( storeKeyDecoded, enabled ) );
     }
 
     @Operation( description = "Retrieve the concrete stores which are constituents of the specified group" )
@@ -192,12 +196,15 @@ public class RepositoryQueryResources
     @Produces( APPLICATION_JSON )
     public Response getOrderedConcreteStoresInGroup(
             @Parameter( description = "Key of the group whom the repositories are contained in", required = true,
-                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey,
+                        example = "maven:group:public" ) @QueryParam( "storeKey" ) @Encoded final String storeKey,
             @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
+        logger.debug( "StoreKey is {}", storeKey );
+        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey, defaultCharset() );
+        logger.debug( "StoreKey decoded is {}", storeKeyDecoded );
         return generateStoreListingResponse(
-                () -> queryController.getOrderedConcreteStoresInGroup( storeKey, enabled ) );
+                () -> queryController.getOrderedConcreteStoresInGroup( storeKeyDecoded, enabled ) );
     }
 
     @Operation( description = "Retrieve the stores which are constituents of the specified group" )
@@ -210,11 +217,13 @@ public class RepositoryQueryResources
     @Produces( APPLICATION_JSON )
     public Response getOrderedStoresInGroup(
             @Parameter( description = "Key of the group whom the repositories are contained in", required = true,
-                        example = "maven:group:public" ) @QueryParam( "storeKey" ) final String storeKey,
+                        example = "maven:group:public" ) @QueryParam( "storeKey" ) @Encoded final String storeKey,
             @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        return generateStoreListingResponse( () -> queryController.getOrderedStoresInGroup( storeKey, enabled ) );
+        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey, defaultCharset() );
+        return generateStoreListingResponse(
+                () -> queryController.getOrderedStoresInGroup( storeKeyDecoded, enabled ) );
     }
 
     @Operation( description = "Retrieve the groups which are affected by the specified store keys" )
@@ -227,16 +236,20 @@ public class RepositoryQueryResources
     @Produces( APPLICATION_JSON )
     public Response getGroupsAffectedBy(
             @Parameter( description = "Store keys whom the groups are affected by, use \",\" to split", required = true,
-                        example = "maven:remote:central,maven:hosted:local" ) @QueryParam( "keys" ) final String keys )
+                        example = "maven:remote:central,maven:hosted:local" ) @QueryParam( "keys" ) @Encoded
+            final String keys )
     {
-
+        if ( keys == null )
+        {
+            IndyWorkflowException e =
+                    new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKeys: can not be null" );
+            logger.error( e.getMessage(), e );
+            return responseHelper.formatResponse( e );
+        }
+        final String keysDecoded = UrlUtils.uriDecode( keys, defaultCharset() );
         return generateStoreListingResponse( () -> {
-            if ( keys == null )
-            {
-                throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKeys: can not be null" );
-            }
-            String[] keysArr = keys.split( "," );
-            if ( keys.length() == 0 )
+            String[] keysArr = keysDecoded.split( "," );
+            if ( keysArr.length == 0 )
             {
                 throw new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKeys: can not be empty" );
             }

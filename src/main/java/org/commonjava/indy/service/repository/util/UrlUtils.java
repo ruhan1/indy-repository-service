@@ -15,8 +15,14 @@
  */
 package org.commonjava.indy.service.repository.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 public final class UrlUtils
@@ -87,6 +93,63 @@ public final class UrlUtils
         }
 
         return new URL( urlBuilder.toString() ).toExternalForm();
+    }
+
+    /**
+     * This is copied from
+     * https://github.com/spring-projects/spring-framework/blob/581fa1419fb36d685af07554369a3fe77f4af68f/spring-core/src/main/java/org/springframework/util/StringUtils.java#L793
+     * to handle uri segment decode problem
+     *
+     * @param source
+     * @param charset
+     * @return
+     */
+    public static String uriDecode( String source, Charset charset )
+    {
+        if ( source == null || source.length() == 0 )
+        {
+            return source;
+        }
+        int length = source.length();
+        Charset providedCharSet = charset;
+        if ( providedCharSet == null )
+        {
+            providedCharSet = Charset.defaultCharset();
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream( length );
+        boolean changed = false;
+        for ( int i = 0; i < length; i++ )
+        {
+            int ch = source.charAt( i );
+            if ( ch == '%' )
+            {
+                if ( i + 2 < length )
+                {
+                    char hex1 = source.charAt( i + 1 );
+                    char hex2 = source.charAt( i + 2 );
+                    int u = Character.digit( hex1, 16 );
+                    int l = Character.digit( hex2, 16 );
+                    if ( u == -1 || l == -1 )
+                    {
+                        throw new IllegalArgumentException(
+                                "Invalid encoded sequence \"" + source.substring( i ) + "\"" );
+                    }
+                    baos.write( (char) ( ( u << 4 ) + l ) );
+                    i += 2;
+                    changed = true;
+                }
+                else
+                {
+                    throw new IllegalArgumentException( "Invalid encoded sequence \"" + source.substring( i ) + "\"" );
+                }
+            }
+            else
+            {
+                baos.write( ch );
+            }
+        }
+        return ( changed ? baos.toString( providedCharSet ) : source );
     }
 
 }
