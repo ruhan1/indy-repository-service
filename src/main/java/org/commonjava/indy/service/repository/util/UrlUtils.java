@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public final class UrlUtils
@@ -114,7 +115,7 @@ public final class UrlUtils
         Charset providedCharSet = charset;
         if ( providedCharSet == null )
         {
-            providedCharSet = Charset.defaultCharset();
+            providedCharSet = StandardCharsets.UTF_8;
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream( length );
@@ -150,6 +151,11 @@ public final class UrlUtils
             }
         }
         return ( changed ? baos.toString( providedCharSet ) : source );
+    }
+
+    public static String uriDecode( String source )
+    {
+        return uriDecode( source, null );
     }
 
 }

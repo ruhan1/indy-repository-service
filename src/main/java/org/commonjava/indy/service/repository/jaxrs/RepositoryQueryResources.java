@@ -182,7 +182,7 @@ public class RepositoryQueryResources
             @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey, defaultCharset() );
+        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey );
         return generateStoreListingResponse( () -> queryController.getGroupsContaining( storeKeyDecoded, enabled ) );
     }
 
@@ -201,7 +201,7 @@ public class RepositoryQueryResources
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
         logger.debug( "StoreKey is {}", storeKey );
-        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey, defaultCharset() );
+        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey );
         logger.debug( "StoreKey decoded is {}", storeKeyDecoded );
         return generateStoreListingResponse(
                 () -> queryController.getOrderedConcreteStoresInGroup( storeKeyDecoded, enabled ) );
@@ -221,7 +221,7 @@ public class RepositoryQueryResources
             @Parameter( description = "If the repositories retrieved are enabled, default is true if not specified",
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
-        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey, defaultCharset() );
+        final String storeKeyDecoded = UrlUtils.uriDecode( storeKey );
         return generateStoreListingResponse(
                 () -> queryController.getOrderedStoresInGroup( storeKeyDecoded, enabled ) );
     }
@@ -246,7 +246,7 @@ public class RepositoryQueryResources
             logger.error( e.getMessage(), e );
             return responseHelper.formatResponse( e );
         }
-        final String keysDecoded = UrlUtils.uriDecode( keys, defaultCharset() );
+        final String keysDecoded = UrlUtils.uriDecode( keys );
         return generateStoreListingResponse( () -> {
             String[] keysArr = keysDecoded.split( "," );
             if ( keysArr.length == 0 )

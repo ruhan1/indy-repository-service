@@ -67,18 +67,18 @@ public class UrlUtilsTest
     @Test
     public void testDecode()
     {
-        assertThat( UrlUtils.uriDecode( "", defaultCharset() ), is( "" ) );
-        assertThat( UrlUtils.uriDecode( "foobar", defaultCharset() ), is( "foobar" ) );
-        assertThat( UrlUtils.uriDecode( "foo%20bar", defaultCharset() ), is( "foo bar" ) );
-        assertThat( UrlUtils.uriDecode( "foo%2bbar", defaultCharset() ), is( "foo+bar" ) );
-        assertThat( UrlUtils.uriDecode( "T%C5%8Dky%C5%8D", defaultCharset() ), is( "T\u014dky\u014d" ) );
-        assertThat( UrlUtils.uriDecode( "/Z%C3%BCrich", defaultCharset() ), is( "/Z\u00fcrich" ) );
-        assertThat( UrlUtils.uriDecode( "T\u014dky\u014d", defaultCharset() ), is( "T\u014dky\u014d" ) );
+        assertThat( UrlUtils.uriDecode( "" ), is( "" ) );
+        assertThat( UrlUtils.uriDecode( "foobar" ), is( "foobar" ) );
+        assertThat( UrlUtils.uriDecode( "foo%20bar" ), is( "foo bar" ) );
+        assertThat( UrlUtils.uriDecode( "foo%2bbar" ), is( "foo+bar" ) );
+        assertThat( UrlUtils.uriDecode( "T%C5%8Dky%C5%8D" ), is( "T\u014dky\u014d" ) );
+        assertThat( UrlUtils.uriDecode( "/Z%C3%BCrich" ), is( "/Z\u00fcrich" ) );
+        assertThat( UrlUtils.uriDecode( "T\u014dky\u014d" ), is( "T\u014dky\u014d" ) );
     }
 
     @Test
     public void testDecodeInvalidSequence()
     {
-        assertThrows( IllegalArgumentException.class, () -> UrlUtils.uriDecode( "foo%2", defaultCharset() ) );
+        assertThrows( IllegalArgumentException.class, () -> UrlUtils.uriDecode( "foo%2" ) );
     }
 }
