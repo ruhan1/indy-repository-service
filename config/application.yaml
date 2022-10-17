@@ -36,8 +36,8 @@ quarkus:
 
   # Logging (disable console on prod)
   log:
-    level: INFO
-    min-level: INFO
+    level: DEBUG
+    min-level: TRACE
     category:
       "org.jboss":
         level: WARN
@@ -52,6 +52,8 @@ quarkus:
         level: WARN
       "io.netty":
         level: WARN
+      "io.grpc":
+        level: WARN
       "org.infinispan":
         level: WARN
       "io.agroal":
@@ -61,10 +63,10 @@ quarkus:
         min-level: DEBUG
     console:
       enable: true
-      level: INFO
+      level: DEBUG
     file:
       enable: true
-      level: INFO
+      level: DEBUG
       path: "log/indy-repository-service.log"
       format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
       rotation:

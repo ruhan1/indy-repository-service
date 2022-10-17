@@ -26,6 +26,8 @@ import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -48,6 +50,8 @@ import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConsta
 @ApplicationScoped
 public class QueryController
 {
+    private final Logger logger = LoggerFactory.getLogger( this.getClass() );
+
     @Inject
     StoreDataManager storeManager;
 
@@ -152,6 +156,7 @@ public class QueryController
     {
         final boolean isEnabled =
                 enabled == null || enabled.equalsIgnoreCase( "yes" ) || Boolean.parseBoolean( enabled );
+        logger.debug( "Searching Concrete repos in group {} with enabled {}", storeKey, isEnabled );
         return generateQueryResult( () -> {
             final StoreKey key = validateStoreKey( storeKey );
             if ( key.getType() != StoreType.group )
