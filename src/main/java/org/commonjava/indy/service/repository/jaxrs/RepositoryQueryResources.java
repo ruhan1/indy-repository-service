@@ -42,7 +42,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static java.nio.charset.Charset.defaultCharset;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -163,7 +162,7 @@ public class RepositoryQueryResources
         }
         catch ( IndyWorkflowException e )
         {
-            logger.error( e.getMessage(), e );
+            logger.error( e.getMessage() );
             return responseHelper.formatResponse( e );
         }
     }
@@ -243,7 +242,7 @@ public class RepositoryQueryResources
         {
             IndyWorkflowException e =
                     new IndyWorkflowException( BAD_REQUEST.getStatusCode(), "Illegal storeKeys: can not be null" );
-            logger.error( e.getMessage(), e );
+            logger.error( e.getMessage() );
             return responseHelper.formatResponse( e );
         }
         final String keysDecoded = UrlUtils.uriDecode( keys );
@@ -287,6 +286,7 @@ public class RepositoryQueryResources
         return responseHelper.formatOkResponseWithJsonEntity( dto );
     }
 
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     private Response generateStoreListingResponse( ArtifactStoreListSupplier supplier )
     {
         try
@@ -302,7 +302,7 @@ public class RepositoryQueryResources
         }
         catch ( IndyWorkflowException e )
         {
-            logger.error( e.getMessage(), e );
+            logger.error( e.getMessage() );
             return responseHelper.formatResponse( e );
         }
     }
