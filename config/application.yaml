@@ -25,7 +25,7 @@ quarkus:
     enabled: true
     tracer:
       sampler:
-        ratio: 10
+        ratio: 0.05
       exporter:
         otlp:
           endpoint: http://localhost:4317
@@ -33,6 +33,7 @@ quarkus:
             - "header1=value1"
       "resource-attributes":
         - "service.name=indy-repository-service"
+        - "sample.rate=0.05"
 
   # Logging (disable console on prod)
   log:
@@ -46,6 +47,10 @@ quarkus:
       "io.quarkus":
         level: WARN
 #        min-level: DEBUG
+      "io.undertow":
+        level: WARN
+      "io.vertx":
+        level: WARN
       "io.smallrye":
         level: WARN
       "org.eclipse":
@@ -56,10 +61,14 @@ quarkus:
         level: WARN
       "org.infinispan":
         level: WARN
+      "com.datastax":
+        level: INFO
       "io.agroal":
         level: WARN
+      "io.opentelemetry":
+        level: TRACE
       "org.commonjava.indy.service":
-        level: DEBUG
+        level: INFO
         min-level: DEBUG
     console:
       enable: true
