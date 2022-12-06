@@ -45,7 +45,7 @@ public enum StoreType
         this.singular = singular;
         this.plural = plural;
 
-        final Set<String> a = new HashSet<String>();
+        final Set<String> a = new HashSet<>();
         a.add( singular );
         a.add( plural );
         for ( final String alias : aliases )

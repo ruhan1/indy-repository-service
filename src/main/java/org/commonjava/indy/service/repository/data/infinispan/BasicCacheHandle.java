@@ -20,6 +20,7 @@ import org.infinispan.commons.api.BasicCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -171,14 +172,9 @@ public class BasicCacheHandle<K, V>
         return name( metricPrefix, opName );
     }
 
-    //    public Set<K> cacheKeySetByFilter( Predicate<K> filter )
-    //    {
-    //        return this.cache.keySet().stream().filter( filter ).collect( Collectors.toSet() );
-    //    }
-
     public boolean isEmpty()
     {
-        return execute( c -> c.isEmpty() );
+        return execute( Map::isEmpty );
     }
 
 }

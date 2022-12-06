@@ -61,7 +61,7 @@ public abstract class GroupDataManagerTCK
         seedRepositoriesForGroupTests();
     }
 
-    protected void doSetup() throws Exception
+    protected void doSetup()
     {
     }
 

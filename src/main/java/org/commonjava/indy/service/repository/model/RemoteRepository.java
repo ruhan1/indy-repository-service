@@ -221,7 +221,6 @@ public class RemoteRepository
         if ( userInfo != null && user == null && password == null )
         {
             user = userInfo;
-            password = null;
 
             int idx = userInfo.indexOf( ':' );
             if ( idx > 0 )
@@ -231,7 +230,7 @@ public class RemoteRepository
 
                 final StringBuilder sb = new StringBuilder();
                 idx = this.url.indexOf( "://" );
-                sb.append( this.url.substring( 0, idx + 3 ) );
+                sb.append( this.url, 0, idx + 3 );
 
                 idx = this.url.indexOf( "@" );
                 if ( idx > 0 )

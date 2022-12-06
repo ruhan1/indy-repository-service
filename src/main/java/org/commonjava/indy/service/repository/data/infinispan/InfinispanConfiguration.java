@@ -29,6 +29,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @ApplicationScoped
 public class InfinispanConfiguration
 {
+    @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
     @Inject
     @ConfigProperty( name = "ispn.configDir" )
     Optional<String> infinispanConfigDir;

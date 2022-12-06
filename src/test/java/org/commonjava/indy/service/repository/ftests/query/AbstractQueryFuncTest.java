@@ -113,6 +113,7 @@ public abstract class AbstractQueryFuncTest
         String json = given().get( QUERY_BASE + "/all" ).body().prettyPrint();
         if ( json != null && !json.trim().equals( "" ) )
         {
+            @SuppressWarnings( "unchecked" )
             StoreListingDTO<ArtifactStore> stores = mapper.readValue( json, StoreListingDTO.class );
             for ( ArtifactStore store : stores )
             {

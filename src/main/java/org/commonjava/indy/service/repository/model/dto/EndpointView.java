@@ -52,22 +52,22 @@ public final class EndpointView
         this.resourceUri = resourceUri;
     }
 
-    public final String getName()
+    public String getName()
     {
         return name;
     }
 
-    public final String getType()
+    public String getType()
     {
         return type;
     }
 
-    public final String getPackageType()
+    public String getPackageType()
     {
         return packageType;
     }
 
-    public final String getResourceUri()
+    public String getResourceUri()
     {
         return resourceUri;
     }
@@ -82,7 +82,7 @@ public final class EndpointView
         return new StoreKey( packageType, StoreType.get( type ), name );
     }
 
-    public final String getKey()
+    public String getKey()
     {
         return packageType + ":" + type + ":" + name;
     }
@@ -120,16 +120,10 @@ public final class EndpointView
         final EndpointView other = (EndpointView) obj;
         if ( resourceUri == null )
         {
-            if ( other.resourceUri != null )
-            {
-                return false;
-            }
+            return other.resourceUri == null;
         }
-        else if ( !resourceUri.equals( other.resourceUri ) )
-        {
-            return false;
-        }
-        return true;
+        else
+            return resourceUri.equals( other.resourceUri );
     }
 
     public void setResourceUri( final String resourceUri )

@@ -55,6 +55,7 @@ public class MixedStoreSerializationTest
         oos.flush();
         ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream( baos.toByteArray() ) );
 
+        //noinspection unchecked
         return (List<ArtifactStore>) ois.readObject();
     }
 }

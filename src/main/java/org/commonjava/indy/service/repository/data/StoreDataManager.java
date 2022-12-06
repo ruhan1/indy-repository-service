@@ -89,7 +89,7 @@ public interface StoreDataManager
 
     /**
      * Return a mapping of {@link ArtifactStore}'s keyed by the corresponding {@link StoreKey}.
-     * @return
+     * @return -
      */
     Map<StoreKey, ArtifactStore> getArtifactStoresByKey();
 
@@ -158,8 +158,8 @@ public interface StoreDataManager
 
     /**
      * Get affected-by groups from event metadata if provided.
-     * @param keys
-     * @param eventMetadata
+     * @param keys -
+     * @param eventMetadata -
      */
     Set<Group> affectedBy( Collection<StoreKey> keys, EventMetadata eventMetadata ) throws IndyDataException;
 

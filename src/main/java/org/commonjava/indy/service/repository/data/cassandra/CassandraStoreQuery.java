@@ -112,8 +112,6 @@ public class CassandraStoreQuery
                 "SELECT packagetype, storeType, namehashprefix, name, description, transientMetadata, metadata, disabled, disableTimeout, pathStyle, pathMaskPatterns, authoritativeIndex, createTime, rescanInProgress, extras FROM "
                         + keySpace + "." + TABLE_STORE + " WHERE typekey=?" );
 
-//        preparedArtifactStoreExistedQuery =
-//                session.prepare( "SELECT name FROM " + keySpace + "." + TABLE_STORE + " LIMIT 1" );
 
         preparedArtifactStoreDel = session.prepare( "DELETE FROM " + keySpace + "." + TABLE_STORE
                                                             + " WHERE typekey=? AND namehashprefix=? AND name=? IF EXISTS" );

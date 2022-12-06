@@ -31,8 +31,6 @@ public class RevalidateAllMatcher
 {
     private final Logger logger = LoggerFactory.getLogger( this.getClass() );
 
-    private String mismatchDescription;
-
     private final ObjectMapper mapper;
 
     public RevalidateAllMatcher( final ObjectMapper mapper )
@@ -46,7 +44,9 @@ public class RevalidateAllMatcher
         final HashMap<String, ArtifactStoreValidateData> remoteRepositoriesValidated;
         try
         {
+            //noinspection unchecked
             remoteRepositoriesValidated = mapper.readValue( (String) actual, HashMap.class );
+            String mismatchDescription;
             if ( remoteRepositoriesValidated == null )
             {
                 mismatchDescription = "Should return validation results";

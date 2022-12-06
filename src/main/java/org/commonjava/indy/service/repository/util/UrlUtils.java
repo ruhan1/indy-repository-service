@@ -15,11 +15,7 @@
  */
 package org.commonjava.indy.service.repository.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -101,9 +97,9 @@ public final class UrlUtils
      * https://github.com/spring-projects/spring-framework/blob/581fa1419fb36d685af07554369a3fe77f4af68f/spring-core/src/main/java/org/springframework/util/StringUtils.java#L793
      * to handle uri segment decode problem
      *
-     * @param source
-     * @param charset
-     * @return
+     * @param source -
+     * @param charset -
+     * @return -
      */
     public static String uriDecode( String source, Charset charset )
     {

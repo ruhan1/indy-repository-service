@@ -15,9 +15,6 @@
  */
 package org.commonjava.indy.service.repository.ftests.profile;
 
-import io.quarkus.test.junit.QuarkusTestProfile;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

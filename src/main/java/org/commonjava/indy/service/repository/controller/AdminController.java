@@ -211,7 +211,6 @@ public class AdminController
     }
 
     public ArtifactStoreValidateData validateStore( ArtifactStore artifactStore )
-            throws InvalidArtifactStoreException, MalformedURLException
     {
         return storeValidator.validate( artifactStore );
     }

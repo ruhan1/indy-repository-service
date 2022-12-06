@@ -42,7 +42,7 @@ import static org.commonjava.indy.service.repository.util.PathUtils.normalize;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
-@TestSecurity( authorizationEnabled = true, roles = {"power-user"}, user = "pouser")
+@TestSecurity( roles = {"power-user"}, user = "pouser")
 public class RepositoryAdminResourcesTest
 {
     private static final String BASE_STORE_PATH = "/api/admin/stores";

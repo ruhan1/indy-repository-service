@@ -56,7 +56,7 @@ import static org.commonjava.indy.service.repository.data.metrics.TraceManager.I
 @SuppressWarnings( {"unchecked", "rawtypes"} )
 public class CacheProducer
 {
-    Logger logger = LoggerFactory.getLogger( getClass() );
+    final Logger logger = LoggerFactory.getLogger( getClass() );
 
     private static final String ISPN_XML = "infinispan.xml";
 
@@ -195,11 +195,6 @@ public class CacheProducer
         }
 
     }
-
-    //    public int getShutdownPriority()
-    //    {
-    //        return 10;
-    //    }
 
     private String interpolateStrFromStream( InputStream inputStream, String path )
     {

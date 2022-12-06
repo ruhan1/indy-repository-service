@@ -15,7 +15,6 @@
  */
 package org.commonjava.indy.service.repository.model;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,7 +48,7 @@ public class PackageTypes
 
     public static Set<PackageTypeDescriptor> getPackageTypeDescriptors()
     {
-        return unmodifiableSet( new HashSet<>( PACKAGE_TYPES.values() ) );
+        return Set.copyOf( PACKAGE_TYPES.values() );
     }
 
     public static Map<String, PackageTypeDescriptor> getPackageTypeDescriptorMap()

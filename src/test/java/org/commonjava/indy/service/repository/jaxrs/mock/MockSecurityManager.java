@@ -26,12 +26,6 @@ import javax.enterprise.inject.Alternative;
 public class MockSecurityManager
         extends SecurityManager
 {
-//    @Override
-//    public boolean authorized( final String path, final String httpMethod )
-//    {
-//        return true;
-//    }
-
     @Override
     public String getUser( HttpRequest request )
     {

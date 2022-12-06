@@ -16,14 +16,10 @@
 package org.commonjava.indy.service.repository.util;
 
 import org.commonjava.atlas.maven.ident.util.JoinString;
-import org.commonjava.indy.service.repository.model.PackageTypeDescriptor;
-import org.commonjava.indy.service.repository.model.PackageTypes;
-import org.commonjava.indy.service.repository.model.StoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.UriInfo;
 import java.net.MalformedURLException;
 
 import static org.apache.commons.lang3.StringUtils.join;

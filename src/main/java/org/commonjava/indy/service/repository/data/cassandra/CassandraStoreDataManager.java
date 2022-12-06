@@ -132,7 +132,6 @@ public class CassandraStoreDataManager
 
     @Override
     public void clear( ChangeSummary summary )
-            throws IndyDataException
     {
 
     }
@@ -449,6 +448,7 @@ public class CassandraStoreDataManager
         return store;
     }
 
+    @SuppressWarnings( "unchecked" )
     private ArtifactStore generateStore( DtxArtifactStore dtxArtifactStore )
     {
         ArtifactStore store = null;

@@ -198,6 +198,7 @@ public class Group
                                            + " but this class can only deserialize up to version: " + STORE_VERSION );
         }
 
+        //noinspection unchecked
         this.constituents = (List<StoreKey>) in.readObject();
 
         this.prependConstituent = in.readBoolean();
