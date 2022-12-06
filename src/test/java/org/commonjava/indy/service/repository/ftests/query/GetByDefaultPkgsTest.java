@@ -15,14 +15,12 @@
  */
 package org.commonjava.indy.service.repository.ftests.query;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.matchers.StoreListingCheckMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

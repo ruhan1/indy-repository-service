@@ -20,7 +20,7 @@ import org.commonjava.indy.service.repository.audit.ChangeSummary;
 public abstract class AbstractProxyDataManagerTCK
 {
 
-    protected ChangeSummary summary = new ChangeSummary( "test-user", "test" );
+    protected final ChangeSummary summary = new ChangeSummary( "test-user", "test" );
 
     protected abstract TCKFixtureProvider getFixtureProvider();
 

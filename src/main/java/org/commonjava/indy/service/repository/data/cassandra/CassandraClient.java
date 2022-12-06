@@ -115,10 +115,10 @@ public class CassandraClient
 
     public void close()
     {
-        if ( !closed && cluster != null && sessions != null )
+        if ( !closed && cluster != null )
         {
             logger.info( "Close cassandra client" );
-            sessions.entrySet().forEach( e -> e.getValue().close() );
+            sessions.forEach( ( key, value ) -> value.close() );
             sessions.clear();
             cluster.close();
             cluster = null;

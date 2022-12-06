@@ -25,7 +25,6 @@ import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
 import org.commonjava.indy.service.repository.model.version.Versioning;
 import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;

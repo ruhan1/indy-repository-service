@@ -105,10 +105,10 @@ public class QueryController
             {
                 query.storeTypes( typeList.toArray( new StoreType[] {} ) );
             }
-            Boolean isEnabled = Boolean.parseBoolean( enabled );
+            boolean isEnabled = Boolean.parseBoolean( enabled );
             if ( isEnabled )
             {
-                query.enabledState( isEnabled );
+                query.enabledState( true );
             }
             return query.getAll();
 

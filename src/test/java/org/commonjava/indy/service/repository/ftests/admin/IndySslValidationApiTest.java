@@ -24,7 +24,6 @@ import org.commonjava.indy.service.repository.ftests.matchers.RevalidateAllMatch
 import org.commonjava.indy.service.repository.ftests.matchers.RevalidateRepoMatcher;
 import org.commonjava.indy.service.repository.ftests.profile.ISPNSSLFunctionProfile;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
-import org.commonjava.indy.service.repository.util.PathUtils;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

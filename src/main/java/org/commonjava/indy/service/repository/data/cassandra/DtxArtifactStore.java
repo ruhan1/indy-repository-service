@@ -29,7 +29,7 @@ import static org.commonjava.indy.service.repository.data.cassandra.CassandraSto
 public class DtxArtifactStore
 {
 
-    @PartitionKey(0)
+    @PartitionKey()
     private String typeKey;
 
     @PartitionKey(1)

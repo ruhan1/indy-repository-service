@@ -40,9 +40,4 @@ public class InfinispanStoreDataByPkgMapStartupAction
         }
     }
 
-    //    public int getStartupPriority()
-    //    {
-    //        return 11;
-    //    }
-
 }

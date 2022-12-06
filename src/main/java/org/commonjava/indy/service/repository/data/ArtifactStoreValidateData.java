@@ -39,7 +39,7 @@ public class ArtifactStoreValidateData
         private boolean valid;
         private String repositoryUrl;
 
-        private StoreKey storeKey;
+        private final StoreKey storeKey;
         private Map<String,String> errors;
 
         public Builder(StoreKey storeKey) {

@@ -105,7 +105,7 @@ public class Locker<K>
         Boolean retry = false;
         do
         {
-            Boolean locked = false;
+            boolean locked = false;
             try
             {
                 logger.debug( "Locking on: {} with timeout seconds: {}", key, timeoutSeconds );

@@ -516,18 +516,6 @@ public class RepositoryAdminResources
             response = responseHelper.formatOkResponseWithJsonEntity( results );
 
         }
-        catch ( IndyDataException ide )
-        {
-            logger.warn( "=> [IndyDataException] exception message: " + ide.getMessage() );
-            response = responseHelper.formatResponse( ide );
-
-        }
-        catch ( MalformedURLException mue )
-        {
-            logger.warn( "=> [MalformedURLException] Invalid URL exception message: " + mue.getMessage() );
-            response = responseHelper.formatResponse( mue );
-
-        }
         catch ( IndyWorkflowException iwe )
         {
             logger.warn( "=> [IndyWorkflowException] exception message: " + iwe.getMessage() );
@@ -575,18 +563,6 @@ public class RepositoryAdminResources
             {
                 response = responseHelper.formatOkResponseWithJsonEntity( result );
             }
-
-        }
-        catch ( IndyDataException ide )
-        {
-            logger.warn( "=> [IndyDataException] exception message: " + ide.getMessage() );
-            response = responseHelper.formatResponse( ide );
-
-        }
-        catch ( MalformedURLException mue )
-        {
-            logger.warn( "=> [MalformedURLException] Invalid URL exception message: " + mue.getMessage() );
-            response = responseHelper.formatResponse( mue );
 
         }
         catch ( IndyWorkflowException iwe )

@@ -34,7 +34,6 @@ public class ExportBundleTest
 
     @Test
     public void run()
-            throws Exception
     {
         given()
                    .when()

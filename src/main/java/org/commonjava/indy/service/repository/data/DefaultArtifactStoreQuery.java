@@ -651,7 +651,7 @@ public class DefaultArtifactStoreQuery<T extends ArtifactStore>
                     {
                         // if we're here, we're definitely recursing groups...
                         Group group = (Group) dataManager.getArtifactStore( key ).orElse( null );
-                        getMembersOrdering( group, enabled, result, includeGroups, recurseGroups );
+                        getMembersOrdering( group, enabled, result, includeGroups, true );
                     }
                     else
                     {

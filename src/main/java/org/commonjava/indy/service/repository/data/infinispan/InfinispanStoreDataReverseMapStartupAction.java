@@ -39,9 +39,4 @@ public class InfinispanStoreDataReverseMapStartupAction
             ( (InfinispanStoreDataManager) storeDataManager ).initAffectedBy();
         }
     }
-
-    //    public int getStartupPriority()
-    //    {
-    //        return 10;
-    //    }
 }

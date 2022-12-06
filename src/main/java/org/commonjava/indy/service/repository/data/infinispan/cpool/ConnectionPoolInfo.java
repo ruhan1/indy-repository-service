@@ -32,7 +32,6 @@ public class ConnectionPoolInfo
         this.name = name;
         this.properties = properties;
         this.useMetrics = useMetrics;
-//        this.useHealthChecks = useHealthChecks;
     }
 
     public boolean isUseMetrics()
@@ -40,10 +39,6 @@ public class ConnectionPoolInfo
         return useMetrics;
     }
 
-//    public boolean isUseHealthChecks()
-//    {
-//        return useHealthChecks;
-//    }
 
     public String getName()
     {

@@ -15,13 +15,17 @@
  */
 package org.commonjava.indy.service.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeAll;
+
+import java.util.Map;
 
 public class AbstractSerializatinTest
 {
@@ -30,18 +34,15 @@ public class AbstractSerializatinTest
     @BeforeAll
     protected static void beforeSuite()
     {
-        mapper = new ObjectMapper();
-        mapper.setSerializationInclusion( JsonInclude.Include.NON_EMPTY );
-        mapper.configure( JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT, true );
-        mapper.configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        builder.serializationInclusion( JsonInclude.Include.NON_EMPTY )
+               .configure( JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT, true )
+               .configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true )
+               .enable( MapperFeature.AUTO_DETECT_FIELDS )
+               .enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID )
+               .disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS )
+               .disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
 
-        mapper.enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID );
-
-        mapper.enable( MapperFeature.AUTO_DETECT_FIELDS );
-        //        mapper.disable( MapperFeature.AUTO_DETECT_GETTERS );
-
-        mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
-
-        mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+        mapper = builder.build();
     }
 }

@@ -34,7 +34,7 @@ public interface PackageTypeDescriptor
      * <pre>
      *     /api/content/maven
      * </pre>
-     * @return
+     * @return -
      */
     String getContentRestBasePath();
 
@@ -44,7 +44,7 @@ public interface PackageTypeDescriptor
      * <pre>
      *     /api/admin/maven
      * </pre>
-     * @return
+     * @return -
      */
     String getAdminRestBasePath();
 }

@@ -46,7 +46,7 @@ public class CPInitialContextFactory
             extends InitialContext
     {
 
-        private Map<String, Object> bindings = new HashMap<>();
+        private final Map<String, Object> bindings = new HashMap<>();
 
         public CPInitialContext()
                 throws NamingException

@@ -93,7 +93,6 @@ public class ApiVersioningFilter
 
     @Override
     public void init( final FilterConfig filterConfig )
-            throws ServletException
     {
     }
 

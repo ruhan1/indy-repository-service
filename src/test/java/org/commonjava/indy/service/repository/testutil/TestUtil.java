@@ -21,20 +21,24 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.commonjava.indy.service.repository.util.jackson.RepoApiSerializerModule;
 
 public class TestUtil
 {
-    public static ObjectMapper prepareCustomizedMapper() {
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion( JsonInclude.Include.NON_EMPTY );
-        mapper.configure( JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT, true );
-        mapper.configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        mapper.enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID );
-        mapper.enable( MapperFeature.AUTO_DETECT_FIELDS );
-        mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
-        mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+    public static ObjectMapper prepareCustomizedMapper()
+    {
 
+        JsonMapper.Builder builder = JsonMapper.builder();
+        builder.serializationInclusion( JsonInclude.Include.NON_EMPTY )
+               .configure( JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT, true )
+               .configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true )
+               .enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID )
+               .enable( MapperFeature.AUTO_DETECT_FIELDS )
+               .disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES )
+               .disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
+
+        final ObjectMapper mapper = builder.build();
         mapper.registerModule( new RepoApiSerializerModule() );
 
         return mapper;

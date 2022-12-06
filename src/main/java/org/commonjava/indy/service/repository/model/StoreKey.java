@@ -87,7 +87,7 @@ public final class StoreKey
     }
 
     @Override
-    public final int hashCode()
+    public int hashCode()
     {
         final int prime = 31;
         int result = 1;
@@ -98,7 +98,7 @@ public final class StoreKey
     }
 
     @Override
-    public final boolean equals( final Object obj )
+    public boolean equals( final Object obj )
     {
         if ( this == obj )
         {
@@ -198,7 +198,7 @@ public final class StoreKey
         return comp;
     }
 
-    private static ConcurrentHashMap<StoreKey, StoreKey> deduplications = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<StoreKey, StoreKey> deduplications = new ConcurrentHashMap<>();
 
     public static StoreKey dedupe( StoreKey key )
     {

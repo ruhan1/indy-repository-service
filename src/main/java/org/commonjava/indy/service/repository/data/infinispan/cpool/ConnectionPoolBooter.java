@@ -56,15 +56,4 @@ public class ConnectionPoolBooter
         }
     }
 
-    //    @Override
-    //    public int getBootPriority()
-    //    {
-    //        return 100;
-    //    }
-
-    //    @Override
-    //    public String getId()
-    //    {
-    //        return "JNDI Connection Pools";
-    //    }
 }

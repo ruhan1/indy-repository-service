@@ -43,14 +43,13 @@ public class VersioningProvider
 
     private final DeprecatedApis deprecatedApis;
 
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
-
     public VersioningProvider()
     {
         ClassLoader cl = VersioningProvider.class.getClassLoader();
 
         // Load version
         final Properties props = new Properties();
+        Logger logger = LoggerFactory.getLogger( getClass() );
         try (InputStream is = cl.getResourceAsStream( INDY_VERSIONING_PROPERTIES ))
         {
             if ( is != null )

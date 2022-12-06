@@ -17,10 +17,7 @@ package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import org.commonjava.indy.service.repository.util.PathUtils;
 import org.junit.jupiter.api.Test;
-
-import java.nio.file.Paths;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

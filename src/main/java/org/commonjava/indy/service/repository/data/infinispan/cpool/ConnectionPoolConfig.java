@@ -41,6 +41,7 @@ public class ConnectionPoolConfig
 
     private static final String POOL_NAME = "repo-data-pool";
 
+    @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
     @Inject
     @ConfigProperty( name = "ispn." + POOL_NAME )
     Optional<String> poolJndiName;
@@ -95,7 +96,7 @@ public class ConnectionPoolConfig
         Map<String, String> result = new HashMap<>();
         Stream.of( value.split( "\\s*,\\s*" ) ).forEach( ( s ) -> {
             String[] parts = s.trim().split( "\\s*=\\s*" );
-            if ( parts.length < 1 )
+            if ( parts.length <= 1 )
             {
                 result.put( parts[0], Boolean.toString( TRUE ) );
             }

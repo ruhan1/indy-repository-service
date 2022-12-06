@@ -158,9 +158,7 @@ public class DefaultStoreEventDispatcher
     {
         logger.trace( "Dispatch post-enable event for: {}", asList( storeKeys ) );
 
-        executor.execute( () -> {
-            fireEnablement( false, eventMetadata, false, storeKeys );
-        } );
+        executor.execute( () -> fireEnablement( false, eventMetadata, false, storeKeys ) );
     }
 
     @Override
@@ -172,9 +170,7 @@ public class DefaultStoreEventDispatcher
     @Override
     public void disabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
-        executor.execute( () -> {
-            fireEnablement( false, eventMetadata, true, storeKeys );
-        } );
+        executor.execute( () -> fireEnablement( false, eventMetadata, true, storeKeys ) );
     }
 
     private void fireEnablement( boolean preprocess, EventMetadata eventMetadata, boolean disabling,
@@ -194,9 +190,7 @@ public class DefaultStoreEventDispatcher
             }
             else
             {
-                executor.execute( () -> {
-                    kafkaEvent.fireEvent( event );
-                } );
+                executor.execute( () -> kafkaEvent.fireEvent( event ) );
             }
         }
     }

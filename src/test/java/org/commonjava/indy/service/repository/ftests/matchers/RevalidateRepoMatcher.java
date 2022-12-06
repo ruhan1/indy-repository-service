@@ -21,19 +21,15 @@ import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class RevalidateRepoMatcher
         extends BaseMatcher<ArtifactStore>
 {
     private final ObjectMapper mapper;
 
-    private Function<ArtifactStoreValidateData, Boolean> validateFunc;
+    private final Function<ArtifactStoreValidateData, Boolean> validateFunc;
 
     public RevalidateRepoMatcher( final ObjectMapper mapper,
                                   final Function<ArtifactStoreValidateData, Boolean> validateFunc )

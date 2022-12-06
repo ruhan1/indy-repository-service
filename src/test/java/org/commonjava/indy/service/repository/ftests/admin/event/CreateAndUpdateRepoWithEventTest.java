@@ -105,6 +105,7 @@ public class CreateAndUpdateRepoWithEventTest
         assertChangeMap( ( (StorePostUpdateEvent) storeEvent ).getChangeMap(), repo.getKey().toEventStoreKey() );
     }
 
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     private void assertChangeMap( Map<EventStoreKey, Map<String, List<Object>>> changeMap,
                                   final EventStoreKey eventStoreKey )
     {

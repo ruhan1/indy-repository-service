@@ -48,13 +48,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by jdcasey on 10/21/16.
  */
+@SuppressWarnings( "deprecation" )
 @WithByteman
 @BMUnitConfig( debug = true )
 public class ConcurrencyTest
 {
-
-//    @Rule
-//    public TestRule timeout = ThreadDumper.timeoutRule( 10, TimeUnit.SECONDS );
 
     @BMRules( rules = { @BMRule( name = "init rendezvous", targetClass = "MemoryStoreDataManager",
                                  targetMethod = "<init>",

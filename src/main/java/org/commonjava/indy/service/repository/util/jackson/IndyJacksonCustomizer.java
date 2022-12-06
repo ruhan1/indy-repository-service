@@ -44,6 +44,7 @@ public class IndyJacksonCustomizer
     @Inject
     Instance<Module> injectedModules;
 
+    @Override
     public void customize( ObjectMapper mapper )
     {
         mapper.setSerializationInclusion( JsonInclude.Include.NON_EMPTY );

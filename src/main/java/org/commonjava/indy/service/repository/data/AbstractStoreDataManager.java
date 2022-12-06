@@ -110,7 +110,6 @@ public abstract class AbstractStoreDataManager
 
     protected void preStore( final ArtifactStore store, final ArtifactStore original, final ChangeSummary summary,
                              final boolean exists, final boolean fireEvents, final EventMetadata eventMetadata )
-            throws IndyDataException
     {
         StoreEventDispatcher dispatcher = getStoreEventDispatcher();
         if ( dispatcher != null && isStarted() && fireEvents )
@@ -135,7 +134,6 @@ public abstract class AbstractStoreDataManager
 
     protected void postStore( final ArtifactStore store, final ArtifactStore original, final ChangeSummary summary,
                               final boolean exists, final boolean fireEvents, final EventMetadata eventMetadata )
-            throws IndyDataException
     {
         StoreEventDispatcher dispatcher = getStoreEventDispatcher();
         if ( dispatcher != null && isStarted() && fireEvents )
@@ -165,7 +163,6 @@ public abstract class AbstractStoreDataManager
 
     protected void preDelete( final ArtifactStore store, final ChangeSummary summary, final boolean fireEvents,
                               final EventMetadata eventMetadata )
-            throws IndyDataException
     {
         StoreEventDispatcher dispatcher = getStoreEventDispatcher();
         if ( dispatcher != null && isStarted() && fireEvents )
@@ -177,7 +174,6 @@ public abstract class AbstractStoreDataManager
 
     protected void postDelete( final ArtifactStore store, final ChangeSummary summary, final boolean fireEvents,
                                final EventMetadata eventMetadata )
-            throws IndyDataException
     {
         StoreEventDispatcher dispatcher = getStoreEventDispatcher();
         if ( dispatcher != null && isStarted() && fireEvents )
@@ -456,41 +452,20 @@ public abstract class AbstractStoreDataManager
             return true;
         }
 
-        try
+        if ( eventMetadata != null && summary != null )
         {
-            if ( eventMetadata != null && summary != null )
-            {
-                eventMetadata.set( StoreDataManager.CHANGE_SUMMARY, summary );
-            }
-            logger.debug( "Starting pre-store actions for {}", k );
-            preStore( store, original, summary, original != null, fireEvents, eventMetadata );
-            logger.debug( "Pre-store actions complete for {}", k );
+            eventMetadata.set( StoreDataManager.CHANGE_SUMMARY, summary );
         }
-        catch ( IndyDataException e )
-        {
-            error.set( e );
-            return false;
-        }
+        logger.debug( "Starting pre-store actions for {}", k );
+        preStore( store, original, summary, original != null, fireEvents, eventMetadata );
+        logger.debug( "Pre-store actions complete for {}", k );
 
         logger.debug( "Put {} to stores map", k );
         final ArtifactStore old = putArtifactStoreInternal( store.getKey(), store );
 
-        try
-        {
-            logger.debug( "Starting post-store actions for {}", k );
-            postStore( store, original, summary, original != null, fireEvents, eventMetadata );
-            logger.debug( "Post-store actions complete for {}", k );
-        }
-        catch ( final IndyDataException e )
-        {
-            if ( old != null )
-            {
-                logger.error( "postStore() failed for {}. Rollback to old value: {}", store, old );
-                putArtifactStoreInternal( old.getKey(), old );
-            }
-            error.set( e );
-            return false;
-        }
+        logger.debug( "Starting post-store actions for {}", k );
+        postStore( store, original, summary, original != null, fireEvents, eventMetadata );
+        logger.debug( "Post-store actions complete for {}", k );
 
         return true;
     }
@@ -534,6 +509,7 @@ public abstract class AbstractStoreDataManager
         Set<Group> groups = null;
         if ( eventMetadata != null )
         {
+            //noinspection rawtypes
             ValuePipe<Set<Group>> valuePipe = (ValuePipe) eventMetadata.get( AFFECTED_GROUPS );
             groups = valuePipe != null ? valuePipe.get() : null;
         }

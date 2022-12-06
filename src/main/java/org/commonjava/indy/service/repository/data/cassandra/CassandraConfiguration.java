@@ -17,15 +17,14 @@ package org.commonjava.indy.service.repository.data.cassandra;
 
 import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Optional;
 
 import static java.util.Optional.of;
 
+@SuppressWarnings( { "OptionalUsedAsFieldOrParameterType", "unused" } )
 @Startup
 @ApplicationScoped
 public class CassandraConfiguration

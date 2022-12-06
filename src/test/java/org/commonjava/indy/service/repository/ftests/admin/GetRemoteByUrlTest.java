@@ -58,7 +58,7 @@ import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeD
 public class GetRemoteByUrlTest
         extends AbstractStoreManagementTest
 {
-    public ExpectationServer server = new ExpectationServer();
+    public final ExpectationServer server = new ExpectationServer();
 
     @BeforeEach
     public void before()

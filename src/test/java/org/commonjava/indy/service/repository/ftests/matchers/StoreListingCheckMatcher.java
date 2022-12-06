@@ -47,6 +47,7 @@ public class StoreListingCheckMatcher
         final StoreListingDTO<ArtifactStore> dto;
         try
         {
+            //noinspection unchecked
             dto = mapper.readValue( (String) actual, StoreListingDTO.class );
             return checkFunc.apply( dto );
         }

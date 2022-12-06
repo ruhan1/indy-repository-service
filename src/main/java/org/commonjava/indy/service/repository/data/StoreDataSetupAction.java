@@ -52,7 +52,6 @@ public class StoreDataSetupAction
 
     @PostConstruct
     public void start()
-            throws IndyLifecycleException
     {
         final ChangeSummary summary = new ChangeSummary( ChangeSummary.SYSTEM_USER, "Initializing default data." );
 
@@ -119,13 +118,4 @@ public class StoreDataSetupAction
         }
     }
 
-    //    public String getId()
-    //    {
-    //        return "Default artifact store initialization";
-    //    }
-
-    //    public int getStartupPriority()
-    //    {
-    //        return 0;
-    //    }
 }

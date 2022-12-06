@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+@SuppressWarnings( "unchecked" )
 @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, property = ArtifactStore.TYPE_ATTR )
 @JsonSubTypes( { @Type( name = "remote", value = RemoteRepository.class ),
                        @Type( name = "hosted", value = HostedRepository.class ),

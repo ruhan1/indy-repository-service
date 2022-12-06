@@ -103,10 +103,6 @@ public class IndyWorkflowException
                     }
                 }
 
-                if ( formattedMessage == null )
-                {
-                    formattedMessage = format;
-                }
             }
         }
 
