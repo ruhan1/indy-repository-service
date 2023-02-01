@@ -107,6 +107,7 @@ indy_security:
 
 repository:
   data-storage: cassandra
+  affectedGroupsExclude: "^build-.+|^g-.+-build-.+"
 
 kafka:
   bootstrap:
