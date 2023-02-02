@@ -24,7 +24,7 @@ services:
     environment:
       - "MAX_HEAP_SIZE=256M"
       - "HEAP_NEWSIZE=128M"
-    restart: always
+    restart: "on-failure"
     volumes:
       - /tmp/cassandra:/var/lib/cassandra
 
