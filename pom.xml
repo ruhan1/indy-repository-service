@@ -29,7 +29,7 @@
   <name>Indy :: Service :: Repository</name>
   <url>https://github.com/Commonjava/indy-repository-service</url>
   <description>Indy Repository Service</description>
-  <inceptionYear>2011-2022</inceptionYear>
+  <inceptionYear>2022-2023</inceptionYear>
 
   <scm>
     <connection>scm:git:https://github.com/commonjava/indy-repository-service</connection>
