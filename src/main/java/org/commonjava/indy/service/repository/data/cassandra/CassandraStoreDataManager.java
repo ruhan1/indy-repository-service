@@ -127,6 +127,7 @@ public class CassandraStoreDataManager
 
         DtxArtifactStore dtxArtifactStore =
                 storeQuery.removeArtifactStore( key.getPackageType(), key.getType(), key.getName() );
+        cacheProducer.getCache( ARTIFACT_STORE ).remove( key );
         return toArtifactStore( dtxArtifactStore );
     }
 
