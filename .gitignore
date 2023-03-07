@@ -21,3 +21,4 @@ target
 
 *.dat
 log/*
+config/*

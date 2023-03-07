@@ -1,9 +1,25 @@
+#
+# Copyright (C) 2011-2022 Red Hat, Inc. (https://github.com/Commonjava/indy-repository-service)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 quarkus:
   http:
     port: 8080
     read-timeout: 30m
     limits:
-      max-body-size: 500M
+      max-body-size: 500m
   package:
     type: uber-jar
   application:
@@ -22,6 +38,8 @@ quarkus:
   security:
     auth:
       enabled-in-dev-mode: false
+  opentelemetry:
+    enabled: true
   log:
     level: INFO
     min-level: TRACE
@@ -56,8 +74,19 @@ quarkus:
         max-file-size: 10M
   swagger-ui:
     always-include: true
-  opentelemetry:
-    enabled: false
+
+indy_security:
+  enabled: True
+
+repository:
+  data-storage: mem
+  affectedGroupsExclude: "^build-.+|^g-.+-build-.+"
+  query:
+    cache:
+      enabled: false
+
+cassandra:
+  enabled: false
 
 kafka:
   bootstrap:
@@ -75,18 +104,6 @@ mp:
         value:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
 
-repository:
-  data-storage: cassandra
-  affectedGroupsExclude: "^build-.+|^g-.+-build-.+"
-  query:
-    cache:
-      enabled: false
-
-cassandra:
-  enabled: false
-
-indy_security:
-  enabled: True
 
 "%dev":
   quarkus:
@@ -127,6 +144,3 @@ indy_security:
 
   ispn:
     configDir: /tmp
-
-  cassandra:
-    enabled: false

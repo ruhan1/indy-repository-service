@@ -77,6 +77,8 @@ public class RepositoryMaintenanceResources
         }
     }
 
+    @Operation( description = "Import a ZIP-compressed file containing repository definitions into the repository management database." )
+    @APIResponse( responseCode = "200", description = "All repository definitions which are imported successfully." )
     @POST
     @Path( "/import" )
     @Consumes( MEDIATYPE_APPLICATION_ZIP )
