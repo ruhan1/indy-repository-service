@@ -64,8 +64,6 @@ public abstract class ArtifactStore
 
     public static final String TRACKING_ID = "trackingId";
 
-    //    @ApiModelProperty( required = true, dataType = "string",
-    //                       value = "Serialized store key, of the form: '[hosted|group|remote]:name'" )
     private StoreKey key;
 
     private String description;
@@ -77,8 +75,6 @@ public abstract class ArtifactStore
 
     private boolean disabled;
 
-    //    @ApiModelProperty( required = false, dataType = "int",
-    //                       value = "Integer time in seconds which is used for repo automatically re-enable when set disable by errors, positive value means time in seconds, -1 means never disable, empty or 0 means use default timeout." )
     @JsonProperty( "disable_timeout" )
     private int disableTimeout;
 
