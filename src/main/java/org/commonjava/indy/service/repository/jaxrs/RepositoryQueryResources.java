@@ -26,6 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
+import static org.eclipse.microprofile.openapi.annotations.enums.ParameterIn.QUERY;
 
 @Tag( name = "Store Querying APIs", description = "Resource for querying artifact store definitions" )
 @Path( "/api/admin/stores/query" )
@@ -67,6 +69,13 @@ public class RepositoryQueryResources
     }
 
     @Operation( description = "Retrieve all repository definitions" )
+    @Parameters( value = {
+            @Parameter( name = "packageType", in = QUERY, description = "The package type of the repository.",
+                        example = "maven, npm, generic-http" ),
+            @Parameter( name = "types", in = QUERY, description = "The types of the repository. Split by comma",
+                        example = "\"remote, hosted\"" ), @Parameter( name = "enabled", in = QUERY,
+                                                                      description = "If the repositories retrieved are enabled, default is true if not specified",
+                                                                      example = "true|false" ) } )
     @APIResponse( responseCode = "200",
                   content = @Content( schema = @Schema( implementation = StoreListingDTO.class ) ),
                   description = "The store definitions" )
