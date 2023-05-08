@@ -76,7 +76,7 @@ quarkus:
     always-include: true
 
 indy_security:
-  enabled: True
+  enabled: False
 
 repository:
   data-storage: mem

@@ -39,7 +39,7 @@ public class StatsHandlerTest
     @Test
     public void testGetPackageTypeNames()
     {
-        given().get( "/api/stats/responseCode-type/keys" )
+        given().get( "/api/stats/package-type/keys" )
                .then()
                .statusCode( OK.getStatusCode() )
                .body( containsString( "maven" ) );
