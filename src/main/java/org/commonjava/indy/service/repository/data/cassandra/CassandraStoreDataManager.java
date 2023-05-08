@@ -23,7 +23,6 @@ import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.ClusterStoreDataManager;
 import org.commonjava.indy.service.repository.data.infinispan.CacheHandle;
 import org.commonjava.indy.service.repository.data.infinispan.CacheProducer;
-import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.model.AbstractRepository;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
@@ -82,6 +81,7 @@ public class CassandraStoreDataManager
 
     private final Integer STORE_EXPIRATION_IN_MINS = 15;
 
+    @SuppressWarnings( "unused" )
     protected CassandraStoreDataManager()
     {
     }
@@ -116,7 +116,7 @@ public class CassandraStoreDataManager
             }
         }
 
-        return Optional.ofNullable( computeIfAbsent( ARTIFACT_STORE, key, STORE_EXPIRATION_IN_MINS, Boolean.FALSE ) );
+        return Optional.ofNullable( computeIfAbsent( key, STORE_EXPIRATION_IN_MINS, Boolean.FALSE ) );
     }
 
     @Override
@@ -230,7 +230,7 @@ public class CassandraStoreDataManager
         DtxArtifactStore dtxArtifactStore = toDtxArtifactStore( storeKey, store );
         storeQuery.createDtxArtifactStore( dtxArtifactStore );
 
-        return computeIfAbsent( ARTIFACT_STORE, storeKey, STORE_EXPIRATION_IN_MINS, Boolean.TRUE );
+        return computeIfAbsent( storeKey, STORE_EXPIRATION_IN_MINS, Boolean.TRUE );
     }
 
     @Override
@@ -635,11 +635,11 @@ public class CassandraStoreDataManager
                  .forEach( s -> remoteKojiStores.put( s.getKey(), s ) );
     }
 
-    private ArtifactStore computeIfAbsent( String name, StoreKey key, int expirationMins, boolean forceQuery )
+    private ArtifactStore computeIfAbsent( StoreKey key, int expirationMins, boolean forceQuery )
     {
-        logger.debug( "computeIfAbsent, cache: {}, key: {}", name, key );
+        logger.debug( "computeIfAbsent, cache: {}, key: {}", ARTIFACT_STORE, key );
 
-        CacheHandle<StoreKey, ArtifactStore> cache = cacheProducer.getCache( name );
+        CacheHandle<StoreKey, ArtifactStore> cache = cacheProducer.getCache( ARTIFACT_STORE );
         ArtifactStore store = cache.get( key );
         if ( store == null || forceQuery )
         {
@@ -662,7 +662,7 @@ public class CassandraStoreDataManager
             }
         }
 
-        logger.trace( "Return value, cache: {}, key: {}, ret: {}", name, key, store );
+        logger.trace( "Return value, cache: {}, key: {}, ret: {}", ARTIFACT_STORE, key, store );
         return store;
     }
 

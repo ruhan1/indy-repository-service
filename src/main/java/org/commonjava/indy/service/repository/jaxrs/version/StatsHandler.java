@@ -95,7 +95,7 @@ public class StatsHandler
     @APIResponse( responseCode = "200", content = @Content( schema = @Schema( implementation = Set.class ),
                                                             example = "[\"generic-http\",\"maven\",\"npm\"]" ),
                   description = "The package type listing" )
-    @Path( "/responseCode-type/keys" )
+    @Path( "/package-type/keys" )
     @GET
     @Produces( APPLICATION_JSON )
     public Response getPackageTypeNames()

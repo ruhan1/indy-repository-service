@@ -58,12 +58,14 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:17.0.0
     command: [
-      "start --hostname-strict=false --https-key-store-file=/etc/keycloak-keystore.jks"
+#       "start --hostname-strict=false --https-key-store-file=/etc/keycloak-keystore.jks"
+       "start-dev --hostname-strict=false"
     ]
     ports:
-      - "8543:8443"
+      - "8180:8080"
+#       - "8543:8443"
     environment:
       KEYCLOAK_ADMIN: "admin"
       KEYCLOAK_ADMIN_PASSWORD: "admin"
-    volumes:
-      - ./config/keycloak-keystore.jks:/etc/keycloak-keystore.jks
+#     volumes:
+#       - ./config/keycloak-keystore.jks:/etc/keycloak-keystore.jks
