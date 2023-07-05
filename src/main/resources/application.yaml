@@ -81,6 +81,7 @@ indy_security:
 repository:
   data-storage: mem
   affectedGroupsExclude: "^build-.+|^g-.+-build-.+"
+  disposableStorePattern: "^build-.+|^[ghr]-.+|^httprox_.+"
   query:
     cache:
       enabled: false

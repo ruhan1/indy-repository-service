@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.data.infinispan;
 
+import io.quarkus.runtime.Startup;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.interpolation.InterpolationException;
@@ -53,6 +54,7 @@ import static org.commonjava.indy.service.repository.data.metrics.TraceManager.I
  * Created by jdcasey on 3/8/16.
  */
 @ApplicationScoped
+@Startup
 @SuppressWarnings( {"unchecked", "rawtypes"} )
 public class CacheProducer
 {
@@ -70,8 +72,6 @@ public class CacheProducer
 
     @Inject
     TraceManager traceManager;
-
-    @Inject
 
     private final Map<String, CacheHandle> caches = new ConcurrentHashMap<>(); // hold embedded and remote caches
 

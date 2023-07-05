@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.change.event;
 
+import io.vertx.mutiny.core.eventbus.EventBus;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.event.store.EventStoreKey;
 import org.commonjava.event.store.StoreEnablementEvent;
@@ -23,8 +24,11 @@ import org.commonjava.event.store.StorePostUpdateEvent;
 import org.commonjava.event.store.StorePreDeleteEvent;
 import org.commonjava.event.store.StorePreUpdateEvent;
 import org.commonjava.event.store.StoreUpdateType;
+import org.commonjava.indy.service.repository.change.audit.AuditOps;
+import org.commonjava.indy.service.repository.change.audit.StoreAuditManager;
 import org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.StoreDiffer;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.slf4j.Logger;
@@ -34,14 +38,17 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static org.commonjava.indy.service.repository.model.StoreType.group;
 
 /**
  * Pre-events (deleting, updating, enabling) are single-threaded (inline to user thread) so there isn't a race
@@ -60,6 +67,9 @@ public class DefaultStoreEventDispatcher
 
     @Inject
     KafkaEventUtils kafkaEvent;
+
+    @Inject
+    StoreAuditManager auditManager;
 
     //    @Inject
     //    @WeftManaged
@@ -95,7 +105,15 @@ public class DefaultStoreEventDispatcher
                     StoreKey::toEventStoreKey ).collect( Collectors.toSet() ) );
 
             kafkaEvent.fireEvent( event );
-
+        }
+        if ( auditManager != null )
+        {
+            executor.execute( () -> {
+                for ( StoreKey storeKey : storeKeys )
+                {
+                    auditManager.recordLog( storeKey, AuditOps.OPS_DEL, null );
+                }
+            } );
         }
     }
 
@@ -127,6 +145,34 @@ public class DefaultStoreEventDispatcher
             final StorePostUpdateEvent event = new StorePostUpdateEvent( type, eventMetadata, newChangeMap );
             kafkaEvent.fireEvent( event );
         } );
+
+        if ( auditManager != null )
+        {
+            executor.execute( () -> {
+                for ( Map.Entry<ArtifactStore, ArtifactStore> entry : changeMap.entrySet() )
+                {
+                    ArtifactStore changed = entry.getKey();
+                    if ( type == StoreUpdateType.ADD )
+                    {
+                        auditManager.recordLog( changed.getKey(), AuditOps.OPS_ADD, null );
+                    }
+                    else if ( changed.getType() == group )
+                    {
+
+                        Set<StoreKey> changedCons = new HashSet<>( ( (Group) changed ).getConstituents() );
+                        Set<StoreKey> originalCons = new HashSet<>( ( (Group) entry.getValue() ).getConstituents() );
+                        if ( !changedCons.equals( originalCons ) )
+                        {
+                            final StoreKey gKey = changed.getKey();
+                            final String changedContent =
+                                    String.format( "Constituents in %s change from %s to %s",
+                                                   changed.getKey().toString(), originalCons, changedCons );
+                            auditManager.recordLog( gKey, AuditOps.OPS_UPDATE, changedContent );
+                        }
+                    }
+                }
+            } );
+        }
     }
 
     private Map<EventStoreKey, EventStoreKey> toEventChangeMap( final Map<StoreKey, StoreKey> changeMap )
@@ -159,6 +205,15 @@ public class DefaultStoreEventDispatcher
         logger.trace( "Dispatch post-enable event for: {}", asList( storeKeys ) );
 
         executor.execute( () -> fireEnablement( false, eventMetadata, false, storeKeys ) );
+        if ( auditManager != null )
+        {
+            executor.execute( () -> {
+                for ( StoreKey storeKey : storeKeys )
+                {
+                    auditManager.recordLog( storeKey, AuditOps.OPS_ENABLE, null );
+                }
+            } );
+        }
     }
 
     @Override
@@ -171,6 +226,15 @@ public class DefaultStoreEventDispatcher
     public void disabled( EventMetadata eventMetadata, StoreKey... storeKeys )
     {
         executor.execute( () -> fireEnablement( false, eventMetadata, true, storeKeys ) );
+        if ( auditManager != null )
+        {
+            executor.execute( () -> {
+                for ( StoreKey storeKey : storeKeys )
+                {
+                    auditManager.recordLog( storeKey, AuditOps.OPS_DISABLE, null );
+                }
+            } );
+        }
     }
 
     private void fireEnablement( boolean preprocess, EventMetadata eventMetadata, boolean disabling,

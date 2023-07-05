@@ -15,6 +15,9 @@
  */
 package org.commonjava.indy.service.repository.jaxrs;
 
+import org.apache.commons.lang3.StringUtils;
+import org.commonjava.indy.service.repository.change.audit.DtxRepoOpsAuditRecord;
+import org.commonjava.indy.service.repository.change.audit.StoreAuditManager;
 import org.commonjava.indy.service.repository.controller.MaintenanceController;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -29,7 +32,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -41,7 +46,11 @@ import java.util.Map;
 import static java.lang.System.currentTimeMillis;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Tag( name = "Store Maintenance APIs", description = "Resource for maintain artifact repositories" )
 @Path( "/api/admin/stores/maint" )
@@ -52,6 +61,9 @@ public class RepositoryMaintenanceResources
 
     @Inject
     MaintenanceController maintController;
+
+    @Inject
+    StoreAuditManager auditManager;
 
     @Operation( description = "Retrieve a ZIP-compressed file containing all repository definitions." )
     @APIResponse( responseCode = "200", description = "The zip file contains all repos definitions" )
@@ -77,7 +89,8 @@ public class RepositoryMaintenanceResources
         }
     }
 
-    @Operation( description = "Import a ZIP-compressed file containing repository definitions into the repository management database." )
+    @Operation(
+            description = "Import a ZIP-compressed file containing repository definitions into the repository management database." )
     @APIResponse( responseCode = "200", description = "All repository definitions which are imported successfully." )
     @POST
     @Path( "/import" )
@@ -94,5 +107,45 @@ public class RepositoryMaintenanceResources
         {
             throw new WebApplicationException( "Cannot processing the imported bundle.", e );
         }
+    }
+
+    @Operation( description = "Check the audit log of the a specified repo changes." )
+    @APIResponse( responseCode = "200", description = "The audit log returned" )
+    @GET
+    @Path( "/audit/{repo}" )
+    @Consumes( MEDIATYPE_APPLICATION_ZIP )
+    @Produces( APPLICATION_JSON )
+    public Response getStoreAuditLogs( final @PathParam( "repo" ) String repoName,
+                                       final @QueryParam( "ops" ) String ops,
+                                       final @QueryParam( "limit" ) String limit )
+    {
+        List<DtxRepoOpsAuditRecord> records = null;
+        if ( isBlank( repoName ) )
+        {
+            return Response.status( BAD_REQUEST ).entity( "The repository name cannot be null" ).build();
+        }
+        int limitRecords;
+        try
+        {
+            limitRecords = StringUtils.isNotBlank( limit ) && Integer.parseInt( limit ) > 0 ? Integer.parseInt( limit ) : 1000;
+        }
+        catch ( NumberFormatException e )
+        {
+            limitRecords = 1000;
+        }
+        if ( isNotBlank( ops ) )
+        {
+            records = auditManager.getAuditLogByRepoAndOps( repoName, ops, limitRecords );
+        }
+        else
+        {
+            records = auditManager.getAuditLogByRepo( repoName, limitRecords );
+        }
+
+        if ( records != null && !records.isEmpty() )
+        {
+            return Response.ok( records ).build();
+        }
+        return Response.status( NOT_FOUND ).build();
     }
 }
