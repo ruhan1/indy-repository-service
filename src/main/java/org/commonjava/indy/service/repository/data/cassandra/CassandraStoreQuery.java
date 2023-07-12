@@ -37,6 +37,7 @@ import static org.commonjava.indy.service.repository.data.cassandra.CassandraSto
 import static org.commonjava.indy.service.repository.data.cassandra.CassandraStoreUtil.TABLE_STORE;
 
 @ApplicationScoped
+//@Startup
 public class CassandraStoreQuery
 {
 

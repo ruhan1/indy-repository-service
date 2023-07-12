@@ -18,6 +18,7 @@ package org.commonjava.indy.service.repository.data.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
+import io.quarkus.runtime.Startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @ApplicationScoped
+@Startup
 public class CassandraClient
 {
     private final Logger logger = LoggerFactory.getLogger( getClass() );
