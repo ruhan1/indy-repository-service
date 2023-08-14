@@ -23,6 +23,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
 import org.apache.commons.lang3.StringUtils;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.cassandra.CassandraClient;
 import org.commonjava.indy.service.repository.data.cassandra.CassandraConfiguration;
 import org.commonjava.indy.service.repository.data.cassandra.SchemaUtils;
@@ -35,6 +36,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -54,6 +56,9 @@ public class StoreAuditManager
 
     @Inject
     CassandraConfiguration config;
+
+    @Inject
+    IndyRepositoryConfiguration repoConfig;
 
     private Mapper<DtxRepoOpsAuditRecord> auditMapper;
 
@@ -77,26 +82,27 @@ public class StoreAuditManager
     @PostConstruct
     public void init()
     {
+        if ( repoConfig.repoAuditEnabled() )
+        {
+            String keySpace = config.getKeyspace();
+            session = client.getSession( keySpace );
+            session.execute( SchemaUtils.getSchemaCreateKeyspace( keySpace, config.getKeyspaceReplicas() ) );
+            session.execute( getSchemaCreateTableStore( keySpace ) );
 
-        String keySpace = config.getKeyspace();
-        session = client.getSession( keySpace );
-        session.execute( SchemaUtils.getSchemaCreateKeyspace( keySpace, config.getKeyspaceReplicas() ) );
-        session.execute( getSchemaCreateTableStore( keySpace ) );
+            MappingManager manager = new MappingManager( session );
 
-        MappingManager manager = new MappingManager( session );
+            auditMapper = manager.mapper( DtxRepoOpsAuditRecord.class, keySpace );
+            preparedStoreAuditQueryByRepo = session.prepare(
+                    format( "SELECT time, reponame, operation, changecontent FROM %s.%s WHERE reponame=? ORDER BY time DESC limit ?",
+                            keySpace, TABLE_AUDIT ) );
 
-        auditMapper = manager.mapper( DtxRepoOpsAuditRecord.class, keySpace );
-        preparedStoreAuditQueryByRepo = session.prepare(
-                format( "SELECT time, reponame, operation, changecontent FROM %s.%s WHERE reponame=? ORDER BY time DESC limit ?",
-                        keySpace, TABLE_AUDIT ) );
-
-        preparedStoreAuditQueryByRepoAndOps = session.prepare(
-                format( "SELECT time, reponame, operation, changecontent FROM %s.%s WHERE reponame=? and operation=? ORDER BY time DESC limit ? ALLOW FILTERING",
-                        keySpace, TABLE_AUDIT ) );
-
+            preparedStoreAuditQueryByRepoAndOps = session.prepare(
+                    format( "SELECT time, reponame, operation, changecontent FROM %s.%s WHERE reponame=? and operation=? ORDER BY time DESC limit ? ALLOW FILTERING",
+                            keySpace, TABLE_AUDIT ) );
+        }
     }
 
-    public static String getSchemaCreateTableStore( String keySpace )
+    private static String getSchemaCreateTableStore( String keySpace )
     {
         // @formatter:off
         return format("CREATE TABLE IF NOT EXISTS %s.%s ("
@@ -112,7 +118,15 @@ public class StoreAuditManager
 
     public void recordLog( final StoreKey storeKey, final String ops, final String content )
     {
-        auditMapper.save( toDtxRepoOpsAuditRecord( storeKey, ops, content ) );
+        if ( repoConfig.repoAuditEnabled() )
+        {
+            auditMapper.save( toDtxRepoOpsAuditRecord( storeKey, ops, content ) );
+        }
+        else
+        {
+            logger.warn( "Warning: Repository audit log is not enabled, will not record audit log" );
+        }
+
     }
 
     public List<DtxRepoOpsAuditRecord> getAuditLogByRepo( final String key, final int limit )
