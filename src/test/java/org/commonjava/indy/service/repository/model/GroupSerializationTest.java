@@ -15,6 +15,7 @@
  */
 package org.commonjava.indy.service.repository.model;
 
+import org.commonjava.indy.service.repository.testutil.ContainsOnlyOneMatcher;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -34,7 +35,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class GroupSerializationTest
+        extends AbstractSerializatinTest
 {
+    @Test
+    public void checkOnlyOneTypeInJson()
+            throws IOException, ClassNotFoundException
+    {
+        Group in = new Group( PKG_TYPE_MAVEN, "test", Arrays.asList( new StoreKey( PKG_TYPE_MAVEN, remote, "test1" ),
+                                                                     new StoreKey( PKG_TYPE_MAVEN, remote,
+                                                                                   "test2" ) ) );
+        Group out = doRoundTrip( in );
+
+        final String serialized = mapper.writeValueAsString( out );
+        assertThat( serialized, new ContainsOnlyOneMatcher( "\"type\" : \"group\"" ) );
+    }
+
     @Test
     public void simpleRoundTrip()
             throws IOException, ClassNotFoundException

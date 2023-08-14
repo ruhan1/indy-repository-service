@@ -16,6 +16,7 @@
 package org.commonjava.indy.service.repository.model;
 
 import org.apache.commons.io.IOUtils;
+import org.commonjava.indy.service.repository.testutil.ContainsOnlyOneMatcher;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
@@ -34,9 +35,7 @@ public class ModelJSONTest
     String loadJson( final String resource )
             throws Exception
     {
-        final InputStream is = Thread.currentThread()
-                                     .getContextClassLoader()
-                                     .getResourceAsStream( resource );
+        final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resource );
         if ( is == null )
         {
             fail( "Cannot find classpath resource: " + resource );
@@ -45,14 +44,21 @@ public class ModelJSONTest
         return IOUtils.toString( is, Charset.defaultCharset() );
     }
 
+    public void checkOnlyOneTypeInJson()
+            throws Exception
+    {
+        final String json = loadJson( "hosted-with-storage-objkey.json" );
+        final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
+        final String serializedJson = mapper.writeValueAsString( repo );
+        assertThat( serializedJson, new ContainsOnlyOneMatcher( "\"type\" : \"hosted\"" ) );
+    }
+
     @Test
     public void deserializeHostedRepoWithObjKey()
             throws Exception
     {
         final String json = loadJson( "hosted-with-storage-objkey.json" );
-        System.out.println( json );
         final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
-        System.out.println( repo );
         assertThat( repo.getPackageType(), is( PKG_TYPE_MAVEN ) );
         assertThat( repo.getType(), is( hosted ) );
     }
@@ -62,9 +68,7 @@ public class ModelJSONTest
             throws Exception
     {
         final String json = loadJson( "hosted-with-storage-stringkey.json" );
-        System.out.println( json );
         final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
-        System.out.println( repo );
         assertThat( repo.getPackageType(), is( PKG_TYPE_MAVEN ) );
         assertThat( repo.getType(), is( hosted ) );
     }

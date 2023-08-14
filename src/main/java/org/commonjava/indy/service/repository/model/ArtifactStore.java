@@ -110,6 +110,9 @@ public abstract class ArtifactStore
         return key.getName();
     }
 
+    // Ignore this because @JsonTypeInfo is used for "type" property in this abstract class,
+    // so the type will be defined by it. We need to do ignoring here for de-duplication
+    @JsonIgnore
     public StoreType getType()
     {
         return key.getType();
