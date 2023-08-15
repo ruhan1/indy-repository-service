@@ -16,12 +16,16 @@
 package org.commonjava.indy.service.repository.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.commonjava.indy.service.repository.testutil.ContainsOnlyOneMatcher;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import static org.commonjava.indy.service.repository.model.StoreType.remote;
 import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.PKG_TYPE_MAVEN;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -34,6 +38,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class RemoteRepositoryTest
         extends AbstractSerializatinTest
 {
+    @Test
+    public void checkOnlyOneTypeInJson()
+            throws IOException, ClassNotFoundException
+    {
+        RemoteRepository remote = new RemoteRepository( PKG_TYPE_MAVEN, "test", "http://test.com/repo" );
+        String json = mapper.writeValueAsString( remote );
+        assertThat( json, new ContainsOnlyOneMatcher( "\"type\" : \"remote\"" ) );
+    }
+
     @Test
     public void serializeRemoteWithServerPem()
             throws JsonProcessingException
@@ -48,6 +61,7 @@ public class RemoteRepositoryTest
         assertThat( json, containsString( "AAAAFFFASDFADSFASDFSADFa" ) );
         assertThat( json, containsString( "server_trust_policy" ) );
         assertThat( json, containsString( "self-signed" ) );
+
     }
 
     @Test
@@ -59,6 +73,8 @@ public class RemoteRepositoryTest
         remote.setKeyPassword( "testme" );
 
         String json = mapper.writeValueAsString( remote );
+
+        System.out.println( json );
 
         assertThat( json, containsString( "key_certificate_pem" ) );
         assertThat( json, containsString( "AAAAFFFASDFADSFASDFSADFa" ) );

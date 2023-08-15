@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.quarkus.jackson.ObjectMapperCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,11 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.JsonInclude.Value.construct;
 
 /**
  * This customizer is used to init the jackson object mapper with indy customized features and modules
@@ -39,8 +44,6 @@ import java.util.Set;
 public class IndyJacksonCustomizer
         implements ObjectMapperCustomizer
 {
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
-
     @Inject
     Instance<Module> injectedModules;
 
@@ -53,11 +56,12 @@ public class IndyJacksonCustomizer
 
         mapper.enable( SerializationFeature.INDENT_OUTPUT, SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID );
         mapper.enable( MapperFeature.AUTO_DETECT_FIELDS );
-        //        mapper.disable( MapperFeature.AUTO_DETECT_GETTERS );
 
-        mapper.disable( SerializationFeature.WRITE_NULL_MAP_VALUES, SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
+        mapper.disable( SerializationFeature.WRITE_EMPTY_JSON_ARRAYS );
         mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
-        //        mapper.disable( SerializationFeature.FAIL_ON_EMPTY_BEANS );
+
+        // This is used to replace builder.disable(SerializationFeature.WRITE_NULL_MAP_VALUES) for deprecation reason
+        mapper.configOverride( Map.class ).setInclude( construct( NON_NULL, NON_NULL ) );
 
         injectSingle( mapper, new RepoApiSerializerModule() );
 
@@ -69,7 +73,6 @@ public class IndyJacksonCustomizer
     {
         Set<Module> injected = new HashSet<>();
 
-        Logger logger = LoggerFactory.getLogger( getClass() );
         if ( modules != null )
         {
             for ( final Module module : modules )

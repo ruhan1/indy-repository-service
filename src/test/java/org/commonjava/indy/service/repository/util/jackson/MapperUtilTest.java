@@ -28,12 +28,12 @@ public class MapperUtilTest
     public void testPatchLegacyStoreJson()
             throws Exception
     {
+        final ObjectMapper mapper = new ObjectMapper();
+        new IndyJacksonCustomizer().customize( mapper );
         final var unpatched = "{\"key\":\"remote:test\",\"name\":\"test\"}";
-
-        final var patched = MapperUtil.patchLegacyStoreJson( new ObjectMapper(), unpatched );
-
-        assertThat( patched, containsString( "\"packageType\":\"maven\"" ) );
-        assertThat( patched, containsString( "\"type\":\"remote\"" ) );
-        assertThat( patched, containsString( "\"key\":\"maven:remote:test\"" ) );
+        final var patched = MapperUtil.patchLegacyStoreJson( mapper, unpatched );
+        assertThat( patched, containsString( "\"packageType\" : \"maven\"" ) );
+        assertThat( patched, containsString( "\"type\" : \"remote\"" ) );
+        assertThat( patched, containsString( "\"key\" : \"maven:remote:test\"" ) );
     }
 }
