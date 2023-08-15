@@ -56,4 +56,8 @@ public interface IndyRepositoryConfiguration
 
     @WithName( "remote.nosslHosts" )
     Optional<List<String>> remoteNoSSLHosts();
+
+    @WithName( "audit" )
+    @WithDefault( "false" )
+    Boolean repoAuditEnabled();
 }
