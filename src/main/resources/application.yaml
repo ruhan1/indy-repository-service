@@ -34,7 +34,7 @@ quarkus:
     devservices:
       enabled: false
   oidc:
-    enabled: false
+    enabled: true
   security:
     auth:
       enabled-in-dev-mode: false
@@ -106,42 +106,42 @@ mp:
           serializer: "io.quarkus.kafka.client.serialization.ObjectMapperSerializer"
 
 
-"%dev":
-  quarkus:
-    log:
-      level: TRACE
-      min-level: TRACE
-      category:
-        "org.jboss":
-          level: INFO
-        "org.apache.kafka":
-          level: ERROR
-        "io.quarkus":
-          level: INFO
-        "io.smallrye":
-          level: INFO
-        "org.eclipse":
-          level: INFO
-        "io.netty":
-          level: INFO
-        "org.infinispan":
-          level: INFO
-        "io.agroal":
-          level: INFO
-        "org.commonjava.indy.service":
-          level: TRACE
-      console:
-        enable: true
-      file:
-        enable: true
-        path: "/tmp/indy-repository-service.log"
-        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
-        rotation:
-          max-backup-index: 5
-          max-file-size: 10M
-
-  repository:
-    data-storage: mem
-
-  ispn:
-    configDir: /tmp
+#"%dev":
+#  quarkus:
+#    log:
+#      level: TRACE
+#      min-level: TRACE
+#      category:
+#        "org.jboss":
+#          level: INFO
+#        "org.apache.kafka":
+#          level: ERROR
+#        "io.quarkus":
+#          level: INFO
+#        "io.smallrye":
+#          level: INFO
+#        "org.eclipse":
+#          level: INFO
+#        "io.netty":
+#          level: INFO
+#        "org.infinispan":
+#          level: INFO
+#        "io.agroal":
+#          level: INFO
+#        "org.commonjava.indy.service":
+#          level: TRACE
+#      console:
+#        enable: true
+#      file:
+#        enable: true
+#        path: "/tmp/indy-repository-service.log"
+#        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+#        rotation:
+#          max-backup-index: 5
+#          max-file-size: 10M
+#
+#  repository:
+#    data-storage: mem
+#
+#  ispn:
+#    configDir: /tmp
