@@ -445,6 +445,7 @@ public class CassandraStoreDataManager
             store.setDisableTimeout( dtxArtifactStore.getDisableTimeout() );
             store.setAuthoritativeIndex( dtxArtifactStore.getAuthoritativeIndex() );
             store.setPathStyle( PathStyle.valueOf( dtxArtifactStore.getPathStyle() ) );
+            store.setCreateTime( dtxArtifactStore.getCreateTime() );
         }
         return store;
     }
