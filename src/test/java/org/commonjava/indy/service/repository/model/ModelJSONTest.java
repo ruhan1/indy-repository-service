@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 
 import static org.commonjava.indy.service.repository.model.StoreType.hosted;
 import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.PKG_TYPE_MAVEN;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -44,11 +45,13 @@ public class ModelJSONTest
         return IOUtils.toString( is, Charset.defaultCharset() );
     }
 
+    @Test
     public void checkOnlyOneTypeInJson()
             throws Exception
     {
         final String json = loadJson( "hosted-with-storage-objkey.json" );
         final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
+        assertThat( repo.getCreateTime(), is("1999-09-09 09:09:09 +0000") );
         final String serializedJson = mapper.writeValueAsString( repo );
         assertThat( serializedJson, new ContainsOnlyOneMatcher( "\"type\" : \"hosted\"" ) );
     }
@@ -71,5 +74,6 @@ public class ModelJSONTest
         final HostedRepository repo = mapper.readValue( json, HostedRepository.class );
         assertThat( repo.getPackageType(), is( PKG_TYPE_MAVEN ) );
         assertThat( repo.getType(), is( hosted ) );
+        assertThat( repo.getCreateTime(), is("1999-09-09 09:09:09 +0000") );
     }
 }

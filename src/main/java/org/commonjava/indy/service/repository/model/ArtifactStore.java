@@ -20,26 +20,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.DiscriminatorMapping;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 @SuppressWarnings( "unchecked" )
 @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, property = ArtifactStore.TYPE_ATTR )
 @JsonSubTypes( { @Type( name = "remote", value = RemoteRepository.class ),
-                       @Type( name = "hosted", value = HostedRepository.class ),
-                       @Type( name = "group", value = Group.class ) } )
+        @Type( name = "hosted", value = HostedRepository.class ), @Type( name = "group", value = Group.class ) } )
 @Schema(
         description = "Definition of a content store on Indy, whether it proxies content from a remote server, hosts artifacts on this system, or groups other content stores.",
         type = SchemaType.OBJECT, discriminatorProperty = "type",
@@ -49,6 +52,7 @@ import java.util.TimeZone;
 public abstract class ArtifactStore
         implements Externalizable
 {
+    final Logger logger = LoggerFactory.getLogger( this.getClass() );
 
     private static final int ARTIFACT_STORE_VERSION = 1;
 
@@ -62,7 +66,7 @@ public abstract class ArtifactStore
 
     public static final String METADATA_ORIGIN = "origin";
 
-    public static final String TRACKING_ID = "trackingId";
+    //    public static final String TRACKING_ID = "trackingId";
 
     private StoreKey key;
 
@@ -96,13 +100,11 @@ public abstract class ArtifactStore
 
     public ArtifactStore()
     {
-        initRepoTime();
     }
 
     protected ArtifactStore( final String packageType, final StoreType type, final String name )
     {
         this.key = StoreKey.dedupe( new StoreKey( packageType, type, name ) );
-        initRepoTime();
     }
 
     public String getName()
@@ -328,14 +330,31 @@ public abstract class ArtifactStore
 
     public String getCreateTime()
     {
+        if ( StringUtils.isBlank( this.createTime ) )
+        {
+            logger.warn(
+                    "Warning: create time for Repository {} is empty. Will init the create time to current system time",
+                    this.getKey().toString() );
+            initRepoTime();
+        }
         return createTime;
     }
 
+    public void setCreateTime( String createTime )
+    {
+        if ( StringUtils.isNotBlank( createTime ) )
+        {
+            this.createTime = createTime;
+        }
+    }
+
+    private final DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm:ss ZZZ" ).withZone( ZoneId.of( "UTC" ) );
+
     private void initRepoTime()
     {
-        final SimpleDateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss ZZZ" );
-        format.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-        this.createTime = format.format( new Date( System.currentTimeMillis() ) );
+        ZonedDateTime current = ZonedDateTime.now( ZoneId.of( "UTC" ) );
+        this.createTime = current.format( formatter );
     }
 
     @Override
