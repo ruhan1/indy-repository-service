@@ -20,11 +20,14 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
+import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -43,6 +46,9 @@ public class TraceManager
     private final Tracer tracer;
 
     @Inject
+    IndyRepositoryConfiguration repoConfig;
+
+    @Inject
     public TraceManager( Tracer tracer )
     {
         this.tracer = tracer;
@@ -53,8 +59,12 @@ public class TraceManager
         return wrapWithStandardMetrics( ( span ) -> method.get(), classifier );
     }
 
-    public <T> T wrapWithStandardMetrics( final Function<Span, T> method, final Supplier<String> classifier )
+    public <T> T wrapWithStandardMetrics( final Function<Optional<Span>, T> method, final Supplier<String> classifier )
     {
+        if ( !isTraceEnabledForName( classifier.get() ) )
+        {
+            return method.apply( Optional.empty() );
+        }
         String spanName = classifier.get();
 
         String errorName = name( spanName, EXCEPTION );
@@ -63,7 +73,7 @@ public class TraceManager
         Span span = tracer.spanBuilder( spanName ).setSpanKind( SpanKind.SERVER ).startSpan();
         try (Scope ignored = span.makeCurrent())
         {
-            T result = method.apply( span );
+            T result = method.apply( Optional.of( span ) );
             span.setStatus( StatusCode.OK );
             return result;
         }
@@ -83,4 +93,20 @@ public class TraceManager
 
     }
 
+    public boolean isTraceEnabledForName( final String name )
+    {
+        Optional<List<String>> skipTracePatterns = repoConfig.skipTracePatterns();
+        if ( skipTracePatterns.isPresent() )
+        {
+            for ( String pattern : skipTracePatterns.get() )
+            {
+                if ( name.matches( pattern ) )
+                {
+                    logger.info( "{} is disabled for tracing from configuration. Skip", name );
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
