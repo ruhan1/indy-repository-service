@@ -60,4 +60,7 @@ public interface IndyRepositoryConfiguration
     @WithName( "audit" )
     @WithDefault( "false" )
     Boolean repoAuditEnabled();
+
+    @WithName( "trace.skip-name-patterns" )
+    Optional<List<String>> skipTracePatterns();
 }

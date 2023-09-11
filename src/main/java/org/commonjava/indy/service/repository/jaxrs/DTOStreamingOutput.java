@@ -73,28 +73,41 @@ public class DTOStreamingOutput
         AtomicReference<IOException> ioe = new AtomicReference<>();
         traceManager.wrapWithStandardMetrics( ( span ) -> {
             CountingOutputStream cout = new CountingOutputStream( outputStream );
-            long start = System.nanoTime();
-            try
+            if ( span.isPresent() )
             {
-                mapper.writeValue( cout, dto );
+                long start = System.nanoTime();
+                try
+                {
+                    mapper.writeValue( cout, dto );
+                }
+                catch ( IOException e )
+                {
+                    ioe.set( e );
+                }
+                finally
+                {
+                    Logger logger = LoggerFactory.getLogger( getClass() );
+                    logger.trace( "Wrote: {} bytes", cout.getByteCount() );
+
+                    String name = getName( TRANSFER_METRIC_NAME, getDefaultName( dto.getClass(), "write" ), "size" );
+
+                    long end = System.nanoTime();
+                    double elapsed = ( end - start ) / NANOS_PER_SEC;
+
+                    span.get().setAttribute( name, Math.round( cout.getByteCount() / elapsed ) );
+                }
             }
-            catch ( IOException e )
+            else
             {
-                ioe.set( e );
+                try
+                {
+                    mapper.writeValue( cout, dto );
+                }
+                catch ( IOException e )
+                {
+                    ioe.set( e );
+                }
             }
-            finally
-            {
-                Logger logger = LoggerFactory.getLogger( getClass() );
-                logger.trace( "Wrote: {} bytes", cout.getByteCount() );
-
-                String name = getName( TRANSFER_METRIC_NAME, getDefaultName( dto.getClass(), "write" ), "size" );
-
-                long end = System.nanoTime();
-                double elapsed = ( end - start ) / NANOS_PER_SEC;
-
-                span.setAttribute( name, Math.round( cout.getByteCount() / elapsed ) );
-            }
-
             return null;
 
         }, () -> TRANSFER_METRIC_NAME );

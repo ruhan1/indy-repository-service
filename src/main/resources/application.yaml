@@ -85,6 +85,9 @@ repository:
   query:
     cache:
       enabled: false
+#  trace:
+#    skip-name-patterns:
+#       - "indy.*"
 
 cassandra:
   enabled: false
