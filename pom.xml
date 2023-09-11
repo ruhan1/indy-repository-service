@@ -25,7 +25,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.commonjava.indy.service</groupId>
   <artifactId>indy-repository-service</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <name>Indy :: Service :: Repository</name>
   <url>https://github.com/Commonjava/indy-repository-service</url>
   <description>Indy Repository Service</description>
@@ -35,7 +35,7 @@
     <connection>scm:git:https://github.com/commonjava/indy-repository-service</connection>
     <developerConnection>scm:git:https://github.com/commonjava/indy-repository-service</developerConnection>
     <url>http://github.com/Commonjava/indy-repository-service</url>
-    <tag>HEAD</tag>
+    <tag>indy-repository-service-1.0.2</tag>
   </scm>
 
   <properties>
