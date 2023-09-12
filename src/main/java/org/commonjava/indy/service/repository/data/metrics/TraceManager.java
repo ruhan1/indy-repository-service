@@ -102,7 +102,7 @@ public class TraceManager
             {
                 if ( name.matches( pattern ) )
                 {
-                    logger.info( "{} is disabled for tracing from configuration. Skip", name );
+                    logger.debug( "{} is disabled for tracing from configuration. Skip this trace.", name );
                     return false;
                 }
             }
