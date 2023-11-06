@@ -17,6 +17,7 @@ package org.commonjava.indy.service.repository.data.cassandra;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.commonjava.indy.model.core.PathStyle;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
 import org.commonjava.indy.service.repository.change.event.StoreEventDispatcher;
 import org.commonjava.indy.service.repository.data.AbstractStoreDataManager;
@@ -27,7 +28,6 @@ import org.commonjava.indy.service.repository.model.AbstractRepository;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
-import org.commonjava.indy.service.repository.model.PathStyle;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;

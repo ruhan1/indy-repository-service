@@ -34,10 +34,11 @@ import java.io.ObjectOutput;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.commonjava.indy.model.core.PathStyle;
 
 @SuppressWarnings( "unchecked" )
 @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, property = ArtifactStore.TYPE_ATTR )

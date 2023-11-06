@@ -28,6 +28,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.commonjava.indy.model.core.PathStyle;
+
 /**
  * Created by jdcasey on 5/11/17.
  */
