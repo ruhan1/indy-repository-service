@@ -43,7 +43,7 @@
     <projectEmail>https://github.com/Commonjava/indy-repository-service</projectEmail>
 
     <atlas.version>1.1.1</atlas.version>
-    <eventmodel.version>1.0</eventmodel.version>
+    <indymodel.version>1.4</indymodel.version>
     <indysecurity.verison>1.1</indysecurity.verison>
 
     <cassandra.version>3.11.3</cassandra.version>
@@ -76,7 +76,17 @@
     <dependency>
       <groupId>org.commonjava.indy.service</groupId>
       <artifactId>indy-event-model</artifactId>
-      <version>${eventmodel.version}</version>
+      <version>${indymodel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.commonjava.indy.service</groupId>
+      <artifactId>indy-event-model-serializer</artifactId>
+      <version>${indymodel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.commonjava.indy.service</groupId>
+      <artifactId>indy-model-core-java</artifactId>
+      <version>${indymodel.version}</version>
     </dependency>
     <dependency>
       <groupId>org.commonjava.indy.service</groupId>
