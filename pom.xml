@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.commonjava</groupId>
     <artifactId>service-parent</artifactId>
-    <version>2</version>
+    <version>4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.commonjava.indy.service</groupId>
@@ -47,7 +47,7 @@
     <indysecurity.verison>1.1</indysecurity.verison>
 
     <cassandra.version>3.11.3</cassandra.version>
-    <infinispan.version>11.0.8.Final</infinispan.version>
+    <infinispan.version>14.0.6.Final</infinispan.version>
     <agroal.version>2.0</agroal.version>
 
     <!--
@@ -172,7 +172,7 @@
     <!-- quarkus otel deps -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
+      <artifactId>quarkus-opentelemetry</artifactId>
     </dependency>
     <dependency>
       <groupId>io.opentelemetry</groupId>
@@ -360,7 +360,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>io.quarkus</groupId>
+        <groupId>io.quarkus.platform</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
       </plugin>
       <plugin>
