@@ -104,17 +104,21 @@ public class RemoteRepository
     @Schema(
             description = "Integer to indicate the pre-fetching priority of the remote, higher means more eager to do the pre-fetching of the content in the repo, 0 or below means disable the pre-fecthing." )
     @JsonProperty( "prefetch_priority" )
+    @Deprecated
     private Integer prefetchPriority = 0;
 
     @Schema( description = "Indicates if the remote needs to do rescan after prefetch" )
     @JsonProperty( "prefetch_rescan" )
+    @Deprecated
     private boolean prefetchRescan = false;
 
     @Schema( description = "The prefetch listing type, should be html or koji" )
     @JsonProperty( "prefetch_listing_type" )
+    @Deprecated
     private String prefetchListingType = PREFETCH_LISTING_TYPE_HTML;
 
     @JsonProperty( "prefetch_rescan_time" )
+    @Deprecated
     private String prefetchRescanTimestamp;
 
     public RemoteRepository()
@@ -412,42 +416,50 @@ public class RemoteRepository
         this.serverTrustPolicy = serverTrustPolicy;
     }
 
+    @Deprecated
     public Integer getPrefetchPriority()
     {
         return prefetchPriority;
     }
 
+    @Deprecated
     public void setPrefetchPriority( Integer prefetchPriority )
     {
         this.prefetchPriority = prefetchPriority;
     }
 
+    @Deprecated
     public boolean isPrefetchRescan()
     {
         return prefetchRescan;
     }
 
+    @Deprecated
     public void setPrefetchRescan( boolean prefetchRescan )
     {
         this.prefetchRescan = prefetchRescan;
     }
 
+    @Deprecated
     public String getPrefetchListingType()
     {
         return prefetchListingType;
     }
 
+    @Deprecated
     public void setPrefetchListingType( String prefetchListingType )
     {
         this.prefetchListingType = prefetchListingType;
     }
 
     @JsonIgnore
+    @Deprecated
     public String getPrefetchRescanTimestamp()
     {
         return prefetchRescanTimestamp;
     }
 
+    @Deprecated
     public void setPrefetchRescanTimestamp( String prefetchRescanTimestamp )
     {
         this.prefetchRescanTimestamp = prefetchRescanTimestamp;
