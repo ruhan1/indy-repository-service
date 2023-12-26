@@ -96,6 +96,9 @@ kafka:
   bootstrap:
     servers: "localhost:9092"
 
+storage-service-api/mp-rest/url: http://localhost
+storage-service-api/mp-rest/scope: javax.inject.Singleton
+
 mp:
   messaging:
     emitter:

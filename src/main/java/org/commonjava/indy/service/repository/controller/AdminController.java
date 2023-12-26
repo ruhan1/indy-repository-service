@@ -18,6 +18,7 @@ package org.commonjava.indy.service.repository.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
+import org.commonjava.indy.service.repository.client.storage.StorageService;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
 import org.commonjava.indy.service.repository.data.ArtifactStoreValidateData;
@@ -30,11 +31,13 @@ import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +60,10 @@ public class AdminController
 
     @Inject
     StoreValidator storeValidator;
+
+    @Inject
+    @RestClient
+    StorageService storageService;
 
     protected AdminController()
     {
@@ -188,11 +195,10 @@ public class AdminController
             if ( store != null && deleteContent )
             {
                 logger.info( "Delete content of {}", key );
-                //TODO: here should send event to notify store service to delete file contents for this repo
-                //                deleteContent( store );
+                purgeFilesystem( key.toString() );
             }
-
-            storeManager.deleteArtifactStore( key, new ChangeSummary( user, changelog ), new EventMetadata() );
+            storeManager.deleteArtifactStore( key, new ChangeSummary( user, changelog ),
+                    new EventMetadata().set( "deleteContent", deleteContent ) );
         }
         catch ( final IndyDataException e )
         {
@@ -202,6 +208,18 @@ public class AdminController
                 status = e.getStatus();
             }
             throw new IndyWorkflowException( status, "Failed to delete: {}. Reason: {}", e, key, e.getMessage() );
+        }
+    }
+
+    private void purgeFilesystem(String filesystem)
+    {
+        try( Response resp = storageService.purge(filesystem) )
+        {
+            logger.info( "Purge filesystem done, code: {}, result: {}", resp.getStatus(), resp.getEntity() );
+        }
+        catch ( Exception e )
+        {
+            logger.warn( "Purge filesystem failed", e );
         }
     }
 
