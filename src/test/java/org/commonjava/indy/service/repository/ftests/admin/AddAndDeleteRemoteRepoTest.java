@@ -60,4 +60,26 @@ public class AddAndDeleteRemoteRepoTest
 
         given().head( repoUrl ).then().statusCode( NOT_FOUND.getStatusCode() );
     }
+
+    @Test
+    public void addRemoteRepositoryAndDeleteWithContent()
+            throws Exception
+    {
+        final String name = "build-" + newName();
+        final RemoteRepository repo = new RemoteRepository( MAVEN_PKG_KEY, name, "http://www.foo.com" );
+        final String json = mapper.writeValueAsString( repo );
+
+        given().body( json )
+                .contentType( APPLICATION_JSON )
+                .post( getRepoTypeUrl( repo.getKey() ) )
+                .then()
+                .body( "url", is( "http://www.foo.com" ) )
+                .body( new RepoEqualMatcher<>( mapper, repo, RemoteRepository.class ) );
+        final String repoUrl = getRepoUrl( repo.getKey() );
+        given().head( repoUrl ).then().statusCode( OK.getStatusCode() );
+
+        delete( repoUrl + "?deleteContent=true" ); // Delete with content
+
+        given().head( repoUrl ).then().statusCode( NOT_FOUND.getStatusCode() );
+    }
 }

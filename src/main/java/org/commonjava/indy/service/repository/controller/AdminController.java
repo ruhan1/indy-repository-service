@@ -26,11 +26,11 @@ import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.data.StoreValidator;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
-import org.commonjava.indy.service.repository.exception.InvalidArtifactStoreException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +63,9 @@ public class AdminController
     @Inject
     @RestClient
     StorageService storageService;
+
+    @Inject
+    ManagedExecutor executor;
 
     protected AdminController()
     {
@@ -194,8 +196,7 @@ public class AdminController
             ArtifactStore store = storeManager.getArtifactStore( key ).orElse( null );
             if ( store != null && deleteContent )
             {
-                logger.info( "Delete content of {}", key );
-                purgeFilesystem( key.toString() );
+                purgeFilesystemAsync( key.toString() );
             }
             storeManager.deleteArtifactStore( key, new ChangeSummary( user, changelog ),
                     new EventMetadata().set( "deleteContent", deleteContent ) );
@@ -211,16 +212,19 @@ public class AdminController
         }
     }
 
-    private void purgeFilesystem(String filesystem)
+    private void purgeFilesystemAsync(final String filesystem)
     {
-        try( Response resp = storageService.purge(filesystem) )
-        {
-            logger.info( "Purge filesystem done, code: {}, result: {}", resp.getStatus(), resp.getEntity() );
-        }
-        catch ( Exception e )
-        {
-            logger.warn( "Purge filesystem failed", e );
-        }
+        executor.runAsync(() -> {
+            logger.info( "Purge content of {}", filesystem );
+            try( Response resp = storageService.purge(filesystem) )
+            {
+                logger.info( "Purge filesystem done, code: {}, result: {}", resp.getStatus(), resp.getEntity() );
+            }
+            catch ( Exception e )
+            {
+                logger.warn( "Purge filesystem failed", e );
+            }
+        });
     }
 
     public boolean exists( final StoreKey key )
