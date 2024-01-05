@@ -38,7 +38,7 @@ quarkus:
   security:
     auth:
       enabled-in-dev-mode: false
-  opentelemetry:
+  otel:
     enabled: true
   log:
     level: INFO
@@ -97,7 +97,7 @@ kafka:
     servers: "localhost:9092"
 
 storage-service-api/mp-rest/url: http://localhost
-storage-service-api/mp-rest/scope: javax.inject.Singleton
+storage-service-api/mp-rest/scope: jakarta.inject.Singleton
 
 mp:
   messaging:

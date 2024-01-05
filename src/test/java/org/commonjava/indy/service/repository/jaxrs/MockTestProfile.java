@@ -18,6 +18,7 @@ package org.commonjava.indy.service.repository.jaxrs;
 import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.jaxrs.mock.MockAdminController;
 import org.commonjava.indy.service.repository.jaxrs.mock.MockSecurityManager;
+import org.commonjava.indy.service.repository.jaxrs.mock.MockStorageService;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class MockTestProfile
     @Override
     public Set<Class<?>> getEnabledAlternatives()
     {
-        return Stream.of( MockAdminController.class, MockSecurityManager.class ).collect( Collectors.toSet() );
+        return Stream.of( MockAdminController.class, MockSecurityManager.class, MockStorageService.class ).collect( Collectors.toSet() );
     }
 
 }

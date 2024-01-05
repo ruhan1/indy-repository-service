@@ -19,7 +19,7 @@ import org.commonjava.atlas.maven.ident.util.JoinString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.net.MalformedURLException;
 
 import static org.apache.commons.lang3.StringUtils.join;
