@@ -21,9 +21,9 @@ import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
 
 @Decorator
 public abstract class MeasuringArtifactStoreQueryInterceptor

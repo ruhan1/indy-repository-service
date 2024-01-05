@@ -17,7 +17,7 @@ package org.commonjava.indy.service.repository.data;
 
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * Store Validator  used to validate URL for for {@link ArtifactStore} instances and

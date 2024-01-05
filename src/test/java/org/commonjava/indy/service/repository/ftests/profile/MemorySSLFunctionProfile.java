@@ -15,21 +15,34 @@
  */
 package org.commonjava.indy.service.repository.ftests.profile;
 
+import org.commonjava.indy.service.repository.jaxrs.mock.MockAdminController;
+import org.commonjava.indy.service.repository.jaxrs.mock.MockSecurityManager;
+import org.commonjava.indy.service.repository.jaxrs.mock.MockStorageService;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ISPNSSLFunctionProfile
+public class MemorySSLFunctionProfile
         extends BaseIndyTestProfile
 {
     @Override
     public Map<String, String> getExtraConfigOverrides()
     {
         Map<String, String> configs = new HashMap<>();
-        configs.put( "repository.data-storage", "infinispan" );
+        configs.put( "repository.data-storage", "mem" );
         configs.put( "repository.storeValidationEnabled", "true" );
         configs.put( "repository.remote.sslRequired", "true" );
         configs.put( "repository.remote.nosslHosts", "localhost,127.0.0.1" );
         return configs;
+    }
+
+    @Override
+    public Set<Class<?>> getEnabledAlternatives()
+    {
+        return Stream.of( MockStorageService.class ).collect( Collectors.toSet() );
     }
 
 }
