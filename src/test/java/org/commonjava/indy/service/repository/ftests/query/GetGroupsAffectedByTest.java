@@ -18,16 +18,16 @@ package org.commonjava.indy.service.repository.ftests.query;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.matchers.StoreListingCheckMatcher;
-import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.testutil.TestUtil.prepareCustomizedMapper;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -39,7 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
  * </ul>
  */
 @QuarkusTest
-@TestProfile( ISPNFunctionProfile.class )
+@TestProfile( MemoryFunctionProfile.class )
 @Tag( "function" )
 public class GetGroupsAffectedByTest
         extends AbstractQueryFuncTest

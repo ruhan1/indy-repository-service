@@ -17,7 +17,7 @@ package org.commonjava.indy.service.repository.ftests.admin.event;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.smallrye.reactive.messaging.providers.connectors.InMemorySink;
+import io.smallrye.reactive.messaging.memory.InMemorySink;
 import org.commonjava.event.store.EventStoreKey;
 import org.commonjava.event.store.IndyStoreEvent;
 import org.commonjava.event.store.StoreEventType;
@@ -26,7 +26,7 @@ import org.commonjava.event.store.StorePreUpdateEvent;
 import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.change.event.kafka.KafkaEventUtils;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
-import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.awaitility.Awaitility.await;
 import static org.commonjava.indy.service.repository.model.StoreKey.fromString;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
@@ -60,7 +60,7 @@ import static org.hamcrest.Matchers.contains;
  * </ul>
  */
 @QuarkusTest
-@TestProfile( ISPNFunctionProfile.class )
+@TestProfile( MemoryFunctionProfile.class )
 @Tag( "function" )
 public class CreateAndUpdateRepoWithEventTest
         extends AbstractStoreEventTest

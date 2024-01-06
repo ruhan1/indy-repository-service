@@ -19,7 +19,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
-import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.hamcrest.CoreMatchers;
@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.delete;
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
-@TestProfile( ISPNFunctionProfile.class )
+@TestProfile( MemoryFunctionProfile.class )
 @QuarkusTest
 @Tag( "function" )
 //@Disabled("StoreManager.postStore not implemented yet, will cause this ftest fail.")

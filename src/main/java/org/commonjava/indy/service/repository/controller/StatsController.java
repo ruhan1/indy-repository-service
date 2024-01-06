@@ -25,12 +25,12 @@ import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
 import org.commonjava.indy.service.repository.model.version.Versioning;
 import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @ApplicationScoped
 public class StatsController

@@ -20,7 +20,7 @@ import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.matchers.StoreListingCheckMatcher;
-import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.Group;
 import org.commonjava.indy.service.repository.model.HostedRepository;
@@ -35,14 +35,14 @@ import java.util.List;
 import java.util.Set;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.commonjava.indy.service.repository.model.StoreType.group;
 import static org.commonjava.indy.service.repository.model.StoreType.hosted;
 import static org.commonjava.indy.service.repository.model.StoreType.remote;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 @QuarkusTest
-@TestProfile( ISPNFunctionProfile.class )
+@TestProfile( MemoryFunctionProfile.class )
 @Tag( "function" )
 public class ListStoresByTypeTest
         extends AbstractStoreManagementTest

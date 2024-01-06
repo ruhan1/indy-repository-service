@@ -18,17 +18,15 @@ package org.commonjava.indy.service.repository.data;
 import org.commonjava.indy.service.repository.config.IndyRepositoryConfiguration;
 import org.commonjava.indy.service.repository.data.annotations.ClusterStoreDataManager;
 import org.commonjava.indy.service.repository.data.annotations.MemStoreDataManager;
-import org.commonjava.indy.service.repository.data.annotations.StandaloneStoreDataManager;
 import org.commonjava.indy.service.repository.data.cassandra.CassandraStoreDataManager;
-import org.commonjava.indy.service.repository.data.infinispan.InfinispanStoreDataManager;
 import org.commonjava.indy.service.repository.data.mem.MemoryStoreDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class StoreDataManagerProducer
@@ -41,16 +39,11 @@ public class StoreDataManagerProducer
     @Produces
     @ApplicationScoped
     @Default
-    public StoreDataManager produces( @StandaloneStoreDataManager InfinispanStoreDataManager ispnStoreDataManager,
-                                      @ClusterStoreDataManager CassandraStoreDataManager clusterStoreDataManager,
+    public StoreDataManager produces( @ClusterStoreDataManager CassandraStoreDataManager clusterStoreDataManager,
                                       @MemStoreDataManager MemoryStoreDataManager memoryStoreDataManager )
     {
         String storageType = repoConfig.storageType().orElse( "" );
-        if ( IndyRepositoryConfiguration.STORAGE_INFINISPAN.equals( storageType ) )
-        {
-            return ispnStoreDataManager;
-        }
-        else if ( IndyRepositoryConfiguration.STORAGE_CASSANDRA.equals( storageType ) )
+        if ( IndyRepositoryConfiguration.STORAGE_CASSANDRA.equals( storageType ) )
         {
             return clusterStoreDataManager;
         }

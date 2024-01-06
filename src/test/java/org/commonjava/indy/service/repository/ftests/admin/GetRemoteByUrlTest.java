@@ -20,16 +20,17 @@ import io.quarkus.test.junit.TestProfile;
 import org.commonjava.indy.service.repository.ftests.AbstractStoreManagementTest;
 import org.commonjava.indy.service.repository.ftests.matchers.RepoEqualMatcher;
 import org.commonjava.indy.service.repository.ftests.matchers.StoreListingCheckMatcher;
-import org.commonjava.indy.service.repository.ftests.profile.ISPNFunctionProfile;
+import org.commonjava.indy.service.repository.ftests.profile.MemoryFunctionProfile;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.test.http.expect.ExpectationServer;
+import org.commonjava.test.http.quarkus.InjectExpected;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
 /**
@@ -53,25 +54,13 @@ import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeD
  * </ul>
  */
 @QuarkusTest
-@TestProfile( ISPNFunctionProfile.class )
+@TestProfile( MemoryFunctionProfile.class )
 @Tag( "function" )
 public class GetRemoteByUrlTest
         extends AbstractStoreManagementTest
 {
+    @InjectExpected()
     public final ExpectationServer server = new ExpectationServer();
-
-    @BeforeEach
-    public void before()
-            throws Exception
-    {
-        server.start();
-    }
-
-    @AfterEach
-    public void after()
-    {
-        server.stop();
-    }
 
     @Test
     public void getRemoteByUrl()

@@ -20,7 +20,7 @@ import io.quarkus.test.junit.TestProfile;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
