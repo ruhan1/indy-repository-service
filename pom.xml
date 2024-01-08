@@ -202,14 +202,6 @@
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-sdk-extension-jaeger-remote-sampler</artifactId>
     </dependency>
-    <!-- for honeycomb otel usage, see: https://docs.honeycomb.io/getting-data-in/opentelemetry/java-distro/ -->
-    <!--
-    <dependency>
-      <groupId>io.honeycomb</groupId>
-      <artifactId>honeycomb-opentelemetry-sdk</artifactId>
-      <version>${honeycomb.otel.version}</version>
-    </dependency>
-    -->
     <!-- quarkus otel deps end -->
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
