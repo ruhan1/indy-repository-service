@@ -28,7 +28,10 @@ import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -83,6 +86,26 @@ public class StatsController
         }
 
         return new EndpointViewListing( points );
+    }
+
+    public Map<String, List<String>> getAllStoreKeys()
+            throws IndyWorkflowException
+    {
+        final List<ArtifactStore> stores;
+        try
+        {
+            final Map<String, List<String>> result = new HashMap<>();
+            stores = new ArrayList<>( dataManager.getAllArtifactStores() );
+            List<String> items = stores.stream().map( s-> s.getKey().toString() ).collect( Collectors.toList() );
+            result.put("items", items);
+            return result;
+        }
+        catch ( final IndyDataException e )
+        {
+            throw new IndyWorkflowException( INTERNAL_SERVER_ERROR.getStatusCode(),
+                                             "Failed to retrieve all store keys: {}", e, e.getMessage() );
+        }
+
     }
 
 }
