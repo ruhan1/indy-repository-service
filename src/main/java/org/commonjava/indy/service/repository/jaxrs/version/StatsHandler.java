@@ -138,7 +138,7 @@ public class StatsHandler
     @Operation(
             summary = "Retrieve a listing of the artifact stores keys available on the system." )
     @APIResponse( responseCode = "200",
-                  content = @Content( schema = @Schema( implementation = EndpointViewListing.class ) ),
+                  content = @Content( schema = @Schema( implementation = Map.class ) ),
                   description = "The artifact store keys listing" )
     @Path( "/all-storekeys" )
     @GET
