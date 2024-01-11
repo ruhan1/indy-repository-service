@@ -37,7 +37,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -126,6 +129,35 @@ public class StatsHandler
         catch ( final IndyWorkflowException e )
         {
             logger.error( String.format( "Failed to retrieve endpoint listing: %s", responseHelper.formatEntity( e ) ),
+                          e );
+            response = responseHelper.formatResponse( e );
+        }
+        return response;
+    }
+
+    @Operation(
+            summary = "Retrieve a listing of the artifact stores keys available on the system." )
+    @APIResponse( responseCode = "200",
+                  content = @Content( schema = @Schema( implementation = EndpointViewListing.class ) ),
+                  description = "The artifact store keys listing" )
+    @Path( "/all-storekeys" )
+    @GET
+    @Produces( APPLICATION_JSON )
+    public Response getAllStoreKeys( @Context final UriInfo uriInfo )
+    {
+        Response response;
+        try
+        {
+
+            Map<String, List<String>> result = statsController.getAllStoreKeys();
+
+            response = responseHelper.formatOkResponseWithJsonEntity( result );
+
+            logger.debug( "\n\n\n\n\n\n{} Sent all-keys:\n\n{}\n\n\n\n\n\n\n", new Date(), result );
+        }
+        catch ( final IndyWorkflowException e )
+        {
+            logger.error( String.format( "Failed to retrieve store keys listing: %s", responseHelper.formatEntity( e ) ),
                           e );
             response = responseHelper.formatResponse( e );
         }
