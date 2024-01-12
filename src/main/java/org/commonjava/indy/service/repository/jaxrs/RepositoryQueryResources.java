@@ -19,8 +19,10 @@ import org.commonjava.atlas.maven.ident.util.JoinString;
 import org.commonjava.indy.service.repository.controller.QueryController;
 import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
+import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
 import org.commonjava.indy.service.repository.model.dto.SimpleBooleanResultDTO;
 import org.commonjava.indy.service.repository.model.dto.StoreListingDTO;
+import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 import org.commonjava.indy.service.repository.util.UrlUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -40,13 +42,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
+import static org.commonjava.indy.service.repository.util.Constants.API_PREFIX;
 import static org.eclipse.microprofile.openapi.annotations.enums.ParameterIn.QUERY;
 
 @Tag( name = "Store Querying APIs", description = "Resource for querying artifact store definitions" )
@@ -62,6 +69,9 @@ public class RepositoryQueryResources
 
     @Inject
     QueryController queryController;
+
+    @Inject
+    JaxRsUriFormatter uriFormatter;
 
     public RepositoryQueryResources()
     {
@@ -293,6 +303,62 @@ public class RepositoryQueryResources
         dto.setDescription( "Check if there are no repository definitions." );
         dto.setResult( result );
         return responseHelper.formatOkResponseWithJsonEntity( dto );
+    }
+
+    @Operation(
+            summary = "Retrieve a listing of the artifact stores available on the system. This is especially useful for setting up a network of Indy instances that reference one another" )
+    @APIResponse( responseCode = "200",
+                  content = @Content( schema = @Schema( implementation = EndpointViewListing.class ) ),
+                  description = "The artifact store listing" )
+    @Path( "/endpoints/{packageType}" )
+    @GET
+    @Produces( APPLICATION_JSON )
+    public Response getEndpoints( @PathParam( "packageType" ) final String pkgType, @Context final UriInfo uriInfo )
+    {
+        Response response;
+        try
+        {
+            final String baseUri = uriInfo.getBaseUriBuilder().path( API_PREFIX ).build().toString();
+
+            final EndpointViewListing listing = queryController.getEndpointsListing( pkgType, baseUri, uriFormatter );
+            response = responseHelper.formatOkResponseWithJsonEntity( listing );
+
+            logger.info( "\n\n\n\n\n\n{} Sent all-endpoints:\n\n{}\n\n\n\n\n\n\n", new Date(), listing );
+        }
+        catch ( final IndyWorkflowException e )
+        {
+            logger.error( String.format( "Failed to retrieve endpoint listing: %s", responseHelper.formatEntity( e ) ),
+                          e );
+            response = responseHelper.formatResponse( e );
+        }
+        return response;
+    }
+
+    @Operation( summary = "Retrieve a listing of the artifact stores keys available on the system." )
+    @APIResponse( responseCode = "200", content = @Content( schema = @Schema( implementation = Map.class ) ),
+                  description = "The artifact store keys listing" )
+    @Path( "/storekeys/{packageType}" )
+    @GET
+    @Produces( APPLICATION_JSON )
+    public Response getStoreKeys( @PathParam( "packageType" ) final String pkgType, @Context final UriInfo uriInfo )
+    {
+        Response response;
+        try
+        {
+
+            Map<String, List<String>> result = queryController.getStoreKeysByPackageType( pkgType );
+
+            response = responseHelper.formatOkResponseWithJsonEntity( result );
+
+            logger.debug( "\n\n\n\n\n\n{} Sent store keys:\n\n{}\n\n\n\n\n\n\n", new Date(), result );
+        }
+        catch ( final IndyWorkflowException e )
+        {
+            logger.error( String.format( "Failed to retrieve store keys listing by type %s: %s", pkgType,
+                                         responseHelper.formatEntity( e ) ), e );
+            response = responseHelper.formatResponse( e );
+        }
+        return response;
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )

@@ -56,4 +56,44 @@ public class RepositoryQueryResourcesTest
 
     }
 
+    @Test
+    public void testGetAllEndpoints()
+    {
+        given().get( normalize( BASE_QUERY_PATH, "endpoints/all" ) )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
+
+    @Test
+    public void testGetMavenEndpoints()
+    {
+        given().get( normalize( BASE_QUERY_PATH, "endpoints/maven" ) )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
+
+    @Test
+    public void testGetAllStoreKeys()
+    {
+        given().get( normalize( BASE_QUERY_PATH, "storekeys/all" ) )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
+
+    @Test
+    public void testGetMavenStoreKeys()
+    {
+        given().get( normalize( BASE_QUERY_PATH, "endpoints/maven" ) )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
+
 }

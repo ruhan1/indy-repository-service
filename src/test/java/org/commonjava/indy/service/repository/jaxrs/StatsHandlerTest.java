@@ -54,23 +54,4 @@ public class StatsHandlerTest
                .body( containsString( "maven" ) );
     }
 
-    @Test
-    public void testGetAllEndpoints()
-    {
-        given().get( "/api/stats/all-endpoints" )
-               .then()
-               .statusCode( OK.getStatusCode() )
-               .body( "size()", is( 1 ) )
-               .body( "items.size()", greaterThan( 1 ) );
-    }
-
-    @Test
-    public void testGetAllStoreKeys()
-    {
-        given().get( "/api/stats/all-storekeys" )
-               .then()
-               .statusCode( OK.getStatusCode() )
-               .body( "size()", is( 1 ) )
-               .body( "items.size()", greaterThan( 1 ) );
-    }
 }
