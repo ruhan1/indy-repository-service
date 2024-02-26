@@ -23,7 +23,6 @@ import org.commonjava.indy.service.repository.controller.MaintenanceController;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.resteasy.spi.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +36,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +49,6 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.METHOD_NOT_ALLOWED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -100,13 +99,13 @@ public class RepositoryMaintenanceResources
     @APIResponse( responseCode = "200", description = "All repository definitions which are imported successfully." )
     @POST
     @Path( "/import" )
-    @Consumes( MEDIATYPE_APPLICATION_ZIP )
+    @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( APPLICATION_JSON )
-    public Response importRepoBundle( @Context final HttpRequest request )
+    public Response importRepoBundle( InputStream input )
     {
         try
         {
-            Map<String, List<String>> results = maintController.importRepoBundle( request.getInputStream() );
+            Map<String, List<String>> results = maintController.importRepoBundle( input );
             return ok( results ).build();
         }
         catch ( IOException e )
