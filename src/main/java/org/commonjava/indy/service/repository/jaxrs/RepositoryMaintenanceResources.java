@@ -23,7 +23,6 @@ import org.commonjava.indy.service.repository.controller.MaintenanceController;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.resteasy.spi.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +36,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -99,13 +99,13 @@ public class RepositoryMaintenanceResources
     @APIResponse( responseCode = "200", description = "All repository definitions which are imported successfully." )
     @POST
     @Path( "/import" )
-    @Consumes( MEDIATYPE_APPLICATION_ZIP )
+    @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( APPLICATION_JSON )
-    public Response importRepoBundle( @Context final HttpRequest request )
+    public Response importRepoBundle( InputStream input )
     {
         try
         {
-            Map<String, List<String>> results = maintController.importRepoBundle( request.getInputStream() );
+            Map<String, List<String>> results = maintController.importRepoBundle( input );
             return ok( results ).build();
         }
         catch ( IOException e )

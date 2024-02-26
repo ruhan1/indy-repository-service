@@ -20,6 +20,7 @@ import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.jaxrs.ResponseHelper;
 import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
 import org.commonjava.indy.service.repository.model.version.Versioning;
+import org.commonjava.indy.service.repository.util.Constants;
 import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -49,7 +50,6 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static jakarta.ws.rs.core.Response.ok;
 import static org.commonjava.indy.service.repository.model.PackageTypes.getPackageTypeDescriptorMap;
 import static org.commonjava.indy.service.repository.model.PackageTypes.getPackageTypes;
-import static org.commonjava.indy.service.repository.util.Constants.API_PREFIX;
 
 @Tag( name = "Generic Infrastructure Queries (UI Support)",
       description = "Various read-only operations for retrieving information about the system." )
@@ -119,7 +119,7 @@ public class StatsHandler
         Response response;
         try
         {
-            final String baseUri = uriInfo.getBaseUriBuilder().path( API_PREFIX ).build().toString();
+            final String baseUri = uriInfo.getBaseUriBuilder().path( Constants.API_PREFIX ).build().toString();
 
             final EndpointViewListing listing = statsController.getEndpointsListing( baseUri, uriFormatter );
             response = responseHelper.formatOkResponseWithJsonEntity( listing );

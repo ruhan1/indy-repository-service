@@ -23,10 +23,11 @@ import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.dto.EndpointView;
 import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
 import org.commonjava.indy.service.repository.model.version.Versioning;
-import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
