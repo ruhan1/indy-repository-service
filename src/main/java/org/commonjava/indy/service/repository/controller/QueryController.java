@@ -26,6 +26,9 @@ import org.commonjava.indy.service.repository.model.HostedRepository;
 import org.commonjava.indy.service.repository.model.RemoteRepository;
 import org.commonjava.indy.service.repository.model.StoreKey;
 import org.commonjava.indy.service.repository.model.StoreType;
+import org.commonjava.indy.service.repository.model.dto.EndpointView;
+import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
+import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +37,10 @@ import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,7 +87,7 @@ public class QueryController
                 // when packageType and type are all unique value, use storeManager.getArtifactStoresByPkgAndType to improve performance
                 stores = storeManager.getArtifactStoresByPkgAndType( packageType, typeList.get( 0 ) );
             }
-            else if ( !isValidPackageType( packageType ) && typeList.size() == 0 )
+            else if ( !isValidPackageType( packageType ) && typeList.isEmpty() )
             {
                 stores = storeManager.getAllArtifactStores();
             }
@@ -249,6 +254,76 @@ public class QueryController
     public Boolean isStoreDataEmpty()
     {
         return storeManager.isEmpty();
+    }
+
+    public EndpointViewListing getEndpointsListing( final String pkgType, final String baseUri,
+                                                    final JaxRsUriFormatter uriFormatter )
+            throws IndyWorkflowException
+    {
+        List<ArtifactStore> stores;
+        try
+        {
+            stores = new ArrayList<>( storeManager.getAllArtifactStores() );
+            if ( StringUtils.isNotBlank( pkgType ) && !"all".equals( pkgType ) && isValidPackageType( pkgType ) )
+            {
+                stores = stores.stream()
+                               .filter( s -> pkgType.equals( s.getPackageType() ) )
+                               .collect( Collectors.toList() );
+            }
+        }
+        catch ( final IndyDataException e )
+        {
+            throw new IndyWorkflowException( INTERNAL_SERVER_ERROR.getStatusCode(),
+                                             "Failed to retrieve all endpoints: {}", e, e.getMessage() );
+        }
+
+        final List<EndpointView> points = new ArrayList<>();
+        for ( final ArtifactStore store : stores )
+        {
+            final StoreKey key = store.getKey();
+            final String resourceUri = uriFormatter.formatAbsolutePathTo( baseUri, "content", key.getPackageType(),
+                                                                          key.getType().singularEndpointName(),
+                                                                          key.getName() );
+
+            final EndpointView point = new EndpointView( store, resourceUri );
+            if ( !points.contains( point ) )
+            {
+                points.add( point );
+            }
+        }
+
+        return new EndpointViewListing( points );
+    }
+
+    public Map<String, List<String>> getStoreKeysByPackageType( final String pkgType )
+            throws IndyWorkflowException
+    {
+        final List<ArtifactStore> stores;
+
+        try
+        {
+            final Map<String, List<String>> result = new HashMap<>();
+            stores = new ArrayList<>( storeManager.getAllArtifactStores() );
+            List<String> items;
+            if ( StringUtils.isNotBlank( pkgType ) && !"all".equals( pkgType ) && isValidPackageType( pkgType ) )
+            {
+                items = stores.stream()
+                              .filter( s -> pkgType.equals( s.getPackageType() ) )
+                              .map( s -> s.getKey().toString() )
+                              .collect( Collectors.toList() );
+            }
+            else
+            {
+                items = stores.stream().map( s -> s.getKey().toString() ).collect( Collectors.toList() );
+            }
+            result.put( "items", items );
+            return result;
+        }
+        catch ( final IndyDataException e )
+        {
+            throw new IndyWorkflowException( INTERNAL_SERVER_ERROR.getStatusCode(),
+                                             "Failed to retrieve all store keys: {}", e, e.getMessage() );
+        }
     }
 
     private StoreKey validateStoreKey( final String storeKey )

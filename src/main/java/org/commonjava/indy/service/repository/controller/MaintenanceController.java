@@ -17,6 +17,9 @@ package org.commonjava.indy.service.repository.controller;
 
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.commonjava.event.common.EventMetadata;
 import org.commonjava.indy.service.repository.audit.ChangeSummary;
@@ -32,17 +35,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import static java.util.Map.of;
@@ -96,35 +100,40 @@ public class MaintenanceController
     public Map<String, List<String>> importRepoBundle( final InputStream zipStream )
             throws IOException
     {
+        File tempRepoZip = createTempFile();
+        logger.info( "Saving repo file to {}", tempRepoZip.getPath() );
+        try (zipStream)
+        {
+            try (OutputStream out = new FileOutputStream( tempRepoZip ))
+            {
+                IOUtils.copy( zipStream, out );
+            }
+        }
+
         final List<String> skipped = new ArrayList<>();
         final List<String> failed = new ArrayList<>();
         final Map<String, String> payload = new HashMap<>();
-        logger.info( "Start extracting repos definitions from bundle!" );
-        try (ZipInputStream zip = new ZipInputStream( zipStream ))
+
+        try (ZipFile zipFile = ZipFile.builder().setFile( tempRepoZip ).get())
         {
-            if ( zip.available() > 0 )
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+            while ( entries.hasMoreElements() )
             {
-                ZipEntry entry = zip.getNextEntry();
-                while ( entry != null )
+                ZipArchiveEntry entry = entries.nextElement();
+                if ( !entry.isDirectory() )
                 {
-                    if ( !entry.isDirectory() )
+                    try (InputStream in = zipFile.getInputStream( entry ))
                     {
-                        logger.debug( "Processing {}", entry.getName() );
-                        byte[] buffer = new byte[2048];
-                        final StringBuilder builder = new StringBuilder();
-                        while ( zip.read( buffer ) > 0 )
-                        {
-                            builder.append( new String( buffer, Charset.defaultCharset() ) );
-                            buffer = new byte[2048];
-                        }
-
-                        payload.put( entry.getName(), builder.toString().trim() );
-
+                        payload.put( entry.getName(), IOUtils.toString( in, Charset.defaultCharset() ) );
                     }
-                    entry = zip.getNextEntry();
                 }
             }
         }
+        finally
+        {
+            FileUtils.deleteQuietly( tempRepoZip );
+        }
+
         logger.info( "Repos definitions extraction from bundle finished.\n\n" );
         logger.info( "Start importing repos definitions to data store." );
         for ( Map.Entry<String, String> entry : payload.entrySet() )
