@@ -20,8 +20,8 @@ import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
 
-import javax.enterprise.inject.Alternative;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Named;
 import java.util.Map;
 
 @Alternative

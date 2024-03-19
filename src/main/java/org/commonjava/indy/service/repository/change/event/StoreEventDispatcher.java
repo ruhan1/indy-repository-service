@@ -20,7 +20,7 @@ import org.commonjava.event.store.StoreUpdateType;
 import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.commonjava.indy.service.repository.model.StoreKey;
 
-import javax.enterprise.event.Event;
+import jakarta.enterprise.event.Event;
 import java.util.Map;
 
 /**

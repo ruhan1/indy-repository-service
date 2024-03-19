@@ -16,8 +16,12 @@
 package org.commonjava.indy.service.repository.jaxrs.version;
 
 import org.commonjava.indy.service.repository.controller.StatsController;
+import org.commonjava.indy.service.repository.exception.IndyWorkflowException;
 import org.commonjava.indy.service.repository.jaxrs.ResponseHelper;
+import org.commonjava.indy.service.repository.model.dto.EndpointViewListing;
 import org.commonjava.indy.service.repository.model.version.Versioning;
+import org.commonjava.indy.service.repository.util.Constants;
+import org.commonjava.indy.service.repository.util.JaxRsUriFormatter;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -26,17 +30,24 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.ok;
 import static org.commonjava.indy.service.repository.model.PackageTypes.getPackageTypeDescriptorMap;
 import static org.commonjava.indy.service.repository.model.PackageTypes.getPackageTypes;
 
@@ -52,6 +63,9 @@ public class StatsHandler
 
     @Inject
     ResponseHelper responseHelper;
+
+    @Inject
+    JaxRsUriFormatter uriFormatter;
 
     @Operation( summary = "Retrieve versioning information about this APP instance" )
     @APIResponse( responseCode = "200", content = @Content( schema = @Schema( implementation = Versioning.class ) ),
@@ -90,6 +104,64 @@ public class StatsHandler
     public Response getPackageTypeNames()
     {
         return ok( new TreeSet<>( getPackageTypes() ) ).build();
+    }
+
+    @Operation(
+            summary = "Retrieve a listing of the artifact stores available on the system. This is especially useful for setting up a network of Indy instances that reference one another" )
+    @APIResponse( responseCode = "200",
+                  content = @Content( schema = @Schema( implementation = EndpointViewListing.class ) ),
+                  description = "The artifact store listing" )
+    @Path( "/all-endpoints" )
+    @GET
+    @Produces( APPLICATION_JSON )
+    public Response getAllEndpoints( @Context final UriInfo uriInfo )
+    {
+        Response response;
+        try
+        {
+            final String baseUri = uriInfo.getBaseUriBuilder().path( Constants.API_PREFIX ).build().toString();
+
+            final EndpointViewListing listing = statsController.getEndpointsListing( baseUri, uriFormatter );
+            response = responseHelper.formatOkResponseWithJsonEntity( listing );
+
+            logger.info( "\n\n\n\n\n\n{} Sent all-endpoints:\n\n{}\n\n\n\n\n\n\n", new Date(), listing );
+        }
+        catch ( final IndyWorkflowException e )
+        {
+            logger.error( String.format( "Failed to retrieve endpoint listing: %s", responseHelper.formatEntity( e ) ),
+                          e );
+            response = responseHelper.formatResponse( e );
+        }
+        return response;
+    }
+
+    @Operation(
+            summary = "Retrieve a listing of the artifact stores keys available on the system." )
+    @APIResponse( responseCode = "200",
+                  content = @Content( schema = @Schema( implementation = Map.class ) ),
+                  description = "The artifact store keys listing" )
+    @Path( "/all-storekeys" )
+    @GET
+    @Produces( APPLICATION_JSON )
+    public Response getAllStoreKeys( @Context final UriInfo uriInfo )
+    {
+        Response response;
+        try
+        {
+
+            Map<String, List<String>> result = statsController.getAllStoreKeys();
+
+            response = responseHelper.formatOkResponseWithJsonEntity( result );
+
+            logger.debug( "\n\n\n\n\n\n{} Sent all-keys:\n\n{}\n\n\n\n\n\n\n", new Date(), result );
+        }
+        catch ( final IndyWorkflowException e )
+        {
+            logger.error( String.format( "Failed to retrieve store keys listing: %s", responseHelper.formatEntity( e ) ),
+                          e );
+            response = responseHelper.formatResponse( e );
+        }
+        return response;
     }
 
 }

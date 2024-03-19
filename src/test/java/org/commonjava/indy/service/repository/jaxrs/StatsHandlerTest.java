@@ -20,7 +20,7 @@ import io.quarkus.test.junit.TestProfile;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -54,4 +54,23 @@ public class StatsHandlerTest
                .body( containsString( "maven" ) );
     }
 
+    @Test
+    public void testGetAllEndpoints()
+    {
+        given().get( "/api/stats/all-endpoints" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
+
+    @Test
+    public void testGetAllStoreKeys()
+    {
+        given().get( "/api/stats/all-storekeys" )
+               .then()
+               .statusCode( OK.getStatusCode() )
+               .body( "size()", is( 1 ) )
+               .body( "items.size()", greaterThan( 1 ) );
+    }
 }

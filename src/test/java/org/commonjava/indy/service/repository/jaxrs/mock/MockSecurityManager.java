@@ -18,8 +18,8 @@ package org.commonjava.indy.service.repository.jaxrs.mock;
 import org.commonjava.indy.service.security.common.SecurityManager;
 import org.jboss.resteasy.spi.HttpRequest;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
 
 @ApplicationScoped
 @Alternative

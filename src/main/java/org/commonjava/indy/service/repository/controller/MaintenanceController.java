@@ -29,8 +29,8 @@ import org.commonjava.indy.service.repository.model.ArtifactStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

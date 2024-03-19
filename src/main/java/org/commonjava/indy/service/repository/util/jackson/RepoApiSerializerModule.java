@@ -21,7 +21,7 @@ import org.commonjava.event.store.jackson.EventStoreKeyDeserializer;
 import org.commonjava.event.store.jackson.EventStoreKeySerializer;
 import org.commonjava.indy.service.repository.model.StoreKey;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class RepoApiSerializerModule
