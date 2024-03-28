@@ -43,7 +43,7 @@
     <projectEmail>https://github.com/Commonjava/indy-repository-service</projectEmail>
 
     <atlas.version>1.1.1</atlas.version>
-    <indymodel.version>2.0-SNAPSHOT</indymodel.version>
+    <indymodel.version>2.0</indymodel.version>
 
     <cassandra.version>3.11.3</cassandra.version>
     <infinispan.version>14.0.6.Final</infinispan.version>
