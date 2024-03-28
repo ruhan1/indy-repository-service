@@ -44,7 +44,6 @@
 
     <atlas.version>1.1.1</atlas.version>
     <indymodel.version>2.0-SNAPSHOT</indymodel.version>
-    <indysecurity.verison>1.2-SNAPSHOT</indysecurity.verison>
 
     <cassandra.version>3.11.3</cassandra.version>
     <infinispan.version>14.0.6.Final</infinispan.version>
@@ -91,7 +90,6 @@
     <dependency>
       <groupId>org.commonjava.indy.service</groupId>
       <artifactId>indy-security</artifactId>
-      <version>${indysecurity.verison}</version>
     </dependency>
     <!-- quarkus deps start -->
     <dependency>
