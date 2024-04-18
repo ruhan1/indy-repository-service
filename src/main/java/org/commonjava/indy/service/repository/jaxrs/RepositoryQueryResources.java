@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static jakarta.ws.rs.core.Response.ok;
@@ -116,6 +117,17 @@ public class RepositoryQueryResources
                         example = "true" ) @QueryParam( "enabled" ) final String enabled )
     {
         return generateStoreListingResponse( () -> queryController.getAllRemoteRepositories( packageType, enabled ) );
+    }
+
+    @Operation( description = "Retrieve all remote repository hostname for setting up egress network policy" )
+    @GET
+    @Path( "/remotes/hosts" )
+    @Produces( TEXT_PLAIN )
+    public Response getAllRemoteRepositoryHosts()
+            throws Exception
+    {
+        return responseHelper.formatOkResponseWithEntity(
+                queryController.getAllRemoteRepositoryHosts(), TEXT_PLAIN, null);
     }
 
     @Operation( description = "Retrieve all hosted repository definitions by specified package type" )

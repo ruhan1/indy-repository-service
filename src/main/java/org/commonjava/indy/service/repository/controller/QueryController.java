@@ -50,7 +50,7 @@ import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.commonjava.indy.service.repository.model.StoreKey.fromString;
 import static org.commonjava.indy.service.repository.model.pkg.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
-import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.isValidPackageType;
+import static org.commonjava.indy.service.repository.model.pkg.PackageTypeConstants.*;
 
 @ApplicationScoped
 public class QueryController
@@ -202,6 +202,22 @@ public class QueryController
                                                               packageType == null ? MAVEN_PKG_KEY : packageType,
                                                               isEnabled ),
                                     "Failed to get all remote repos for package type {}", packageType );
+    }
+
+    /**
+     * Get all remote hostnames in known package types [maven, npm, generic-http].
+     */
+    public String getAllRemoteRepositoryHosts()
+            throws IndyDataException
+    {
+        final Set<String> ret = new HashSet<>();
+        storeManager.query().getAllRemoteRepositories(PKG_TYPE_MAVEN).forEach( r -> ret.add( r.getHost() ) );
+        storeManager.query().getAllRemoteRepositories(PKG_TYPE_NPM).forEach( r -> ret.add( r.getHost() ) );
+        storeManager.query().getAllRemoteRepositories(PKG_TYPE_GENERIC_HTTP).forEach( r -> ret.add( r.getHost() ) );
+
+        final StringBuilder sb = new StringBuilder();
+        ret.stream().sorted().forEach( s -> sb.append(s).append(","));
+        return sb.toString();
     }
 
     public List<HostedRepository> getAllHostedRepositories( final String packageType, final String enabled )

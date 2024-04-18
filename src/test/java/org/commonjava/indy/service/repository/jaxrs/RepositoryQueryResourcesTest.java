@@ -17,7 +17,13 @@ package org.commonjava.indy.service.repository.jaxrs;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -25,6 +31,7 @@ import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.commonjava.indy.service.repository.util.PathUtils.normalize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @TestProfile( MockTestProfile.class )
@@ -42,6 +49,18 @@ public class RepositoryQueryResourcesTest
                .contentType( APPLICATION_JSON )
                .body( "size()", is( 1 ) )
                .body( "items.size()", greaterThan( 1 ) );
+    }
+
+    @Test
+    public void testGetAllRemoteHosts() throws IOException
+    {
+        Response response = given().when()
+                .get(normalize(BASE_QUERY_PATH, "remotes/hosts"));
+        try (InputStream in = response.getBody().asInputStream())
+        {
+            final String ret = IOUtils.toString( in, Charset.defaultCharset() );
+            assertTrue( ret.contains("repo.maven.apache.org") );
+        }
     }
 
     @Test
