@@ -15,6 +15,8 @@
  */
 package org.commonjava.indy.service.repository.client.storage;
 
+import org.commonjava.indy.service.security.jaxrs.CustomClientRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import jakarta.ws.rs.DELETE;
@@ -24,6 +26,7 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/api/storage")
 @RegisterRestClient(configKey="storage-service-api")
+@RegisterProvider(CustomClientRequestFilter.class)
 public interface StorageService
 {
     @DELETE
