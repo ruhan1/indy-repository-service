@@ -40,9 +40,13 @@ quarkus:
       enabled-in-dev-mode: false
   otel:
     enabled: true
+    traces:
+      enabled: true
+      sampler:
+        ~: traceidratio
+        arg: 1.0
   log:
     level: INFO
-    min-level: TRACE
     category:
       "org.jboss":
         level: WARN
