@@ -20,6 +20,8 @@ quarkus:
     read-timeout: 30m
     limits:
       max-body-size: 500m
+    auth:
+      proactive: false
   package:
     type: uber-jar
   application:
