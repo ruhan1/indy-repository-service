@@ -201,8 +201,8 @@
       <artifactId>opentelemetry-sdk-extension-jaeger-remote-sampler</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-exporter-otlp</artifactId>
     </dependency>
     <!-- quarkus otel deps end -->
     <dependency>
