@@ -15,7 +15,7 @@
  */
 package org.commonjava.indy.service.repository.controller;
 
-import org.apache.commons.lang3.StringUtils;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.commonjava.indy.service.repository.data.ArtifactStoreQuery;
 import org.commonjava.indy.service.repository.data.StoreDataManager;
 import org.commonjava.indy.service.repository.exception.IndyDataException;
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,7 +72,7 @@ public class QueryController
             throws IndyWorkflowException
     {
         List<StoreType> typesLs = new ArrayList<>();
-        if ( StringUtils.isNotBlank( types ) )
+        if ( isNotBlank( types ) )
         {
             typesLs = Arrays.stream( types.split( "," ) )
                             .map( String::trim )
@@ -211,13 +212,23 @@ public class QueryController
             throws IndyDataException
     {
         final Set<String> ret = new HashSet<>();
-        storeManager.query().getAllRemoteRepositories(PKG_TYPE_MAVEN).forEach( r -> ret.add( r.getHost() ) );
-        storeManager.query().getAllRemoteRepositories(PKG_TYPE_NPM).forEach( r -> ret.add( r.getHost() ) );
-        storeManager.query().getAllRemoteRepositories(PKG_TYPE_GENERIC_HTTP).forEach( r -> ret.add( r.getHost() ) );
+        storeManager.query().getAllRemoteRepositories(PKG_TYPE_MAVEN).forEach( r -> safelyAddHost( ret, r ) );
+        storeManager.query().getAllRemoteRepositories(PKG_TYPE_NPM).forEach( r -> safelyAddHost( ret, r ) );
+        storeManager.query().getAllRemoteRepositories(PKG_TYPE_GENERIC_HTTP).forEach( r -> safelyAddHost( ret, r ) );
 
         final StringBuilder sb = new StringBuilder();
         ret.stream().sorted().forEach( s -> sb.append(s).append(","));
         return sb.toString();
+    }
+
+    private void safelyAddHost( Set<String> hosts, RemoteRepository r )
+    {
+        // getHost returns null if MalformedURLException occurs during parsing
+        String host = r.getHost();
+        if ( isNotBlank( host ) )
+        {
+            hosts.add( host );
+        }
     }
 
     public List<HostedRepository> getAllHostedRepositories( final String packageType, final String enabled )
@@ -280,7 +291,7 @@ public class QueryController
         try
         {
             stores = new ArrayList<>( storeManager.getAllArtifactStores() );
-            if ( StringUtils.isNotBlank( pkgType ) && !"all".equals( pkgType ) && isValidPackageType( pkgType ) )
+            if ( isNotBlank( pkgType ) && !"all".equals( pkgType ) && isValidPackageType( pkgType ) )
             {
                 stores = stores.stream()
                                .filter( s -> pkgType.equals( s.getPackageType() ) )
@@ -321,7 +332,7 @@ public class QueryController
             final Map<String, List<String>> result = new HashMap<>();
             stores = new ArrayList<>( storeManager.getAllArtifactStores() );
             List<String> items;
-            if ( StringUtils.isNotBlank( pkgType ) && !"all".equals( pkgType ) && isValidPackageType( pkgType ) )
+            if ( isNotBlank( pkgType ) && !"all".equals( pkgType ) && isValidPackageType( pkgType ) )
             {
                 items = stores.stream()
                               .filter( s -> pkgType.equals( s.getPackageType() ) )
