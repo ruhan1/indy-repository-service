@@ -37,6 +37,7 @@ quarkus:
       enabled: false
   oidc:
     enabled: true
+    auth-server-url: http://localhost/realms/myrealm
   security:
     auth:
       enabled-in-dev-mode: false
