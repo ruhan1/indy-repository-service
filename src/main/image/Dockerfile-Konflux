@@ -1,0 +1,80 @@
+#
+# Copyright (C) 2022-2023 Red Hat, Inc. (https://github.com/Commonjava/indy-repository-service)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+####
+# This Dockerfile is used in order to build a container that runs the Quarkus application in JVM mode
+#
+# Before building the container image run:
+#
+# mvn package
+#
+# Then, build the image with:
+#
+# docker build -f src/main/image/Dockerfile.CFX -t indy-services/repository-service .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 indy-services/repository-service
+#
+# If you want to include the debug port into your docker image
+# you will have to expose the debug port (default 5005) like this :  EXPOSE 8080 5050
+#
+# Then run the container using :
+#
+# docker run -i --rm -p 8080:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" indy-services/repository-service
+#
+###
+# Build stage
+FROM registry.access.redhat.com/ubi8/openjdk-11:1.20-2 AS build
+
+USER root
+RUN mkdir /app
+
+WORKDIR /app
+
+COPY pom.xml /app
+COPY src /app/src
+RUN mvn --no-transfer-progress clean package -DskipTests
+
+# Run
+FROM quay.io/factory2/nos-java-base:jdk11
+
+EXPOSE 8080
+USER root
+
+ADD src/main/image/start-service.sh /usr/local/bin/start-service.sh
+
+RUN chmod +x /usr/local/bin/*
+
+RUN mkdir -p /opt/indy-repository-service/log && \
+  chmod -R 777 /opt/indy-repository-service && \
+  chmod -R 777 /opt/indy-repository-service/log
+
+COPY --from=build /app/target/*-runner.jar /opt/indy-repository-service/indy-repository-service-runner.jar
+RUN chmod +r /opt/indy-repository-service/indy-repository-service-runner.jar
+
+# Run as non-root user
+RUN chgrp -R 0 /opt && \
+    chmod -R g=u /opt && \
+    chgrp -R 0 /opt/indy-repository-service && \
+    chmod -R g=u /opt/indy-repository-service && \
+    chgrp -R 0 /opt/indy-repository-service/log && \
+    chmod -R g=u /opt/indy-repository-service/log
+
+USER 1001
+
+ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+CMD ["bash", "-c", "/usr/local/bin/start-service.sh"]

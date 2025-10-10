@@ -9,6 +9,9 @@ target
 .project
 .settings
 
+# vscode
+.vscode
+
 # idea
 .idea
 *.iml
