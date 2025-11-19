@@ -53,7 +53,7 @@
     <honeycomb.otel.version>1.0.0</honeycomb.otel.version>
     -->
 
-    <byteman.version>4.0.20</byteman.version>
+    <byteman.version>4.0.26</byteman.version>
     <skipTests>false</skipTests>
     <plugin.jacoco.skip>false</plugin.jacoco.skip>
   </properties>
