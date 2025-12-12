@@ -42,7 +42,7 @@
     <apiVersion>1</apiVersion>
     <projectEmail>https://github.com/Commonjava/indy-repository-service</projectEmail>
 
-    <atlas.version>1.1.1</atlas.version>
+    <atlas.version>1.1.9</atlas.version>
     <indymodel.version>2.0</indymodel.version>
 
     <cassandra.version>3.11.3</cassandra.version>
