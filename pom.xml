@@ -47,7 +47,7 @@
 
     <cassandra.version>3.11.3</cassandra.version>
     <infinispan.version>14.0.6.Final</infinispan.version>
-    <agroal.version>2.0</agroal.version>
+    <agroal.version>3.0</agroal.version>
 
     <!--
     <honeycomb.otel.version>1.0.0</honeycomb.otel.version>
